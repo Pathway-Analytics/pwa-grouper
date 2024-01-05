@@ -1,0 +1,25 @@
+{
+    "name": "@sst-starter3/core",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+      "test": "sst bind vitest",
+      "typecheck": "tsc -noEmit"
+    },
+    "devDependencies": {
+      "@types/aws-lambda": "^8.10.130",
+      "@types/node": "^20.10.4",
+      "sst": "2.39.2",
+      "vitest": "^1.0.2"
+    },
+    "dependencies": {
+      "@aws-sdk/client-rds-data": "^3.465.0",
+      "aws-lambda": "^1.0.7",
+      "aws-sdk": "^2.1514.0",
+      "kysely": "^0.26.3",
+      "kysely-data-api": "^0.2.1",
+      "uuid": "^9.0.1",
+      "zod": "^3.22.4",
+      "jwt-decode": "^4.0.0"
+    }
+  }
