@@ -1,5 +1,5 @@
 {
-    "name": "@sst-starter3/core",
+    "name": "@pwa-grouper/core",
     "version": "0.0.0",
     "type": "module",
     "scripts": {

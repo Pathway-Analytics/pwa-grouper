@@ -1,10 +1,10 @@
 import { 
     ApiHandler, useBody, useResponse
 } from 'sst/node/api';
-import { User } from '@sst-starter3/core/classes/user';
-import type { UserFilterType } from '@sst-starter3/core/types/user';
-import type { RoleType } from '@sst-starter3/core/types/role';
-import { authzHandler } from '@sst-starter3/core/authzHandler';
+import { User } from '@pwa-grouper/core/classes/user';
+import type { UserFilterType } from '@pwa-grouper/core/types/user';
+import type { RoleType } from '@pwa-grouper/core/types/role';
+import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
 // takes a POST request with a userInfo:Users object
 // returns userInfo:Users object

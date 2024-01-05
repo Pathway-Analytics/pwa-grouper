@@ -3,8 +3,8 @@
     // provide functionality to add, edit, delete users
     // provide functinality to assign roles to users of RoleType add to user.roles : string csv format
     import { Input, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, TableSearch } from 'flowbite-svelte';
-    import type { UserType } from '@sst-starter3/core/types/user';
-    import type { RoleType } from '@sst-starter3/core/types/role';
+    import type { UserType } from '@pwa-grouper/core/types/user';
+    import type { RoleType } from '@pwa-grouper/core/types/role';
     import { env } from '$env/dynamic/public';
     import { onMount } from 'svelte';
 

@@ -1,6 +1,6 @@
 // check SessionManager.getSession() and re-route to login if session is invalid
 import SessionManager from '$lib/classes/SessionManager';
-import  { SessionUserType as SessionUser } from '@sst-starter3/core/types/session';
+import  { SessionUserType as SessionUser } from '@pwa-grouper/core/types/session';
 import { env } from '$env/dynamic/public';
 import { page } from '$app/stores'; // Import the page store
 

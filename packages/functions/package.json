@@ -1,5 +1,5 @@
 {
-    "name": "@sst-starter3/functions",
+    "name": "@pwa-grouper/functions",
     "version": "0.0.0",
     "type": "module",
     "scripts": {

@@ -1,7 +1,7 @@
 import SessionManager from '$lib/classes/SessionManager';
 import {sequence} from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/public';
-import { emptySession, SessionUserType as SessionUser, type SessionType } from '@sst-starter3/core/types/session';
+import { emptySession, SessionUserType as SessionUser, type SessionType } from '@pwa-grouper/core/types/session';
 
 // const publicPages = [
 //     '/login',

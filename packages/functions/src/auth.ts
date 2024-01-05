@@ -1,10 +1,10 @@
 import { AuthHandler, GoogleAdapter, LinkAdapter, Session, SessionTypes } from 'sst/node/auth';
-import { sendEmail } from '@sst-starter3/core/email/emailService';
+import { sendEmail } from '@pwa-grouper/core/email/emailService';
 import { Config } from "sst/node/config";
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '@sst-starter3/core/classes/user';
-import { RoleType as Role } from '@sst-starter3/core/types/role';
-import type { UserType } from '@sst-starter3/core/types/user';
+import { User } from '@pwa-grouper/core/classes/user';
+import { RoleType as Role } from '@pwa-grouper/core/types/role';
+import type { UserType } from '@pwa-grouper/core/types/user';
 
 // we have also created an extend SessionTypes interface in the $shared_types folder
 declare module 'sst/node/auth' {

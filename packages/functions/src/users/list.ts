@@ -1,9 +1,9 @@
 import { 
 	ApiHandler, useBody, useResponse
 } from 'sst/node/api';
-import { User } from '@sst-starter3/core/classes/user';
-import type { UserFilterType } from '@sst-starter3/core/types/user';
-import { authzHandler } from '@sst-starter3/core/authzHandler';
+import { User } from '@pwa-grouper/core/classes/user';
+import type { UserFilterType } from '@pwa-grouper/core/types/user';
+import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
 const main = async () => {
 	// returns list of users meeting criteria in  userfilter

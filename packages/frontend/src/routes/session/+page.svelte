@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
     import SessionManager from '$lib/classes/SessionManager';
-    import type { SessionType, SessionResponseType } from '@sst-starter3/core/types/session';
+    import type { SessionType, SessionResponseType } from '@pwa-grouper/core/types/session';
     import { env } from '$env/dynamic/public';
 
     const sessionManager = SessionManager.getInstance();

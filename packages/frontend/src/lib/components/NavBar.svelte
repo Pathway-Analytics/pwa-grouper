@@ -22,7 +22,7 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import  SessionManager  from '$lib/classes/SessionManager';
-  import type { SessionType } from '@sst-starter3/core/types/session';
+  import type { SessionType } from '@pwa-grouper/core/types/session';
   
   const sessionManager = SessionManager.getInstance();
   let session: SessionType | null ;

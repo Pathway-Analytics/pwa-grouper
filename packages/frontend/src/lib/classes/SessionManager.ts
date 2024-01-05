@@ -1,7 +1,7 @@
 // /packages/frontend/src/classes/SessionManager.ts
 import { writable } from 'svelte/store';
-import type { SessionType, SessionResponseType } from '@sst-starter3/core/types/session';
-import  { emptySession, SessionUserType as SessionUser } from '@sst-starter3/core/types/session';
+import type { SessionType, SessionResponseType } from '@pwa-grouper/core/types/session';
+import  { emptySession, SessionUserType as SessionUser } from '@pwa-grouper/core/types/session';
 import { get } from 'svelte/store';
 import { env } from "$env/dynamic/public";
 
@@ -148,7 +148,7 @@ class SessionManager {
      * @example
      * 
      * ```typescript
-     * import { SessionManager } from '@sst-starter3/frontend/classes/SessionManager';
+     * import { SessionManager } from '@pwa-grouper/frontend/classes/SessionManager';
      * 
      * const sessionManager = new SessionManager();
      * let session = sessionManager.getSessionSync();
@@ -187,7 +187,7 @@ class SessionManager {
      * @returns void
      * @example
      * ```typescript
-     * import { SessionManager } from '@sst-starter3/frontend/classes/SessionManager';
+     * import { SessionManager } from '@pwa-grouper/frontend/classes/SessionManager';
      * 
      * const sessionManager = new SessionManager();
      * sessionManager.logout();

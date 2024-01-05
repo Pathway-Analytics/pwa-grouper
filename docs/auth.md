@@ -151,8 +151,8 @@ API authorization
 Endpoint handlers wrapped in a withAuthAndErrorHandling handler
 Uses sst useSession to validate auth-token presented on the fetch request.
 Implements other common error handling.
-import { withAuthAndErrorHandling } from '@sst-starter3/core/authHandler';
-import { RoleType } from '@sst-starter3/core/types/role';
+import { withAuthAndErrorHandling } from '@pwa-grouper/core/authHandler';
+import { RoleType } from '@pwa-grouper/core/types/role';
 authHandler.ts withAuthAndErrorHandling
 
 const main = async () => {

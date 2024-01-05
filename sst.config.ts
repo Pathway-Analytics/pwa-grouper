@@ -10,7 +10,7 @@ import { Tags } from "aws-cdk-lib/core";
 export default {
   config(_input) {
     return {
-      name: "sst-starter3",
+      name: "pwa-grouper",
       region: "us-east-1",
     };
   },

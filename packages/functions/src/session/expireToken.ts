@@ -1,8 +1,8 @@
 // create an 
 import { useCookie, ApiHandler, useResponse } from 'sst/node/api';
-import type { SessionType } from '@sst-starter3/core/types/session';
-import { SessionUserType } from '@sst-starter3/core/types/session';
-import { authzHandler } from '@sst-starter3/core/authzHandler';
+import type { SessionType } from '@pwa-grouper/core/types/session';
+import { SessionUserType } from '@pwa-grouper/core/types/session';
+import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
 // This handler will get the session from the cookie 
 // If the session is not valid the wrapper will return an unauthorized.

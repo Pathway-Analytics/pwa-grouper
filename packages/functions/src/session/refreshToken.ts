@@ -1,9 +1,9 @@
 import { ApiHandler, useCookie, useResponse } from 'sst/node/api';
 import { useSession } from "sst/node/auth"
-import { User } from '@sst-starter3/core/classes/user';
-import type { SessionType } from '@sst-starter3/core/types/session';
-import { SessionUserType } from '@sst-starter3/core/types/session';
-import { authzHandler } from '@sst-starter3/core/authzHandler';
+import { User } from '@pwa-grouper/core/classes/user';
+import type { SessionType } from '@pwa-grouper/core/types/session';
+import { SessionUserType } from '@pwa-grouper/core/types/session';
+import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
 const main = async () => {
     console.log('0. -- refreshToken token:', JSON.stringify(useCookie('auth-token')));

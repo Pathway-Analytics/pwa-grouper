@@ -1,7 +1,7 @@
 // CAUTION do not allow sst/node pacakages to be accessed directly from frontend
 // we have had to split out the types here rather than leave them in the core USer class package
 
-import { RoleType as Role, type RoleType }  from '@sst-starter3/core/types/role';
+import { RoleType as Role, type RoleType }  from '@pwa-grouper/core/types/role';
 
 type MenuItem = {
     name: string;

@@ -1,7 +1,7 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
 import { useSession } from "sst/node/auth"
-import { SessionUserType, type SessionTokenType } from '@sst-starter3/core/types/session';
-import type { RoleType } from '@sst-starter3/core/types/role';
+import { SessionUserType, type SessionTokenType } from '@pwa-grouper/core/types/session';
+import type { RoleType } from '@pwa-grouper/core/types/role';
 import { useResponse, useMethod, useJsonBody, usePath, useCookie } from 'sst/node/api';
 
 type LambdaHandler = (event: APIGatewayProxyEventV2, context: Context) => Promise<APIGatewayProxyStructuredResultV2>;

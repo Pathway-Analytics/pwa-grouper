@@ -5,7 +5,7 @@
       "moduleResolution": "node",
       "baseUrl": ".",
       "paths": {
-        "@sst-starter3/core/*": ["./src/*"]
+        "@pwa-grouper/core/*": ["./src/*"]
       }
     }
   }

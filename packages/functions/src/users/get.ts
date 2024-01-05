@@ -1,8 +1,8 @@
 import { 
 	ApiHandler, usePathParam, useResponse
  } from 'sst/node/api';
-import { User } from '@sst-starter3/core/classes/user';
-import { authzHandler } from '@sst-starter3/core/authzHandler';
+import { User } from '@pwa-grouper/core/classes/user';
+import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
 const main = async () => {
 	// returns user info of userid 
