@@ -4,6 +4,7 @@
 		"sst": "2.39.2"
 	},
 	"devDependencies": {
-		"@types/node": "^20.10.6"
+		"@types/node": "^20.10.6",
+		"@tsconfig/node18": "^18.2.2"
 	}
 }
