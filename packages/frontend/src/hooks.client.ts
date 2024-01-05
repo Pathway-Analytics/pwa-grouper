@@ -3,7 +3,6 @@ import SessionManager from '$lib/classes/SessionManager';
 import  { SessionUserType as SessionUser } from '@sst-starter3/core/types/session';
 import { env } from '$env/dynamic/public';
 import { page } from '$app/stores'; // Import the page store
-import { resolve } from 'path';
 
 // Define a whitelist of public pages (routes)
 const publicPages = [
@@ -46,7 +45,7 @@ export async function load (){
             }
         });
     } else {
-        return resolve;
+        return ;
     }
 }
 
