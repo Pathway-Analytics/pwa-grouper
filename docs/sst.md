@@ -2,6 +2,14 @@
 
 ## SST and the Separation of Powers
 
+install
+
+```bash
+pnpm add sst --save-exact
+pnpm add -D @types/node
+pnpm install
+```
+
 [SST](https://docs.sst.dev/) (Serverless Stack) is a framework designed to simplify building serverless applications on AWS. It's highly compartmentalized, featuring Constructs, Clients, and CLI tools, each serving distinct purposes.
 
 Constructs and Clients
