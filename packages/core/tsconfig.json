@@ -1,12 +1,7 @@
 {
-    "extends": "@tsconfig/node18/tsconfig.json",
-    "compilerOptions": {
-      "module": "esnext",
-      "moduleResolution": "node",
-      "baseUrl": ".",
-      "paths": {
-        "@pwa-grouper/core/*": ["./src/*"]
-      }
-    }
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node"
   }
-  
+}
