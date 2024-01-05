@@ -1,5 +1,11 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
+import { StorageStack } from "./stacks/StorageStack";
+import { ApiStack } from "./stacks/ApiStack";
+import { FunctionStack } from "./stacks/FunctionStack";
+import { FrontendStack } from "./stacks/FrontendStack";
+import { AuthStack } from "./stacks/AuthStack";
+// import { SentryStack } from "./stacks/SentryStack";
+import { Tags } from "aws-cdk-lib/core";
 
 export default {
   config(_input) {
@@ -9,6 +15,15 @@ export default {
     };
   },
   stacks(app) {
-    app.stack(API);
+    // Add tags to all resources for easy identification
+    Tags.of(app).add("stage-region", `${app.stage}-${app.region}`);
+    Tags.of(app).add("Cost tracking", 'AppManagerCFNStackKey');
+
+    // Remove all resources when non-prod stages are removed
+    if (app.stage !== "prod") {
+      app.setDefaultRemovalPolicy("destroy");
+    }   
+    app
+    .stack(StorageStack)
   }
 } satisfies SSTConfig;
