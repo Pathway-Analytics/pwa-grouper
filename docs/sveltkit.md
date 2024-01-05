@@ -17,4 +17,8 @@ pnpm install -D @tailwindcss/forms
 
 pnpm i -D flowbite-svelte flowbite
 
+pnpm add svelte-kit-sst
+
+pnpm remove @sveltejs/adapter-auto
+
 pnpm install
