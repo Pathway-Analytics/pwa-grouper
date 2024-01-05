@@ -1,5 +1,6 @@
 {
 	"dependencies": {
+		"aws-cdk-lib": "^2.118.0",
 		"sst": "2.39.2"
 	},
 	"devDependencies": {
