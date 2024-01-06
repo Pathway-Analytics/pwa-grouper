@@ -19,6 +19,14 @@ pnpm i -D flowbite-svelte flowbite
 
 pnpm add svelte-kit-sst
 
+sveltekit.confog.js
+- import adapter from '@sveltejs/adapter-auto';
++ import adapter from "svelte-kit-sst";
+
 pnpm remove @sveltejs/adapter-auto
+
+package.json
+- "dev": "vite dev",
++    "dev": "sst bind vite dev",
 
 pnpm install
