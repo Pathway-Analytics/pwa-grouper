@@ -154,3 +154,8 @@ console.log(env.PUBLIC_API_URL);
 ## Secret ARNs
 
 - SST uses 
+
+pnpm install -w kysely
+kysely-data-api
+
+pnpm add -w @aws-sdk/client-rds-data aws-lambda @aws-sdk/client-ses uuid

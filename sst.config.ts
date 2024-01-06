@@ -25,5 +25,6 @@ export default {
     }   
     app
     .stack(StorageStack)
+    .stack(ApiStack)
   }
 } satisfies SSTConfig;
