@@ -17,7 +17,7 @@ pnpm install -D @tailwindcss/forms
 
 pnpm i -D flowbite-svelte flowbite
 
-pnpm add svelte-kit-sst
+pnpm add svelte-kit-sst --save-dev
 
 sveltekit.confog.js
 - import adapter from '@sveltejs/adapter-auto';
