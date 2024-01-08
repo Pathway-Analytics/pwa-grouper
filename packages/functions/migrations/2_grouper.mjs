@@ -11,7 +11,7 @@ export async function up(db) {
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('name', 'varchar(200)')
         .addColumn('isActive', 'boolean')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addColumn('lastChangedby', 'text')
         .addForeignKeyConstraint(
             'fmwk_lastChangedby_fk', ['lastChangedby'], 'users', ['id'],
@@ -34,7 +34,7 @@ export async function up(db) {
         .addColumn('code', 'varchar(50)')
         .addColumn('isLocal', 'boolean')
         .addColumn('isActive', 'boolean')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addColumn('altOption', 'integer')
         .addForeignKeyConstraint('vo_vog_id_fk', ['validationOptionGp_id'], 'validationOptionGp', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -61,7 +61,7 @@ export async function up(db) {
         .addColumn('Order', 'integer')
         .addColumn('altNames', 'varchar(2000)')
         .addColumn('isActive', 'boolean')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('elem_framework_id_fk', ['framework_id'], 'framework', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -80,7 +80,7 @@ export async function up(db) {
         .addColumn('isActive', 'boolean')
         .addColumn('type', sql`enum('LSOA','LB','UA','NMD','MD','CTY','RGN','CTRY','NOT KNOWN')`)
         .addColumn('parent_id', 'integer')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('admarea_parent_id_fk', ['parent_id'], 'adminArea', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -121,7 +121,7 @@ export async function up(db) {
         .addColumn('totalTariff', 'decimal(6,2)')
         .addColumn('episodes', 'integer')
         .addColumn('records', 'integer')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addColumn('lastChangedby', 'text')
         .addForeignKeyConstraint('subm_provider_id_fk', ['provider_id'], 'provider', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -141,7 +141,7 @@ export async function up(db) {
         .addColumn('fileName', 'varchar(200)')
         .addColumn('fileSize', 'integer')
         .addColumn('clinicList', 'varchar(500)')
-        .addColumn('uploadedDate', 'datetime')
+        .addColumn('uploadedDate', 'timestamp')
         .addColumn('uploadedBy', 'text')
         .addColumn('status', sql`enum('NEW','PROCESSING','PROCESSED','ERROR')`)
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
@@ -233,7 +233,7 @@ export async function up(db) {
         .addColumn('additionalTariff', 'decimal(6,2)')
         .addColumn('crossChargeType', sql`enum('NONE','FULL','LOCAL LIMITED', 'LOCAL UNLIMITED')`)
         .addColumn('isActive', 'boolean')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('curr_configuration_id_fk', ['configuration_id'], 'configuration', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -285,7 +285,7 @@ export async function up(db) {
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('currency_id', 'integer', (col) => col.notNull())
         .addColumn('description', 'varchar(200)')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('currts_currency_id_fk', ['currency_id'], 'currency', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -390,7 +390,7 @@ export async function up(db) {
         .addColumn('plannedPaymentDate', 'date')
         .addColumn('totalDiscount', 'decimal(9,2)')
         .addColumn('fullyPaidOnDate', 'date')
-        .addColumn('updatedUTC', 'datetime')
+        .addColumn('updatedUTC', 'timestamp')
         .execute();
 
     await db.schema
@@ -421,7 +421,7 @@ export async function up(db) {
         .addColumn('currencyCode', 'varchar(50)')
         .addColumn('sentToContact', 'boolean')
         .addColumn('totalDiscount', 'decimal(9,2)')
-        .addColumn('updatedUTC', 'datetime')
+        .addColumn('updatedUTC', 'timestamp')
         .execute();
 
     await db.schema
@@ -459,7 +459,7 @@ export async function up(db) {
         .addColumn('provider_id', 'integer')
         .addColumn('adminArea_id', 'integer')
         .addColumn('isActive', 'boolean')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .addColumn('invoiceNo', 'varchar(50)')
         .addColumn('startDate','date')
         .addColumn('endDate','date')
@@ -481,7 +481,7 @@ export async function up(db) {
         .addColumn('nameButton', 'varchar(50)')
         .addColumn('description', 'varchar(2000)')
         .addColumn('isActive', 'boolean')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .execute();
 
     await db.schema
@@ -501,8 +501,8 @@ export async function up(db) {
         .addColumn('fileName', 'varchar(50)')
         .addColumn('fileSize', 'integer')
         .addColumn('error', 'varchar(200)')
-        .addColumn('created', 'datetime')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('created', 'timestamp')
+        .addColumn('lastChanged', 'timestamp')
         .addColumn('reportRequestJSON', 'varchar(2000)')
         .addForeignKeyConstraint('repreq_reportType_id_fk', ['reportType_id'], 'reportType', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -553,7 +553,7 @@ export async function up(db) {
         .addColumn('numerator', 'varchar(1000)')
         .addColumn('denominator', 'varchar(1000)')
         .addColumn('serial', 'varchar(50)')
-        .addColumn('lastChanged', 'datetime')
+        .addColumn('lastChanged', 'timestamp')
         .execute();
 
     await db.schema
@@ -589,7 +589,7 @@ export async function up(db) {
         .addColumn('numerator', 'varchar(50)')
         .addColumn('denominator', 'varchar(50)')
         .addColumn('uom', 'varchar(50)')
-        .addColumn('created', 'datetime')
+        .addColumn('created', 'timestamp')
         .addForeignKeyConstraint('kres_kpi_id_fk', ['kpi_id'], 'kpi', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -655,9 +655,9 @@ export async function up(db) {
         .addColumn('title', 'varchar(100)')
         .addColumn('content', 'binary')
         .addColumn('pageType', sql`enum ('HELP','UPDATE','PAGE')`)
-        .addColumn('availableFrom', 'datetime')
-        .addColumn('changed', 'datetime')
-        .addColumn('created', 'datetime')
+        .addColumn('availableFrom', 'timestamp')
+        .addColumn('changed', 'timestamp')
+        .addColumn('created', 'timestamp')
         .addColumn('isActive', 'boolean')
         .addColumn('tags', 'varchar(1000)')
         .addForeignKeyConstraint('pg_user_id_fk', ['user_id'], 'users', ['id'],

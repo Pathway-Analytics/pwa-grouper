@@ -11,7 +11,7 @@ export async function up(db) {
 		.addColumn('picture', 'text')
 		.addColumn('firstName', 'text')
 		.addColumn('lastName', 'text')
-		.addColumn('lastLogin', 'datetime')
+		.addColumn('lastLogin', 'timestamp')
 		.addColumn('roles', 'text')
 		.addColumn('contactTel', 'text')
 		.execute();
