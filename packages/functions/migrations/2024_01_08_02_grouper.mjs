@@ -217,6 +217,7 @@ export async function up(db) {
         .addColumn('clinicList', 'varchar(500)')
         .addColumn('uploadedDate', 'timestamp')
         .addColumn('uploadedBy', 'text')
+        .addColumn('file_url', 'text')
         .addColumn('status', sql`file_stub_status_type`)
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -224,16 +225,6 @@ export async function up(db) {
         .addForeignKeyConstraint('filestb_uploadedBy_fk', ['uploadedBy'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
-        .execute();
-
-    await db.schema
-        .createTable('file')
-        .addColumn('fileStub_id', 'integer', (col) => col.notNull())
-        .addColumn('file', 'binary')
-        .addForeignKeyConstraint('file_fileStub_id_fk', ['fileStub_id'], 'fileStub', ['id'],
-            (cb) => cb.onDelete('cascade')
-        )
-        .addPrimaryKeyConstraint('file_fileStub_id_pk', ['fileStub_id'])
         .execute();
 
     await db.schema
@@ -573,6 +564,7 @@ export async function up(db) {
         .addColumn('requestProfile', sql`role`)
         .addColumn('guid', 'varchar(50)')
         .addColumn('fileName', 'varchar(50)')
+        .addColumn('fileurl', 'text')        
         .addColumn('fileSize', 'integer')
         .addColumn('error', 'varchar(200)')
         .addColumn('created', 'timestamp')
@@ -587,16 +579,6 @@ export async function up(db) {
         .addForeignKeyConstraint('repreq_processStatus_fk', ['processStatus_id'], 'processStatus', ['id'],
             (cb) => cb.onDelete('restrict')
         )
-        .execute();
-
-    await db.schema
-        .createTable('reportRequestFile')        
-        .addColumn('reportRequest_id', 'integer')
-        .addColumn('file', 'binary')
-        .addForeignKeyConstraint('repreqf_reportRequest_id_fk', ['reportRequest_id'], 'reportRequest', ['id'],
-            (cb) => cb.onDelete('cascade')
-        )
-        .addPrimaryKeyConstraint('repreqf_reportRequest_id_pk', ['reportRequest_id'])
         .execute();
 
     await db.schema
@@ -633,7 +615,7 @@ export async function up(db) {
     await db.schema
         .createTable('kpiSql')
         .addColumn('kpi_id', 'integer')
-        .addColumn('sql', 'binary')
+        .addColumn('sql', 'bytea')
         .addForeignKeyConstraint('ksql_kpi_id_fk', ['kpi_id'], 'kpi', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -727,7 +709,7 @@ export async function up(db) {
         .addColumn('user_id', 'text')
         .addColumn('code', 'varchar(100)')
         .addColumn('title', 'varchar(100)')
-        .addColumn('content', 'binary')
+        .addColumn('content', 'bytea')
         .addColumn('pageType', sql`page_type`)
         .addColumn('availableFrom', 'timestamp')
         .addColumn('changed', 'timestamp')
@@ -825,12 +807,6 @@ export async function up(db) {
         .createIndex('fileStub_submission_idx')
         .on('fileStub')
         .column('submission_id')
-        .execute();
-
-    await db.schema
-        .createIndex('file_filestub_idx')
-        .on('file')
-        .column('fileStub_id')
         .execute();
 
     await db.schema
@@ -963,12 +939,6 @@ export async function up(db) {
         .execute();
 
     await db.schema
-        .createIndex('reportRequestFile_id_idx')
-        .on('reportRequestFile')
-        .column('reportRequest_id')
-        .execute();
-
-    await db.schema
         .createIndex('reportChunk_id_idx')
         .on('reportChunk')
         .column('id')
@@ -1064,7 +1034,6 @@ export async function down(db) {
         .dropIndex('charge_submission_id_idx').execute()
         .dropIndex('userSubscription_id_idx').execute()
         .dropIndex('reportRequest_id_idx').execute()
-        .dropIndex('reportRequestFile_id_idx').execute()
         .dropIndex('reportChunk_id_idx').execute()
         .dropIndex('kpi_id_idx').execute()
         .dropIndex('kpiSql_id_idx').execute()
@@ -1084,7 +1053,6 @@ export async function down(db) {
         .dropTable('kpiSql').execute()
         .dropTable('kpi').execute()
         .dropTable('reportChunk').execute()
-        .dropTable('reportRequestFile').execute()
         .dropTable('reportRequest').execute()
         .dropTable('reportType').execute()
         .dropTable('userSubscription').execute()
@@ -1106,7 +1074,6 @@ export async function down(db) {
         .dropTable('attributeError').execute()
         .dropTable('attribute').execute()
         .dropTable('episode').execute()
-        .dropTable('file').execute()
         .dropTable('fileStub').execute()
         .dropTable('submission').execute()
         .dropTable('processStatus').execute()
