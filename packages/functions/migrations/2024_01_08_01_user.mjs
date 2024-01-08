@@ -12,7 +12,7 @@ export async function up(db) {
 
 	await db.schema
 	.createIndex('user_id_idx')
-	.on('user')
+	.on('users')
 	.column('id')
 	.execute();
 }
