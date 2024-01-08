@@ -12,7 +12,7 @@ export async function up(db) {
         .addColumn('name', 'varchar(200)')
         .addColumn('isActive', 'boolean')
         .addColumn('lastChanged', 'datetime')
-        .addColumn('lastChangedby', 'integer')
+        .addColumn('lastChangedby', 'text')
         .addForeignKeyConstraint(
             'fmwk_lastChangedby_fk', ['lastChangedby'], 'users', ['id'],
             (cb) => cb.onDelete('restrict')
@@ -122,7 +122,7 @@ export async function up(db) {
         .addColumn('episodes', 'integer')
         .addColumn('records', 'integer')
         .addColumn('lastChanged', 'datetime')
-        .addColumn('lastChangedby', 'integer')
+        .addColumn('lastChangedby', 'text')
         .addForeignKeyConstraint('subm_provider_id_fk', ['provider_id'], 'provider', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -142,7 +142,7 @@ export async function up(db) {
         .addColumn('fileSize', 'integer')
         .addColumn('clinicList', 'varchar(500)')
         .addColumn('uploadedDate', 'datetime')
-        .addColumn('uploadedBy', 'integer')
+        .addColumn('uploadedBy', 'text')
         .addColumn('status', sql`enum('NEW','PROCESSING','PROCESSED','ERROR')`)
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -215,7 +215,7 @@ export async function up(db) {
         .addColumn('name', 'varchar(100)')
         .addColumn('startDate', 'date')
         .addColumn('endDate', 'date')
-        .addColumn('user_id', 'integer', (col) => col.notNull())
+        .addColumn('user_id', 'text', (col) => col.notNull())
         .addColumn('submitWithin', 'integer')
         .addColumn('isHideRates', 'boolean')
         .addForeignKeyConstraint('config_user_id_fk', ['user_id'], 'users', ['id'],
@@ -455,7 +455,7 @@ export async function up(db) {
         .addColumn('xero_invoice_id', 'varchar(50)')
         .addColumn('renewalInvoice_id', 'varchar(50)')
         .addColumn('renewalQuote_id', 'varchar(50)')
-        .addColumn('user_id', 'integer')
+        .addColumn('user_id', 'text')
         .addColumn('provider_id', 'integer')
         .addColumn('adminArea_id', 'integer')
         .addColumn('isActive', 'boolean')
@@ -488,7 +488,7 @@ export async function up(db) {
         .createTable('reportRequest')
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('reportType_id', 'integer')
-        .addColumn('user_id', 'integer')
+        .addColumn('user_id', 'text')
         .addColumn('processStatus_id', 'integer')
         .addColumn('decription', 'varchar(2000)')
         .addColumn('startFrom', 'date')
@@ -569,7 +569,7 @@ export async function up(db) {
     await db.schema
         .createTable('kpiLibrary')
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
-        .addColumn('user_id', 'integer')
+        .addColumn('user_id', 'text')
         .addColumn('kpi_id', 'integer')
         .addColumn('order', 'integer')
         .addForeignKeyConstraint('klib_user_id_fk', ['user_id'], 'users', ['id'],
@@ -606,7 +606,7 @@ export async function up(db) {
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('kpi_id', 'integer')
         .addColumn('provider_id', 'integer')
-        .addColumn('user_id', 'integer')
+        .addColumn('user_id', 'text')
         .addColumn('upperValue', 'decimal(6,2)')
         .addColumn('lowerValue', 'decimal(6,2)')
         .addColumn('upperTxtColour', 'varchar(50)')
@@ -637,7 +637,7 @@ export async function up(db) {
     await db.schema
         .createTable('userNotification')
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
-        .addColumn('user_id', 'integer')
+        .addColumn('user_id', 'text')
         .addColumn('notification_id', 'integer')
         .addForeignKeyConstraint('unot_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -650,7 +650,7 @@ export async function up(db) {
     await db.schema
         .createTable('page')
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
-        .addColumn('user_id', 'integer')
+        .addColumn('user_id', 'text')
         .addColumn('code', 'varchar(100)')
         .addColumn('title', 'varchar(100)')
         .addColumn('content', 'binary')
