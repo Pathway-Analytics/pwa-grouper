@@ -7,19 +7,6 @@ import { Kysely, sql } from "kysely";
 export async function up(db) {
 
     await db.schema
-        .createTable('user')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
-        .addColumn('username', 'varchar(200)')
-        .addColumn('email', 'varchar(200)')
-        .addColumn('contactTel', 'varchar(200)')
-        .addColumn('lastLogin', 'datetime')
-        .addColumn('firstName', 'varchar(200)')
-        .addColumn('lastName', 'varchar(200)')
-        .addColumn('displayName', 'varchar(200)')
-        .addColumn('jobTitle', 'varchar(200)')
-        .execute();
-
-    await db.schema
         .createTable('framework')
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('name', 'varchar(200)')
@@ -27,7 +14,7 @@ export async function up(db) {
         .addColumn('lastChanged', 'datetime')
         .addColumn('lastChangedby', 'integer')
         .addForeignKeyConstraint(
-            'fmwk_lastChangedby_fk', ['lastChangedby'], 'user', ['id'],
+            'fmwk_lastChangedby_fk', ['lastChangedby'], 'users', ['id'],
             (cb) => cb.onDelete('restrict')
         )
         .execute();
@@ -139,7 +126,7 @@ export async function up(db) {
         .addForeignKeyConstraint('subm_provider_id_fk', ['provider_id'], 'provider', ['id'],
             (cb) => cb.onDelete('cascade')
         )
-        .addForeignKeyConstraint('subm_lastChangedby_fk', ['lastChangedby'], 'user', ['id'],
+        .addForeignKeyConstraint('subm_lastChangedby_fk', ['lastChangedby'], 'users', ['id'],
             (cb) => cb.onDelete('restrict')
         )
         .addForeignKeyConstraint('subm_processStatus_fk', ['processStatus_id'], 'processStatus', ['id'],
@@ -160,7 +147,7 @@ export async function up(db) {
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
             (cb) => cb.onDelete('cascade')
         )
-        .addForeignKeyConstraint('filestb_uploadedBy_fk', ['uploadedBy'], 'user', ['id'],
+        .addForeignKeyConstraint('filestb_uploadedBy_fk', ['uploadedBy'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .execute();
@@ -231,7 +218,7 @@ export async function up(db) {
         .addColumn('user_id', 'integer', (col) => col.notNull())
         .addColumn('submitWithin', 'integer')
         .addColumn('isHideRates', 'boolean')
-        .addForeignKeyConstraint('config_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('config_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('restrict')
         )
         .execute();
@@ -476,7 +463,7 @@ export async function up(db) {
         .addColumn('invoiceNo', 'varchar(50)')
         .addColumn('startDate','date')
         .addColumn('endDate','date')
-        .addForeignKeyConstraint('usub_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('usub_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .addForeignKeyConstraint('usub_provider_id_fk', ['provider_id'], 'provider', ['id'],
@@ -520,7 +507,7 @@ export async function up(db) {
         .addForeignKeyConstraint('repreq_reportType_id_fk', ['reportType_id'], 'reportType', ['id'],
             (cb) => cb.onDelete('cascade')
         )
-        .addForeignKeyConstraint('repreq_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('repreq_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .addForeignKeyConstraint('repreq_processStatus_fk', ['processStatus_id'], 'processStatus', ['id'],
@@ -585,7 +572,7 @@ export async function up(db) {
         .addColumn('user_id', 'integer')
         .addColumn('kpi_id', 'integer')
         .addColumn('order', 'integer')
-        .addForeignKeyConstraint('klib_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('klib_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .addForeignKeyConstraint('klib_kpi_id_fk', ['kpi_id'], 'kpi', ['id'],
@@ -634,7 +621,7 @@ export async function up(db) {
         .addForeignKeyConstraint('kformat_provider_id_fk', ['provider_id'], 'provider', ['id'],
             (cb) => cb.onDelete('cascade')
         )
-        .addForeignKeyConstraint('kformat_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('kformat_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .execute();
@@ -652,7 +639,7 @@ export async function up(db) {
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('user_id', 'integer')
         .addColumn('notification_id', 'integer')
-        .addForeignKeyConstraint('unot_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('unot_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .addForeignKeyConstraint('unot_notification_id_fk', ['notification_id'], 'notification', ['id'],
@@ -673,7 +660,7 @@ export async function up(db) {
         .addColumn('created', 'datetime')
         .addColumn('isActive', 'boolean')
         .addColumn('tags', 'varchar(1000)')
-        .addForeignKeyConstraint('pg_user_id_fk', ['user_id'], 'user', ['id'],
+        .addForeignKeyConstraint('pg_user_id_fk', ['user_id'], 'users', ['id'],
             (cb) => cb.onDelete('cascade')
         )
         .execute();

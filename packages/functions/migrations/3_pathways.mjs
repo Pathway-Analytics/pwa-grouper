@@ -47,6 +47,8 @@ export async function up(db) {
     await db.schema
         .createTable('consumable')
         .addColumn('id', 'text', (col) => col.primaryKey())
+        .addColumn('uom_id', 'text', (col) => col.notNull())
+        .addColumn('type_id', 'text', (col) => col.notNull())
         .addColumn('name', 'text', (col) => col.notNull())
         .addColumn('reference', 'text')
         .addForeignKeyConstraint('consumable_uom_id_fk', ['uom_id'], 'cons_uom', ['id'],
