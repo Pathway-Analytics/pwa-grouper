@@ -15,13 +15,14 @@ export async function up(db) {
 		.addColumn('roles', 'text')
 		.addColumn('contactTel', 'text')
 		.execute();
+
+	await db.schema
+	.createIndex('user_id_idx')
+	.on('user')
+	.column('id')
+	.execute();
 }
 
-await db.schema
-.createIndex('user_id_idx')
-.on('user')
-.column('id')
-.execute();
 
 /**
  * @param db {Kysely<any>}
