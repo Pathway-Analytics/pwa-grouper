@@ -1,4 +1,5 @@
 import { Kysely, sql } from "kysely";
+import { RoleType as Role, RoleType }  from '@pwa-grouper/core/types/role';
 
 
 /**
@@ -8,7 +9,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('framework')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(200)')
         .addColumn('isActive', 'boolean')
         .addColumn('lastChanged', 'timestamp')
@@ -21,13 +22,13 @@ export async function up(db) {
 
     await db.schema
         .createTable('validationOptionGp')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(225)', (col) => col.notNull())
         .execute();
 
     await db.schema
         .createTable('validationOption')
-        .addColumn('id', 'integer',  (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('validationOptionGp_id', 'integer', (col) => col.notNull())
         .addColumn('name', 'varchar(225)', (col) => col.notNull())
         .addColumn('description', 'varchar(2000)')
@@ -46,7 +47,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('element')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('framework_id', 'integer', (col) => col.notNull())
         .addColumn('validationOptionGp_id', 'integer')
         .addColumn('fieldName', 'varchar(50)')
@@ -72,7 +73,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('adminArea')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(200)')
         .addColumn('code', 'varchar(10)')
         .addColumn('lat', 'decimal(9,6)')
@@ -88,7 +89,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('provider')
-        .addColumn('id', 'integer',  (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('parentAdminArea_id', 'integer')
         .addColumn('name', 'varchar(200)')
         .addColumn('code', 'varchar(10)')
@@ -103,7 +104,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('processStatus')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('label', 'varchar(50)')
         .addColumn('description', 'varchar(500)')
         .addColumn('order', 'integer')
@@ -113,7 +114,7 @@ export async function up(db) {
         
     await db.schema
         .createTable('submission')
-        .addColumn('id', 'integer',  (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('provider_id', 'integer', (col) => col.notNull())
         .addColumn('processStatus_id', 'integer') 
         .addColumn('dateFrom', 'date')
@@ -136,7 +137,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('fileStub')
-        .addColumn('id', 'integer',  (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('submission_id', 'integer', (col) => col.notNull())
         .addColumn('fileName', 'varchar(200)')
         .addColumn('fileSize', 'integer')
@@ -178,7 +179,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('attribute')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('submission_id', 'integer', (col) => col.notNull())
         .addColumn('fileStub_id', 'integer', (col) => col.notNull())
         .addColumn('element_id', 'integer', (col) => col.notNull())
@@ -211,7 +212,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('configuration')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(100)')
         .addColumn('startDate', 'date')
         .addColumn('endDate', 'date')
@@ -225,7 +226,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('currency')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configuration_id', 'integer', (col) => col.notNull())
         .addColumn('name', 'varchar(100)')
         .addColumn('nameShort', 'varchar(10)')
@@ -241,7 +242,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('configurationCombSet')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configuration_id', 'integer', (col) => col.notNull())
         .addForeignKeyConstraint('confccs_configuration_id_fk', ['configuration_id'], 'configuration', ['id'],
             (cb) => cb.onDelete('cascade')
@@ -250,7 +251,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('configurationComb')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configurationCombSet_id', 'integer', (col) => col.notNull())
         .addColumn('currency_id', 'integer', (col) => col.notNull())
         .addColumn('role', sql`enum('IF','THEN')`)
@@ -264,7 +265,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('participatingOrgs')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configuration_id', 'integer', (col) => col.notNull())
         .addColumn('adminArea_id', 'integer')
         .addColumn('provider_id', 'integer')
@@ -282,7 +283,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('currencyTriggerSet')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('currency_id', 'integer', (col) => col.notNull())
         .addColumn('description', 'varchar(200)')
         .addColumn('lastChanged', 'timestamp')
@@ -293,7 +294,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('currencyTrigger')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('currencyTriggerSet_id', 'integer', (col) => col.notNull())
         .addColumn('validationOption_id', 'integer', (col) => col.notNull())
         .addColumn('isNot', 'boolean')
@@ -307,7 +308,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('charge')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('submission_id', 'integer', (col) => col.notNull())
         .addColumn('episodeIdentifier', 'varchar(100)')
         .addColumn('currency_id', 'integer', (col) => col.notNull())
@@ -334,7 +335,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('clinic')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('code', 'varchar(50)')
         .addColumn('provider_id', 'integer')
         .addColumn('commissioner_id', 'integer')
@@ -395,7 +396,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('contact_invoice')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('xero_invoice_id', 'integer')
         .addColumn('xero_contact_id', 'integer')
         .execute();
@@ -426,14 +427,14 @@ export async function up(db) {
 
     await db.schema
         .createTable('contact_quote')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('xero_quote_id', 'integer')
         .addColumn('xero_contact_id', 'integer')
         .execute();
 
     await db.schema
         .createTable('xero_line_item')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('lineItemId', 'varchar(50)')
         .addColumn('xero_invoice_id', 'integer')
         .addColumn('xero_quote_id', 'integer')
@@ -450,8 +451,8 @@ export async function up(db) {
 
     await db.schema
         .createTable('userSubscription')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
-        .addColumn('role', sql`enum('ADMIN', 'COMMISSIONER', 'PROVIDER+', 'PROVIDER_BASIC', 'PROVIDER_READ_ONLY')`)
+        .addColumn('id', 'serial', (col) => col.primaryKey())
+        .addColumn('role', sql`enum(${Role.ADMIN}, 'COMMISSIONER', 'PROVIDER+', 'PROVIDER_BASIC', 'PROVIDER_READ_ONLY')`)
         .addColumn('xero_invoice_id', 'varchar(50)')
         .addColumn('renewalInvoice_id', 'varchar(50)')
         .addColumn('renewalQuote_id', 'varchar(50)')
@@ -476,7 +477,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('reportType')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(50)')
         .addColumn('nameButton', 'varchar(50)')
         .addColumn('description', 'varchar(2000)')
@@ -486,7 +487,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('reportRequest')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('reportType_id', 'integer')
         .addColumn('user_id', 'text')
         .addColumn('processStatus_id', 'integer')
@@ -527,7 +528,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('reportChunk')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('reportRequest_id', 'integer')
         .addColumn('provider_id', 'integer')
         .addColumn('commissioner_id', 'integer')
@@ -545,7 +546,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('kpi')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(50)')
         .addColumn('description', 'varchar(2000)')
         .addColumn('isActive', 'boolean')
@@ -568,7 +569,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('kpiLibrary')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('user_id', 'text')
         .addColumn('kpi_id', 'integer')
         .addColumn('order', 'integer')
@@ -582,7 +583,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('kpiResult')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('kpi_id', 'integer')
         .addColumn('provider_id', 'integer')
         .addColumn('submission_id', 'integer')
@@ -603,7 +604,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('kpiFormat')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('kpi_id', 'integer')
         .addColumn('provider_id', 'integer')
         .addColumn('user_id', 'text')
@@ -628,7 +629,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('notification')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('name', 'varchar(100)')
         .addColumn('description', 'varchar(2000)')
         .addColumn('isActive', 'boolean')
@@ -636,7 +637,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('userNotification')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('user_id', 'text')
         .addColumn('notification_id', 'integer')
         .addForeignKeyConstraint('unot_user_id_fk', ['user_id'], 'users', ['id'],
@@ -649,7 +650,7 @@ export async function up(db) {
 
     await db.schema
         .createTable('page')
-        .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
+        .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('user_id', 'text')
         .addColumn('code', 'varchar(100)')
         .addColumn('title', 'varchar(100)')

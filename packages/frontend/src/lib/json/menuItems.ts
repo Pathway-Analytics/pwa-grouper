@@ -19,7 +19,7 @@ export let menuItems: MenuItem[] = [
       isSelected: false,
       description: 'Dashboard',
       icon: 'home',
-      roles: [Role.ADMIN, Role.ROLE1, Role.ROLE2, Role.ROLE3],
+      roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
     },
     {
       name: 'Role1',
@@ -27,7 +27,7 @@ export let menuItems: MenuItem[] = [
       isSelected: false,
       description: 'Role1',
       icon: 'users',
-      roles: [Role.ADMIN, Role.ROLE1],
+      roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
       menuItems :[
         {
           name: 'Role1 menu item 1',
@@ -35,7 +35,7 @@ export let menuItems: MenuItem[] = [
           isSelected: false,
           description: 'Role 1 Item1',
           icon: 'Item1',
-          roles: [Role.ADMIN, Role.ROLE1],
+          roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
         },
         {
           name: 'Role1 menu item 2',
@@ -43,7 +43,7 @@ export let menuItems: MenuItem[] = [
           isSelected: false,
           description: 'Role 1, Item 2',
           icon: 'Item2',
-          roles: [Role.ADMIN, Role.ROLE1],
+          roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
         }
       ]
     },
@@ -53,7 +53,7 @@ export let menuItems: MenuItem[] = [
       isSelected: false,
       description: 'Role2',
       icon: 'folder',
-      roles: [Role.ADMIN, Role.ROLE2],
+      roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
       menuItems: [
         {
           name: 'Role2 menu item 1',
@@ -61,7 +61,7 @@ export let menuItems: MenuItem[] = [
           isSelected: false,
           description: 'Role2, Item 1',
           icon: 'home',
-          roles: [Role.ADMIN, Role.ROLE2],
+          roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
         },
         {
           name: 'Role2 menu item 2',
@@ -69,7 +69,7 @@ export let menuItems: MenuItem[] = [
           isSelected: false,
           description: 'Role2, Item 2',
           icon: 'home',
-          roles: [Role.ADMIN, Role.ROLE2],
+          roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
 
         }
       ]
@@ -80,7 +80,7 @@ export let menuItems: MenuItem[] = [
         isSelected: false,
         description: 'My Account',
         icon: 'settings',
-        roles: [Role.ADMIN, Role.ROLE1, Role.ROLE2],
+        roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
         menuItems:[
             {
             name: 'My Account',
@@ -88,7 +88,7 @@ export let menuItems: MenuItem[] = [
             isSelected: false,
             description: 'My details',
             icon: 'home',
-            roles: [Role.ADMIN, Role.ROLE1, Role.ROLE2],
+            roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
           },
             {
                 name: 'Notifications',
@@ -96,7 +96,7 @@ export let menuItems: MenuItem[] = [
                 isSelected: false,
                 description: 'notifications',
                 icon: 'home',
-                roles: [Role.ADMIN, Role.ROLE1, Role.ROLE2, Role.ROLE3],
+                roles: [Role.ADMIN, Role.COMMISSIONER, Role.PROVIDER_PLUS, Role.PROVIDER_BASIC, Role.PROVIDER_READ_ONLY],
               },
         ]
     },

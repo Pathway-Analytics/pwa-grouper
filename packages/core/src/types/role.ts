@@ -4,8 +4,10 @@
  */
 export enum RoleType {
     ADMIN = 'ADMIN',
-    ROLE1 = 'ROLE1',
-    ROLE2 = 'ROLE2',
-    ROLE3 = 'ROLE3',
+    COMMISSIONER = 'COMMISSIONER',
+    PROVIDER_PLUS = 'PROVIDER_PLUS',
+    PROVIDER_BASIC = 'PROVIDER_BASIC',
+    PROVIDER_READ_ONLY = 'PROVIDER_READ_ONLY'
+
     // add more roles as needed
 }
