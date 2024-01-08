@@ -17,6 +17,8 @@ pnpm install -D @tailwindcss/forms
 
 pnpm i -D flowbite-svelte flowbite
 
+pnpm i -D flowbite-svelte-icons
+
 pnpm add svelte-kit-sst --save-dev
 
 sveltekit.confog.js
