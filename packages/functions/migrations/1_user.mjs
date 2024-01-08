@@ -5,14 +5,8 @@ import { Kysely } from "kysely";
  */
 export async function up(db) {
 	await db.schema
-		.createTable('users')
-		.addColumn('id', 'text', (col) => col.primaryKey())
-		.addColumn('email', 'text', (col) => col.notNull())
-		.addColumn('picture', 'text')
-		.addColumn('firstName', 'text')
-		.addColumn('lastName', 'text')
+		.alterTable('users')
 		.addColumn('lastLogin', 'timestamp')
-		.addColumn('roles', 'text')
 		.addColumn('contactTel', 'text')
 		.execute();
 
@@ -30,5 +24,4 @@ export async function up(db) {
 export async function down(db) {
 	await db.schema
 		.dropIndex('user_id_idx').execute()
-		.dropTable('users').execute()
 }
