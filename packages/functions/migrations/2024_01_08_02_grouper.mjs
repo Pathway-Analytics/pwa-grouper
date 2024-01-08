@@ -5,72 +5,81 @@ import { Kysely, sql } from "kysely";
  */
 export async function up(db) {
 
-    await db.query(sql`
-        CREATE TYPE role AS ENUM (
-            'ADMIN', 
-            'COMMISSIONER', 
-            'PROVIDER_PLUS', 
-            'PROVIDER_BASIC', 
-            'PROVIDER_READ_ONLY'
-        )
-    `)
+    await db.schema
+    .createType("role")
+    .asEnum([
+        'ADMIN', 
+        'COMMISSIONER', 
+        'PROVIDER_PLUS', 
+        'PROVIDER_BASIC', 
+        'PROVIDER_READ_ONLY'
+    ])
+    .execute();
+
+    // .addColumn("status", sql`status`)
     
-    await db.query(sql`
-        CREATE TYPE adminAreaType AS ENUM (
-            'LSOA',
-            'LB',
-            'UA',
-            'NMD',
-            'MD',
-            'CTY',
-            'RGN',
-            'CTRY',
-            'NOT KNOWN'
-        )
-    `)
+    await db.schema
+    .createType("adminAreaType")
+    .asEnum([
+        'LSOA',
+        'LB',
+        'UA',
+        'NMD',
+        'MD',
+        'CTY',
+        'RGN',
+        'CTRY',
+        'NOT KNOWN'
+    ])
+    .execute();
 
-    await db.query(sql`
-        CREATE TYPE processStatusType AS ENUM (
-            'Submission',
-            'Sandbox',
-            'Validation',
-            'Report'
-        )
-    `)
+    await db.schema
+    .createType("processStatusType")
+    .asEnum([
+        'Submission',
+        'Sandbox',
+        'Validation',
+        'Report'
+    ])
+    .execute();
+    
+    await db.schema
+    .createType("fileStubStatusType")
+    .asEnum([
+        'NEW',
+        'PROCESSING',
+        'PROCESSED',
+        'ERROR'
+    ])
+    .execute();
+    
+    await db.schema
+    .createType("pageType")
+    .asEnum([
+        'HELP',
+        'UPDATE',
+        'PAGE'
+    ])
+    .execute();
 
-    await db.query(sql`
-        CREATE TYPE fileStubStatusType AS ENUM (
-            'NEW',
-            'PROCESSING',
-            'PROCESSED',
-            'ERROR'
-            )
-    `)
-
-    await db.query(sql`
-        CREATE TYPE pageType AS ENUM (
-            'HELP',
-            'UPDATE',
-            'PAGE'
-        )
-    `)
-
-    await db.query(sql`
-        CREATE TYPE currencyCrossChargeType AS ENUM (
-            'NONE',
-            'FULL',
-            'LOCAL LIMITED', 
-            'LOCAL UNLIMITED'
-        )
-    `)
-
-    await db.query(sql`
-        CREATE TYPE ifThenType AS ENUM (
-            'IF',
-            'THEN',
-            )
-    `)
-
+    await db.schema
+    .createType("currencyCrossChargeType")
+    .asEnum([
+        'NONE',
+        'FULL',
+        'LOCAL LIMITED', 
+        'LOCAL UNLIMITED'
+    ])
+    .execute();
+    
+    await db.schema
+    .createType("ifThenType")
+    .asEnum([
+        'IF',
+        'THEN',
+    ])
+    .execute();
+    
     await db.schema
         .createTable('framework')
         .addColumn('id', 'serial', (col) => col.primaryKey())
@@ -318,7 +327,7 @@ export async function up(db) {
         .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configurationCombSet_id', 'integer', (col) => col.notNull())
         .addColumn('currency_id', 'integer', (col) => col.notNull())
-        .addColumn('role', 'ifThenType')
+        .addColumn('role', sql`ifThenType`)
         .addForeignKeyConstraint('configcc_configurationCombSet_id_fk', ['configurationCombSet_id'], 'configurationCombSet', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -516,7 +525,7 @@ export async function up(db) {
     await db.schema
         .createTable('userSubscription')
         .addColumn('id', 'serial', (col) => col.primaryKey())
-        .addColumn('role', 'role')
+        .addColumn('role', sql`role`)
         .addColumn('xero_invoice_id', 'varchar(50)')
         .addColumn('renewalInvoice_id', 'varchar(50)')
         .addColumn('renewalQuote_id', 'varchar(50)')
@@ -561,7 +570,7 @@ export async function up(db) {
         .addColumn('isEmail', 'boolean')
         .addColumn('csvProviders', 'varchar(250)')
         .addColumn('csvCommissioners', 'varchar(250)')
-        .addColumn('requestProfile', 'role')
+        .addColumn('requestProfile', sql`role`)
         .addColumn('guid', 'varchar(50)')
         .addColumn('fileName', 'varchar(50)')
         .addColumn('fileSize', 'integer')
