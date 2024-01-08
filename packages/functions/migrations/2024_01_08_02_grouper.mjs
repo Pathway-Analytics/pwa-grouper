@@ -152,7 +152,7 @@ export async function up(db) {
         .addColumn('lat', 'decimal(9,6)')
         .addColumn('lng', 'decimal(9,6)')
         .addColumn('isActive', 'boolean')
-        .addColumn('type', 'adminAreaType')
+        .addColumn('type', sql`adminAreaType`)
         .addColumn('parent_id', 'integer')
         .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('admarea_parent_id_fk', ['parent_id'], 'adminArea', ['id'],
@@ -181,7 +181,7 @@ export async function up(db) {
         .addColumn('label', 'varchar(50)')
         .addColumn('description', 'varchar(500)')
         .addColumn('order', 'integer')
-        .addColumn('type', 'processStatusType')
+        .addColumn('type', sql`processStatusType`)
         .addColumn('isActive', 'boolean')
         .execute();
         
@@ -217,7 +217,7 @@ export async function up(db) {
         .addColumn('clinicList', 'varchar(500)')
         .addColumn('uploadedDate', 'timestamp')
         .addColumn('uploadedBy', 'text')
-        .addColumn('status', 'fileStubType')
+        .addColumn('status', sql`fileStubStatusType`)
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -305,7 +305,7 @@ export async function up(db) {
         .addColumn('nameShort', 'varchar(10)')
         .addColumn('primaryTariff', 'decimal(6,2)')
         .addColumn('additionalTariff', 'decimal(6,2)')
-        .addColumn('crossChargeType', 'currencyCrossChargeType')
+        .addColumn('crossChargeType', sql`currencyCrossChargeType`)
         .addColumn('isActive', 'boolean')
         .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('curr_configuration_id_fk', ['configuration_id'], 'configuration', ['id'],
@@ -728,7 +728,7 @@ export async function up(db) {
         .addColumn('code', 'varchar(100)')
         .addColumn('title', 'varchar(100)')
         .addColumn('content', 'binary')
-        .addColumn('pageType', 'pageType')
+        .addColumn('pageType', sql`pageType`)
         .addColumn('availableFrom', 'timestamp')
         .addColumn('changed', 'timestamp')
         .addColumn('created', 'timestamp')
@@ -1122,7 +1122,7 @@ export async function down(db) {
                 role, 
                 adminAreaType, 
                 processStatusType, 
-                fileStubType, 
+                fileStubStatusType, 
                 pageType, 
                 currencyCrossChargeType, 
                 ifThenType
