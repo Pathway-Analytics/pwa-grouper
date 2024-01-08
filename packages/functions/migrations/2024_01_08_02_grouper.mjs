@@ -5,6 +5,72 @@ import { Kysely, sql } from "kysely";
  */
 export async function up(db) {
 
+    await db.query(sql`
+        CREATE TYPE role AS ENUM (
+            'ADMIN', 
+            'COMMISSIONER', 
+            'PROVIDER_PLUS', 
+            'PROVIDER_BASIC', 
+            'PROVIDER_READ_ONLY'
+        )
+    `)
+    
+    await db.query(sql`
+        CREATE TYPE adminAreaType AS ENUM (
+            'LSOA',
+            'LB',
+            'UA',
+            'NMD',
+            'MD',
+            'CTY',
+            'RGN',
+            'CTRY',
+            'NOT KNOWN'
+        )
+    `)
+
+    await db.query(sql`
+        CREATE TYPE processStatusType AS ENUM (
+            'Submission',
+            'Sandbox',
+            'Validation',
+            'Report'
+        )
+    `)
+
+    await db.query(sql`
+        CREATE TYPE fileStubStatusType AS ENUM (
+            'NEW',
+            'PROCESSING',
+            'PROCESSED',
+            'ERROR'
+            )
+    `)
+
+    await db.query(sql`
+        CREATE TYPE pageType AS ENUM (
+            'HELP',
+            'UPDATE',
+            'PAGE'
+        )
+    `)
+
+    await db.query(sql`
+        CREATE TYPE currencyCrossChargeType AS ENUM (
+            'NONE',
+            'FULL',
+            'LOCAL LIMITED', 
+            'LOCAL UNLIMITED'
+        )
+    `)
+
+    await db.query(sql`
+        CREATE TYPE ifThenType AS ENUM (
+            'IF',
+            'THEN',
+            )
+    `)
+
     await db.schema
         .createTable('framework')
         .addColumn('id', 'serial', (col) => col.primaryKey())
@@ -77,7 +143,7 @@ export async function up(db) {
         .addColumn('lat', 'decimal(9,6)')
         .addColumn('lng', 'decimal(9,6)')
         .addColumn('isActive', 'boolean')
-        .addColumn('type', sql`enum('LSOA','LB','UA','NMD','MD','CTY','RGN','CTRY','NOT KNOWN')`)
+        .addColumn('type', 'adminAreaType')
         .addColumn('parent_id', 'integer')
         .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('admarea_parent_id_fk', ['parent_id'], 'adminArea', ['id'],
@@ -106,7 +172,7 @@ export async function up(db) {
         .addColumn('label', 'varchar(50)')
         .addColumn('description', 'varchar(500)')
         .addColumn('order', 'integer')
-        .addColumn('type', sql`enum('Submission','Sandbox','Validation', 'Report')`)
+        .addColumn('type', 'processStatusType')
         .addColumn('isActive', 'boolean')
         .execute();
         
@@ -142,7 +208,7 @@ export async function up(db) {
         .addColumn('clinicList', 'varchar(500)')
         .addColumn('uploadedDate', 'timestamp')
         .addColumn('uploadedBy', 'text')
-        .addColumn('status', sql`enum('NEW','PROCESSING','PROCESSED','ERROR')`)
+        .addColumn('status', 'fileStubType')
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -230,7 +296,7 @@ export async function up(db) {
         .addColumn('nameShort', 'varchar(10)')
         .addColumn('primaryTariff', 'decimal(6,2)')
         .addColumn('additionalTariff', 'decimal(6,2)')
-        .addColumn('crossChargeType', sql`enum('NONE','FULL','LOCAL LIMITED', 'LOCAL UNLIMITED')`)
+        .addColumn('crossChargeType', 'currencyCrossChargeType')
         .addColumn('isActive', 'boolean')
         .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('curr_configuration_id_fk', ['configuration_id'], 'configuration', ['id'],
@@ -252,7 +318,7 @@ export async function up(db) {
         .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configurationCombSet_id', 'integer', (col) => col.notNull())
         .addColumn('currency_id', 'integer', (col) => col.notNull())
-        .addColumn('role', sql`enum('IF','THEN')`)
+        .addColumn('role', 'ifThenType')
         .addForeignKeyConstraint('configcc_configurationCombSet_id_fk', ['configurationCombSet_id'], 'configurationCombSet', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -450,7 +516,7 @@ export async function up(db) {
     await db.schema
         .createTable('userSubscription')
         .addColumn('id', 'serial', (col) => col.primaryKey())
-        .addColumn('role', sql`enum('ADMIN', 'COMMISSIONER', 'PROVIDER_PLUS', 'PROVIDER_BASIC', 'PROVIDER_READ_ONLY')`)
+        .addColumn('role', 'role')
         .addColumn('xero_invoice_id', 'varchar(50)')
         .addColumn('renewalInvoice_id', 'varchar(50)')
         .addColumn('renewalQuote_id', 'varchar(50)')
@@ -495,7 +561,7 @@ export async function up(db) {
         .addColumn('isEmail', 'boolean')
         .addColumn('csvProviders', 'varchar(250)')
         .addColumn('csvCommissioners', 'varchar(250)')
-        .addColumn('requestProfile', sql`enum('PROVIDER', 'COMMISSIONER')`)
+        .addColumn('requestProfile', 'role')
         .addColumn('guid', 'varchar(50)')
         .addColumn('fileName', 'varchar(50)')
         .addColumn('fileSize', 'integer')
@@ -653,7 +719,7 @@ export async function up(db) {
         .addColumn('code', 'varchar(100)')
         .addColumn('title', 'varchar(100)')
         .addColumn('content', 'binary')
-        .addColumn('pageType', sql`enum ('HELP','UPDATE','PAGE')`)
+        .addColumn('pageType', 'pageType')
         .addColumn('availableFrom', 'timestamp')
         .addColumn('changed', 'timestamp')
         .addColumn('created', 'timestamp')
@@ -1041,4 +1107,15 @@ export async function down(db) {
         .dropTable('validationOption').execute()
         .dropTable('validationOptionGp').execute()
         .dropTable('framework').execute()
+
+        await db.query(sql`
+            DROP TYPE IF EXISTS 
+                role, 
+                adminAreaType, 
+                processStatusType, 
+                fileStubType, 
+                pageType, 
+                currencyCrossChargeType, 
+                ifThenType
+        `)
 }
