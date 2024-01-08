@@ -1,6 +1,4 @@
 import { Kysely, sql } from "kysely";
-import { RoleType as Role, RoleType }  from '@pwa-grouper/core/types/role';
-
 
 /**
  * @param db {Kysely<any>}
@@ -452,7 +450,7 @@ export async function up(db) {
     await db.schema
         .createTable('userSubscription')
         .addColumn('id', 'serial', (col) => col.primaryKey())
-        .addColumn('role', sql`enum(${Role.ADMIN}, 'COMMISSIONER', 'PROVIDER+', 'PROVIDER_BASIC', 'PROVIDER_READ_ONLY')`)
+        .addColumn('role', sql`enum('ADMIN', 'COMMISSIONER', 'PROVIDER_PLUS', 'PROVIDER_BASIC', 'PROVIDER_READ_ONLY')`)
         .addColumn('xero_invoice_id', 'varchar(50)')
         .addColumn('renewalInvoice_id', 'varchar(50)')
         .addColumn('renewalQuote_id', 'varchar(50)')
