@@ -6,7 +6,7 @@ import { Kysely, sql } from "kysely";
 export async function up(db) {
 
     await db.schema
-    .createType("role")
+    .createType('role')
     .asEnum([
         'ADMIN', 
         'COMMISSIONER', 
@@ -19,7 +19,7 @@ export async function up(db) {
     // .addColumn("status", sql`status`)
     
     await db.schema
-    .createType("adminAreaType")
+    .createType('admin_area_type')
     .asEnum([
         'LSOA',
         'LB',
@@ -34,7 +34,7 @@ export async function up(db) {
     .execute();
 
     await db.schema
-    .createType("processStatusType")
+    .createType('process_status_type')
     .asEnum([
         'Submission',
         'Sandbox',
@@ -44,7 +44,7 @@ export async function up(db) {
     .execute();
     
     await db.schema
-    .createType("fileStubStatusType")
+    .createType('file_stub_status_type')
     .asEnum([
         'NEW',
         'PROCESSING',
@@ -54,7 +54,7 @@ export async function up(db) {
     .execute();
     
     await db.schema
-    .createType("pageType")
+    .createType('page_type')
     .asEnum([
         'HELP',
         'UPDATE',
@@ -63,7 +63,7 @@ export async function up(db) {
     .execute();
 
     await db.schema
-    .createType("currencyCrossChargeType")
+    .createType('currency_cross_charge_type')
     .asEnum([
         'NONE',
         'FULL',
@@ -73,7 +73,7 @@ export async function up(db) {
     .execute();
     
     await db.schema
-    .createType("ifThenType")
+    .createType('if_then_type')
     .asEnum([
         'IF',
         'THEN',
@@ -152,7 +152,7 @@ export async function up(db) {
         .addColumn('lat', 'decimal(9,6)')
         .addColumn('lng', 'decimal(9,6)')
         .addColumn('isActive', 'boolean')
-        .addColumn('type', sql`adminAreaType`)
+        .addColumn('type', sql`admin_area_type`)
         .addColumn('parent_id', 'integer')
         .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('admarea_parent_id_fk', ['parent_id'], 'adminArea', ['id'],
@@ -181,7 +181,7 @@ export async function up(db) {
         .addColumn('label', 'varchar(50)')
         .addColumn('description', 'varchar(500)')
         .addColumn('order', 'integer')
-        .addColumn('type', sql`processStatusType`)
+        .addColumn('type', sql`process_status_type`)
         .addColumn('isActive', 'boolean')
         .execute();
         
@@ -217,7 +217,7 @@ export async function up(db) {
         .addColumn('clinicList', 'varchar(500)')
         .addColumn('uploadedDate', 'timestamp')
         .addColumn('uploadedBy', 'text')
-        .addColumn('status', sql`fileStubStatusType`)
+        .addColumn('status', sql`file_stub_status_type`)
         .addForeignKeyConstraint('filestb_submission_id_fk', ['submission_id'], 'submission', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -305,7 +305,7 @@ export async function up(db) {
         .addColumn('nameShort', 'varchar(10)')
         .addColumn('primaryTariff', 'decimal(6,2)')
         .addColumn('additionalTariff', 'decimal(6,2)')
-        .addColumn('crossChargeType', sql`currencyCrossChargeType`)
+        .addColumn('crossChargeType', sql`currency_cross_charge_type`)
         .addColumn('isActive', 'boolean')
         .addColumn('lastChanged', 'timestamp')
         .addForeignKeyConstraint('curr_configuration_id_fk', ['configuration_id'], 'configuration', ['id'],
@@ -327,7 +327,7 @@ export async function up(db) {
         .addColumn('id', 'serial', (col) => col.primaryKey())
         .addColumn('configurationCombSet_id', 'integer', (col) => col.notNull())
         .addColumn('currency_id', 'integer', (col) => col.notNull())
-        .addColumn('role', sql`ifThenType`)
+        .addColumn('role', sql`if_then_type`)
         .addForeignKeyConstraint('configcc_configurationCombSet_id_fk', ['configurationCombSet_id'], 'configurationCombSet', ['id'],
             (cb) => cb.onDelete('cascade')
         )
@@ -728,7 +728,7 @@ export async function up(db) {
         .addColumn('code', 'varchar(100)')
         .addColumn('title', 'varchar(100)')
         .addColumn('content', 'binary')
-        .addColumn('pageType', sql`pageType`)
+        .addColumn('pageType', sql`page_type`)
         .addColumn('availableFrom', 'timestamp')
         .addColumn('changed', 'timestamp')
         .addColumn('created', 'timestamp')
@@ -1119,12 +1119,12 @@ export async function down(db) {
 
         await db.query(sql`
             DROP TYPE IF EXISTS 
-                role, 
-                adminAreaType, 
-                processStatusType, 
-                fileStubStatusType, 
-                pageType, 
-                currencyCrossChargeType, 
-                ifThenType
+                "role", 
+                "admin_area_type", 
+                "process_status_type", 
+                "file_stub_status_type", 
+                "page_type", 
+                "currency_cross_charge_type", 
+                "if_then_type"
         `)
 }
