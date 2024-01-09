@@ -78,7 +78,9 @@ export async function up(db) {
 
         await db.schema
         .createTable('version')
-        .addColumn('id', 'text', (col) => col.notNull())
+        .addColumn('id', 'text', (col) => col.primaryKey())
+        .addColumn('title', 'text')
+        .addColumn('description', 'text')
         .execute();
 
         await db.schema
