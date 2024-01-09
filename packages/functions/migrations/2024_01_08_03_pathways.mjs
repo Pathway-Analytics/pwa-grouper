@@ -24,7 +24,8 @@ export async function up(db) {
         .addColumn('name', 'text', (col) => col.notNull())
         .addColumn('order', 'integer')
         .addColumn('comment', 'text')
-        .addColumn('activity', 'integer')       
+        .addColumn('activity', 'integer')
+        .execute();       
 
     await db.schema
         .createIndex('step_id_idx')
@@ -99,12 +100,10 @@ export async function down(db) {
         .dropTable('version_price').execute()
         .dropIndex('pathway_id_idx').execute()
         .dropIndex('cons_id_idx').execute()
-        
         .dropTable('step_cons').execute()
         .dropTable('consumable').execute()
         .dropTable('cons_type').execute()
         .dropTable('cons_uom').execute()
-        
         .dropTable('step').execute()
 		.dropTable('pathway').execute()
         
