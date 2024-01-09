@@ -67,37 +67,40 @@ export async function up(db) {
     await db.schema
         .createTable('step_cons')
         .addColumn('step_id', 'text', (col) => col.notNull())
-        .addColumn('consumable_id', 'text', (col) => col.notNull())
+        .addColumn('cons_id', 'text', (col) => col.notNull())
         .addColumn('primary_qty', 'decimal(8,4)')
         .addColumn('additional_qty', 'decimal(8,4)')
         .addForeignKeyConstraint('step_cons_step_id_fk', ['step_id'], 'step', ['id'],
             (cb) => cb.onDelete('cascade'))
-        .addForeignKeyConstraint('step_cons_consumable_id_fk', ['consumable_id'], 'consumable', ['id'],
+        .addForeignKeyConstraint('step_cons_consumable_id_fk', ['cons_id'], 'consumable', ['id'],
             (cb) => cb.onDelete('cascade'))
         .execute();
 
-    await db.schema
+        await db.schema
+        .createTable('version')
+        .addColumn('id', 'text', (col) => col.notNull())
+        .execute();
+
+        await db.schema
         .createTable('version_price')
         .addColumn('cons_id', 'text', (col) => col.notNull())
         .addColumn('version_id', 'text', (col) => col.notNull())
         .addColumn('price', 'decimal(8,4)')
-        .execute();
-
-    await db.schema
-        .createTable('version')
-        .addColumn('version_id', 'text', (col) => col.notNull())
-        .addForeignKeyConstraint('version_id_fk', ['version_id'], 'version_price', ['version_id'],
+        .addForeignKeyConstraint('ver_pri_version_fk', ['version_id'], 'version', ['id'], 
+            (cb) => cb.onDelete('cascade'))
+        .addForeignKeyConstraint('ver_pri_consumable_fk', ['cons_id'], 'consumable', ['id'],
             (cb) => cb.onDelete('cascade'))
         .execute();
+
 }
 
 /**
  * @param db {Kysely<any>}
  */
 export async function down(db) {
-	await db.schema
-        .dropTable('version').execute()
+    await db.schema
         .dropTable('version_price').execute()
+        .dropTable('version').execute()
         .dropIndex('pathway_id_idx').execute()
         .dropIndex('cons_id_idx').execute()
         .dropTable('step_cons').execute()
