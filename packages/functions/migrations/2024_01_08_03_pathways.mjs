@@ -37,13 +37,13 @@ export async function up(db) {
         .createTable('cons_uom')
         .addColumn('id', 'text', (col) => col.primaryKey())
         .addColumn('uom', 'text')
-        .execute
+        .execute();
 
     await db.schema
         .createTable('cons_type')
         .addColumn('id', 'text', (col) => col.primaryKey())
         .addColumn('type', 'text')
-        .execute()
+        .execute();
 
     await db.schema
         .createTable('consumable')
