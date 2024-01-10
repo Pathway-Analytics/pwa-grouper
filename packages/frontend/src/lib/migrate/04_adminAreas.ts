@@ -15,7 +15,7 @@ const query =`
 
 async function getList() {
     try{
-        const response = await fetch(`http://statistics.data.gov.uk/sparql.json?query=${encodeURIComponent(query)}`, {
+        const response = await fetch(`https://statistics.data.gov.uk/sparql.json?query=${encodeURIComponent(query)}`, {
             headers: {
                 Accept: 'application/json'
             },
