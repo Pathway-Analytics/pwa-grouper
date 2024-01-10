@@ -27,18 +27,24 @@ onMount(async () => {
       <TableHeadCell>Name</TableHeadCell>
     </TableHead>
     <TableBody>
-      {#each data as row}
-        <TableBodyRow>
-          <TableBodyCell>
-            {row.lsoa}  
-          </TableBodyCell>
-          <TableBodyCell>
-            {row.code}  
-          </TableBodyCell>
-          <TableBodyCell>
-            {row.name}  
-          </TableBodyCell>
-        </TableBodyRow>
-      {/each}
+      {#await data}
+        <p>loading...</p>
+      {:then data}
+        {#each data as row}
+          <TableBodyRow>
+            <TableBodyCell>
+              {row.id}  
+            </TableBodyCell>
+            <TableBodyCell>
+              {row.code}  
+            </TableBodyCell>
+            <TableBodyCell>
+              {row.name}  
+            </TableBodyCell>
+          </TableBodyRow>
+        {/each}        
+      {:catch error}
+        <p>error: {error.message}</p>
+      {/await}
     </TableBody>
   </Table>
