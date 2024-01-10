@@ -32,8 +32,8 @@ export default {
     .stack(FunctionStack)
     .stack(FrontendStack)
     .stack(AuthStack)
-    .stack(ProcessingQueStack)
     .stack(EventBusStack)
+    .stack(ProcessingQueStack)
     ;
   }
 } satisfies SSTConfig;
