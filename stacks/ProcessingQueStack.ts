@@ -6,7 +6,7 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
     // Queue configurations
     consumer:{
       function: {
-        handler: "function/src/queueHandlers/entityFetchQueue.main", 
+        handler: "packages/function/src/queueHandlers/entityFetchQueue.main", 
         environment: {
           STAGE: app.stage,
         },
@@ -16,7 +16,7 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
       
   const lsoaFetchQueue = new Queue(stack, "LsoaFetchQueue", {
     // Queue configurations
-    consumer: "function/src/queueHandlers/lsoaFetchQueue.main",
+    consumer: "packages/function/src/queueHandlers/lsoaFetchQueue.main",
   });
         
   return {  
