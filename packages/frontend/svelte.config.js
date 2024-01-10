@@ -15,7 +15,7 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			// this will match a file
-			'@sst-starter3/core': '../core/src/*'
+			'@pwa-grouper/core': '../core/src/*'
 		}
 	}
 };
