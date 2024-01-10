@@ -1,4 +1,4 @@
-import { Config, EventBus, StackContext, use } from "sst/constructs";
+import { EventBus, StackContext, use } from "sst/constructs";
 import { ProcessingQueStack } from "./ProcessingQueStack";
 
 const { entityFetchQueue, lsoaFetchQueue } = use(ProcessingQueStack);
@@ -7,11 +7,6 @@ export function EventBusStack({ stack }: StackContext) {
   const stage = stack.stage;
 
   const eventBus = new EventBus(stack, "DataEventBus", {
-    cdk: {
-      eventBus: {
-        eventBusName: `${stage}-EventBus`,
-      },
-    },
     rules: {
       // Queue for lsoaFetch
       lsoaFetchQueueRule: {

@@ -1,4 +1,4 @@
-import {Function, Api, StackContext, use, Config } from "sst/constructs";
+import { Api, StackContext, use, Config } from "sst/constructs";
 import { StorageStack } from "./StorageStack";
 
 export function ApiStack({ stack, app }: StackContext) {
