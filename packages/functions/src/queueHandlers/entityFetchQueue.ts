@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { Fn } from "aws-cdk-lib";  
 
 const client = new AWS.EventBridge();
 
@@ -10,7 +11,7 @@ export async function main(event: AWSLambda.SQSEvent) {
     // trigger an event to say we are done
     await client.putEvents({
       Entries: [{
-        EventBusName: process.env.EVENT_BUS_NAME,
+        EventBusName: Fn.importValue("EventBusName"),
         Source: `${process.env.STAGE}-queComplete`,
         // add in here some information about what we have done
         DetailType: 'queComplete',

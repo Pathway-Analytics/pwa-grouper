@@ -3,8 +3,9 @@ import { ProcessingQueStack } from "./ProcessingQueStack";
 
 const { entityFetchQueue, lsoaFetchQueue } = use(ProcessingQueStack);
 
-export function EventBusStack({ stack, app }: StackContext) {
-  const stage = app.stage;
+export function EventBusStack({ stack }: StackContext) {
+  const stage = stack.stage;
+
   const eventBus = new EventBus(stack, "DataEventBus", {
     cdk: {
       eventBus: {
@@ -52,7 +53,9 @@ export function EventBusStack({ stack, app }: StackContext) {
     },
   });
 
-  new Config.Parameter(app, "EVENT_BUS_NAME", {value: eventBus.eventBusName});
+  stack.addOutputs({
+    EventBusName: eventBus.eventBusName,    
+  });
 
   return { 
     eventBus
