@@ -1,6 +1,6 @@
-import { Queue, StackContext, use} from "sst/constructs";
+import { Queue, StackContext } from "sst/constructs";
 
-export function ProcessingQueStack({ stack }: StackContext ) {
+export function ProcessingQueStack({ stack, app }: StackContext ) {
       
         const entityFetchQueue = new Queue(stack, "EntityFetchQueue", {
           // Queue configurations
@@ -8,7 +8,7 @@ export function ProcessingQueStack({ stack }: StackContext ) {
             function: {
               handler: "function/src/queueHandlers/entityFetchQueue.main", 
               environment: {
-                STAGE: stack.stage,
+                STAGE: app.stage,
               },
             }
           },

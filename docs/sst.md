@@ -159,3 +159,5 @@ pnpm install -w kysely
 kysely-data-api
 
 pnpm add -w @aws-sdk/client-rds-data aws-lambda @aws-sdk/client-ses uuid
+
+pnpm i -w --save-dev @types/node
