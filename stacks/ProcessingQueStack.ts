@@ -1,8 +1,6 @@
 import { Queue, StackContext, use } from "sst/constructs";
-import { EventBusStack } from "./EventBusStack";
 
 export function ProcessingQueStack({ stack, app }: StackContext ) {
-
 
   const entityFetchQueue = new Queue(stack, "EntityFetchQueue", {
     // Queue configurations
