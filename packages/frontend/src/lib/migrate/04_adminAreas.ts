@@ -20,7 +20,7 @@ async function getList() {
                 Accept: 'application/json'
             },
             method: 'GET',
-            mode: 'no-cors',
+            // mode: 'no-cors',
             // body: JSON.stringify({ query: query }) // Convert the query to a JSON string
         });
     
