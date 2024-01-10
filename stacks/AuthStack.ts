@@ -55,6 +55,7 @@ export function AuthStack({ stack }: StackContext) {
         api,
         prefix: "/auth", // optional
       });
+      
     return {
         auth
     }

@@ -1,10 +1,9 @@
 import { EventBus, StackContext, use } from "sst/constructs";
 import { ProcessingQueStack } from "./ProcessingQueStack";
 
-const { entityFetchQueue, lsoaFetchQueue } = use(ProcessingQueStack);
-
-export function EventBusStack({ stack }: StackContext) {
+export function EventBusStack({ stack, app }: StackContext) {
   const stage = stack.stage;
+  const { entityFetchQueue, lsoaFetchQueue } = use(ProcessingQueStack);
 
   const eventBus = new EventBus(stack, "DataEventBus", {
     rules: {
