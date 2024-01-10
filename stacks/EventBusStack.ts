@@ -34,20 +34,20 @@ export function EventBusStack({ stack }: StackContext) {
       lsoaFetchRule: {
         pattern: { source: [`${stage}-lsoaFetch`] },
         targets: {
-          lsoaFetchTarget: "packages/function/src/fetchHandlers/lsoaFetch.main",
+          lsoaFetchTarget: "packages/functions/src/fetchHandlers/lsoaFetch.main",
         },
       },
       // Thi will collect all the higher entities (e.g. local authority, region, country)
       entityFetchRule: {
         pattern: { source: [`${stage}-entitySpider`] },
         targets: {
-          entityFetchTarget: "packages/function/src/fetchHandlers/entityFetch.main",
+          entityFetchTarget: "packages/functions/src/fetchHandlers/entityFetch.main",
           },
       },
       queComplete: {
         pattern: { source: [`${stage}-queComplete`] },
         targets: {
-          entityFetchTarget: "packages/function/src/fetchHandlers/cycleFetch.main",
+          entityFetchTarget: "packages/functions/src/fetchHandlers/cycleFetch.main",
           },
       },
     },
