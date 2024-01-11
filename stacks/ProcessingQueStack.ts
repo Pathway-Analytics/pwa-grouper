@@ -16,7 +16,7 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
       }
     },
   });
-      
+  
   eventBus.addRules(stack, {
     "eventEntityFetchQueue":{
       pattern: { source: [`eventEntityFetchQueue`] },
@@ -25,6 +25,28 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
       },
     },
   });
+
+  const ErrorQueue = new Queue(stack, "ErrorQueue", {
+    // Queue configurations
+    // consumer:{
+    //   function: {
+    //     handler: "packages/functions/src/adminAreaSpider/fetchChildrenHandler.main",
+    //     environment: {
+    //       STAGE: app.stage,
+    //     },
+    //   }
+    // },
+  });
+
+  eventBus.addRules(stack, {
+    "eventErrorQueue":{
+      pattern: { source: [`eventErrorQueue`] },
+      targets: {
+        queueEntityFetchQueueTarget: ErrorQueue,
+      },
+    },
+  });
+
 
   return {  
     queueEntityFetchQueue
