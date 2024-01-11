@@ -10,7 +10,7 @@ export const DB = new Kysely<Database>({
 		driver: {
 			secretArn: (RDS as any).Cluster.secretArn,
 			resourceArn: (RDS as any).Cluster.clusterArn,
-      database: (RDS as any).Cluster.defaultDatabaseName,
+      		database: (RDS as any).Cluster.defaultDatabaseName,
 			client: new RDSData({})
 		}
 	})

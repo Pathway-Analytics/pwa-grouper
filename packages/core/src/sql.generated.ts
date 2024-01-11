@@ -1,14 +1,8 @@
 // type UserWithNullableId = Omit<User, 'id'> & { id: string | null };
-
-export interface Users {
-    id: string ;
-    email: string;
-    picture: string | null;
-    firstName: string | null;
-    lastName: string | null;
-    roles: string | null;
-  }
+import { AdminAreaType } from "./types/adminArea";
+import { UserType } from "./types/user";
   
   export interface Database {
-    users: Users;
+    users: UserType;
+    adminArea: AdminAreaType;
   }
