@@ -27,6 +27,7 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
   });
 
   const ErrorQueue = new Queue(stack, "ErrorQueue", {
+    // currently dead letter queue 
     // Queue configurations
     // consumer:{
     //   function: {

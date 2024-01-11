@@ -51,8 +51,9 @@ export async function main(event: AWSLambda.SQSEvent) {
                     }
                 }
             }
-            catch (err) {
-                console.error("Error in adminAreadSpider: ", err);
+            catch (e) {
+                console.error("Error in adminAreadSpider: ", e);
+                triggerErrorQueueEevent(collections, within, e as string);
             }
         } else {
             console.log("No entities to process");
@@ -105,6 +106,7 @@ async function fetchEntityRecords(collections: string[], within: string) {
 
     } catch(e) {
         console.log('error', e);
+        triggerErrorQueueEevent(collections, within, e as string);
     }    
 }
 
@@ -139,6 +141,17 @@ async function triggerQueueEntityEvent(collections:string[], within: string, las
         Detail: JSON.stringify({ collections: collections, within: within, lastItem: lastItem }),
     };
     await eventBridge.putEvents({ Entries: [childEvent] }).promise();
+}
+
+async function triggerErrorQueueEevent(collections: string[], within: string, error: string) {
+         
+        const childEvent = {
+            EventBusName: Fn.importValue("EventBusName"),
+            Source: "eventErrorQueue",
+            DetailType: "Queueu Fetch Children Within",
+            Detail: JSON.stringify({ collections: collections, within: within, error: error }),
+        };
+        await eventBridge.putEvents({ Entries: [childEvent] }).promise();
 }
 
 async function triggerQueueEntityComplete(within: string) {
