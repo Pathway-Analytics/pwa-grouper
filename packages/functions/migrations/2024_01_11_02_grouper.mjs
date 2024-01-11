@@ -783,7 +783,7 @@ export async function up(db) {
 
     await db.schema
         .createIndex('adminAreaTypeIsActive_idx')
-        .on('adminAarea')
+        .on('adminArea')
         .column('type')
         .column('isActive')
         .execute();
