@@ -27,7 +27,7 @@ export function EventBusStack({ stack, app }: StackContext) {
       eventQueueComplete: {
         pattern: { source: [`queueComplete`] },
         targets: {
-          QueueCompleteTarget: "packages/functions/src/fetchCompleteHandler.main",
+          QueueCompleteTarget: "packages/functions/src/adminAreaSpider/fetchCompleteHandler.main",
           },
       },
     },
