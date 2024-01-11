@@ -113,7 +113,7 @@ export async function up(db) {
         .addForeignKeyConstraint('voVogId_fk', ['validationOptionGpId'], 'validationOptionGp', ['id'],
             (cb) => cb.onDelete('cascade')
         )
-        .addForeignKeyConstraint('voAltOption_fk', ['alOoption'], 'validationOption', ['id'],
+        .addForeignKeyConstraint('voAltOption_fk', ['altOption'], 'validationOption', ['id'],
             (cb) => cb.onDelete('set null')
         )
         .execute();
