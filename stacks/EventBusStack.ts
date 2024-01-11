@@ -1,47 +1,33 @@
 import { EventBus, StackContext, use } from "sst/constructs";
-import { ProcessingQueStack } from "./ProcessingQueStack";
 
 export function EventBusStack({ stack, app }: StackContext) {
   const stage = stack.stage;
-  // const { entityFetchQueue, lsoaFetchQueue } = use(ProcessingQueStack);
 
   const eventBus = new EventBus(stack, "DataEventBus", {
     rules: {
-      // // Queue for lsoaFetch
-      // lsoaFetchQueueRule: {
-      //   // events are sent to the aws accont default bus, 
-      //   // so we need to filter on the stage to make sure
-      //   // we only process events for this stage here
-      //   pattern: { source: [`${stage}-lsoaFetchQueue`] },
-      //   targets: {
-      //     lsoaFetchQueueTarget: lsoaFetchQueue,
-      //   },
-      // },
-      // // Queue for entityFetch
-      // entityFetchQueueRule: {
-      //   pattern: { source: [`${stage}-entityFetchQueue`] },
-      //   targets: {
-      //     entityFetchQueueTarget: entityFetchQueue,
-      //   },
-      // },
-      // This will collect all the lsoa for an entity
-      lsoaFetchRule: {
-        pattern: { source: [`${stage}-lsoaFetch`] },
+
+      // // Queue for eventEntityFetch added in ProcessingQueStack.ts
+
+      // This will collect all children of an entitiy
+      // pass in the entites to collect and the parent entity
+      eventEntityFetchChildren: {
+        pattern: { source: [`fetchChildren`] },
         targets: {
-          lsoaFetchTarget: "packages/functions/src/fetchHandlers/lsoaFetch.main",
-        },
-      },
-      // Thi will collect all the higher entities (e.g. local authority, region, country)
-      entityFetchRule: {
-        pattern: { source: [`${stage}-entitySpider`] },
-        targets: {
-          entityFetchTarget: "packages/functions/src/fetchHandlers/entityFetch.main",
+          FetchChildrenTarget: "packages/functions/src/adminAreaSpider/fetchChildrenHandler.main",
           },
       },
-      queComplete: {
-        pattern: { source: [`${stage}-queComplete`] },
+      eventStartAdminAreaSpider: {
+        pattern: { 
+          source: [`startAdminAreaSpider`] 
+        },
         targets: {
-          entityFetchTarget: "packages/functions/src/fetchHandlers/cycleFetch.main",
+          StartAdminAreaSpiderTarget: "packages/functions/src/adminAreaSpider/startAreaSpiderHandler.main",
+          },
+      },
+      eventQueueComplete: {
+        pattern: { source: [`queueComplete`] },
+        targets: {
+          QueueCompleteTarget: "packages/functions/src/fetchCompleteHandler.main",
           },
       },
     },

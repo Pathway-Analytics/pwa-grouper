@@ -5,11 +5,11 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
 
   const { eventBus } = use(EventBusStack);
 
-  const entityFetchQueue = new Queue(stack, "EntityFetchQueue", {
+  const queueEntityFetchQueue = new Queue(stack, "EntityFetchQueue", {
     // Queue configurations
     consumer:{
       function: {
-        handler: "packages/functions/src/queueHandlers/entityFetchQueue.main",
+        handler: "packages/functions/src/adminAreaSpider/fetchChildrenHandler.main",
         environment: {
           STAGE: app.stage,
         },
@@ -17,31 +17,16 @@ export function ProcessingQueStack({ stack, app }: StackContext ) {
     },
   });
       
-  const lsoaFetchQueue = new Queue(stack, "LsoaFetchQueue", {
-    // Queue configurations
-    consumer: "packages/functions/src/queueHandlers/lsoaFetchQueue.main",
-  });
-
   eventBus.addRules(stack, {
-    "lsoaFetchQueueRule":{
-      pattern: { source: [`${app.stage}-lsoaFetchQueue`] },
+    "eventEntityFetchQueue":{
+      pattern: { source: [`eventEntityFetchQueue`] },
       targets: {
-        lsoaFetchQueueTarget: lsoaFetchQueue,
+        queueEntityFetchQueueTarget: queueEntityFetchQueue,
       },
     },
   });
 
-  eventBus.addRules(stack, {
-    "entityFetchQueueRule":{
-      pattern: { source: [`${app.stage}-entityFetchQueue`] },
-      targets: {
-        entityFetchQueueTarget: entityFetchQueue,
-      },
-    },
-  });
-  
   return {  
-      entityFetchQueue,
-      lsoaFetchQueue
+    queueEntityFetchQueue
   };
 }
