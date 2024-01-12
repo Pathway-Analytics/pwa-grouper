@@ -24,8 +24,10 @@ async function triggerEvent(event: string) {
   const response = await fetch(`${env.PUBLIC_API_URL}/process/trigger/${event}`, {
     method: 'POST',
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
     },
+    // include credentials true to allow sending cookies
+    credentials: 'include',
     body: JSON.stringify({collections:["E92"], within:"E92000001", lastItem: false})
   });
 
