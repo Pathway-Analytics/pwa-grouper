@@ -26,7 +26,6 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
 
         return await handler(event, context);
 
-        console.log('2. -- authzHandler session:', JSON.stringify(usePath()));
       }
 
       if (!session || session.type === SessionUserType.PUBLIC ) {

@@ -49,10 +49,20 @@ const main = async () => {
                 'path:', '/',
                 'domain:' , '.pathwayanalytics.com',
                 'body:', JSON.stringify(session)
-);
+                );
                 return useResponse()
                     .status(200)
                     .cookies({
+                        key: 'auth-token',
+                        value: '',
+                        encrypted: true,
+                        secure: true,
+                        httpOnly: true,
+                        expires: new Date(0),
+                        sameSite: 'none',
+                        path: '/'
+                    },
+                    {
                         key: 'auth-token',
                         value: token,
                         encrypted: true,
@@ -61,16 +71,6 @@ const main = async () => {
                         expires: date,
                         sameSite: 'Lax',
                         domain:  '.pathwayanalytics.com',
-                        path: '/'
-                    },
-                    {
-                        key: 'auth-token',
-                        value: '',
-                        encrypted: true,
-                        secure: true,
-                        httpOnly: true,
-                        expires: new Date(0),
-                        sameSite: 'none',
                         path: '/'
                     })
                     .serialize({ body: JSON.stringify(session)});

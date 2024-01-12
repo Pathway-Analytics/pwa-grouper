@@ -227,7 +227,8 @@ async function handleClaim(claims:Record<string,any>): Promise<UserType | undefi
                     picture: claims.picture,
                     firstName: claims.given_name,
                     lastName: claims.family_name,
-                    roles: ''
+                    roles: '',
+                    lastLogin: new Date()
                 };
                 console.log('10. ---*** auth.ts createUpdate(newUser) : ', newUser);
                 return await User.createUpdate(newUser);
@@ -245,13 +246,13 @@ async function handleClaim(claims:Record<string,any>): Promise<UserType | undefi
     }
 }
 
-function composeEmail(email: string, link: string)
-: Promise<{
-recipient: string, 
-sender: string, 
-subject: string, 
-textBody: string,
-htmlBody: string
+function composeEmail(email: string, link: string):
+Promise<{
+    recipient: string, 
+    sender: string, 
+    subject: string, 
+    textBody: string,
+    htmlBody: string
 }> {
     // use AWS SES to send an email to the user with the link
     // the link should be a URL with a JWT token in the query string
