@@ -1,6 +1,5 @@
 import { ApiHandler, useCookie, useResponse } from 'sst/node/api';
 import { useSession } from "sst/node/auth"
-import { Config } from 'sst/node/config';
 import { User } from '@pwa-grouper/core/classes/user';
 import type { SessionType } from '@pwa-grouper/core/types/session';
 import { SessionUserType } from '@pwa-grouper/core/types/session';
@@ -48,7 +47,7 @@ const main = async () => {
                 'expires:', date,
                 'sameSite:', 'Lax',
                 'path:', '/',
-                'domain:' , `.${Config.DOMAIN}`,
+                'domain:' , '.pathwayanalytics.com',
                 'body:', JSON.stringify(session)
 );
                 return useResponse()
@@ -61,7 +60,7 @@ const main = async () => {
                         httpOnly: true,
                         expires: date,
                         sameSite: 'Lax',
-                        domain: `.${Config.DOMAIN}`,
+                        domain:  '.pathwayanalytics.com',
                         path: '/'
                     })
                     .serialize({ body: JSON.stringify(session)});
