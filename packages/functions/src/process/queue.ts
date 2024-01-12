@@ -15,7 +15,9 @@ const main = async () => {
             .status(400)
             .header('Content-Type', 'application/json')
             .header('Access-Control-Allow-Origin', process.env.SITE_URL)
-            .send({ error: 'Queue name is required' });
+            .serialize({
+                body: JSON.stringify({ message: 'Queue name is required' })
+            })
     }
     try {
 	// returns the queue details 
@@ -26,7 +28,9 @@ const main = async () => {
             .status(404)
             .header('Content-Type', 'application/json')
             .header('Access-Control-Allow-Origin', process.env.SITE_URL)
-            .send({ error: 'Queue not found' });
+            .serialize({
+                body: JSON.stringify({ message: 'Queue not found' })
+            })  
     }
     const attributesResult = await sqs.getQueueAttributes({
         QueueUrl: urlResult.QueueUrl,
@@ -37,7 +41,10 @@ const main = async () => {
         .status(200)
         .header('Content-Type', 'application/json')
         .header('Access-Control-Allow-Origin', process.env.SITE_URL)
-        .send(attributesResult.Attributes);
+        .serialize({
+            body: JSON.stringify(attributesResult.Attributes)
+        })
+        
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Internal server error';
         console.error(`Error in get queue: ${queueName}: `, error);

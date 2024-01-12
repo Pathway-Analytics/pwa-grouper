@@ -16,7 +16,9 @@ const main = async () => {
         return useResponse()
             .status(400)
             .header('Content-Type', 'application/json')
-            .send({ error: 'Body is required' });
+            .serialize({
+                body: JSON.stringify({ message: 'Body is required' })
+            })
     }
 
     try {
@@ -36,7 +38,9 @@ const main = async () => {
         return useResponse()
             .status(200)
             .header('Content-Type', 'application/json')
-            .send({ success: true });
+            .serialize({
+                body: JSON.stringify({ message: 'Event triggered' })
+            })
 
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Internal server error';
@@ -48,7 +52,6 @@ const main = async () => {
             .serialize({
                 body: JSON.stringify({ message: errorMessage })
             })
-            .send();
     }
 
 }
