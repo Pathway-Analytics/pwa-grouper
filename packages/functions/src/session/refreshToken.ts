@@ -63,20 +63,22 @@ const main = async () => {
                     },
                     credentials: 'include'
                 });
-
+                // set the cookie
+                const cookie = "auth-token=" + token + "; expires=" + date + "; secure; httpOnly; sameSite=Lax; domain=.pathwayanalytics.com; path=/";
                 return useResponse()
                     .status(200)
                     .cookies(
                     {
-                        key: 'auth-token',
-                        value: token,
-                        encrypted: true,
-                        secure: true,
-                        httpOnly: true,
-                        expires: date,
-                        sameSite: 'Lax',
-                        domain:  '.pathwayanalytics.com',
-                        path: '/'
+                        cookie
+                        // key: 'auth-token',
+                        // value: token,
+                        // encrypted: true,
+                        // secure: true,
+                        // httpOnly: true,
+                        // expires: date,
+                        // sameSite: 'Lax',
+                        // domain:  '.pathwayanalytics.com',
+                        // path: '/'
                     })
                     .serialize({ body: JSON.stringify(session)});
             } else {
