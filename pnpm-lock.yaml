@@ -51,6 +51,9 @@ importers:
 
   packages/core:
     dependencies:
+      aws-lambda:
+        specifier: ^1.0.7
+        version: 1.0.7
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -58,6 +61,9 @@ importers:
         specifier: ^3.22.4
         version: 3.22.4
     devDependencies:
+      '@types/aws-lambda':
+        specifier: ^8.10.130
+        version: 8.10.131
       '@types/node':
         specifier: ^20.10.6
         version: 20.10.6
