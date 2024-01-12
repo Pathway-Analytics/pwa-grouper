@@ -52,7 +52,7 @@ const main = async () => {
 );
                 return useResponse()
                     .status(200)
-                    .cookie({
+                    .cookies({
                         key: 'auth-token',
                         value: token,
                         encrypted: true,
@@ -61,6 +61,16 @@ const main = async () => {
                         expires: date,
                         sameSite: 'Lax',
                         domain:  '.pathwayanalytics.com',
+                        path: '/'
+                    },
+                    {
+                        key: 'auth-token',
+                        value: '',
+                        encrypted: true,
+                        secure: true,
+                        httpOnly: true,
+                        expires: 0,
+                        sameSite: 'none',
                         path: '/'
                     })
                     .serialize({ body: JSON.stringify(session)});
