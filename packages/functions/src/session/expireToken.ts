@@ -50,7 +50,7 @@ const main = ApiHandler(async (event) => {
                 secure: true,
                 httpOnly: true,
                 expires: new Date(0),
-                sameSite: 'None',
+                sameSite: 'Lax',
                 domain: '.pathwayanalytics.com',
                 path: '/'
             })
