@@ -53,20 +53,29 @@ const main = async () => {
                 // setting two cookies, expiring one and setting the other
                 // does not seem to work so we are call the expireToken function to clear it.
                 // and then setting setting the one
-                console.log('5. -- logout: ', `fetch(${process.env.API_URL}/logout`);
+                
                 // call api/expiredToken to clear the cookie
-                await fetch(`${process.env.API_URL}/logout`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': `${process.env.SITE_URL}`
-                    },
-                    credentials: 'include'
-                });
+                // await fetch(`${process.env.API_URL}/logout`, {
+                //     method: 'GET',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Access-Control-Allow-Origin': `${process.env.SITE_URL}`
+                //     },
+                //     credentials: 'include'
+                // });
                 // set the cookie
                 return useResponse()
                     .status(200)
                     .cookie({
+                        key: 'auth-token',
+                        value: '',
+                        encrypted: true,
+                        secure: true,
+                        httpOnly: true,
+                        expires: new Date(0),
+                        sameSite: 'none',
+                        path: '/'
+                    }).cookie({
                         key: 'auth-token',
                         value: token,
                         encrypted: true,
