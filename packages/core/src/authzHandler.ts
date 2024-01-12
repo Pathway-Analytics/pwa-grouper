@@ -11,12 +11,13 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
 // TODO: Check user has required roles
     console.log('00000 authzHandler event:', JSON.stringify(event));
     try {
-      if (event.headers && event.headers.cookie && event.headers.cookie.includes('auth-token')) {
+      // just for logging ...
+      if ( event.cookies && event.cookies.includes('auth-token')) {
         console.log('000 authzHandler Auth-token cookie is included in the request.');
       }  else {
-
         console.log('000 authzHandler Auth-token cookie is not included in the request.');
       }
+      
       console.log('00 -- authzHandler cookie.', JSON.stringify(useCookie('auth-token')))
       const session: SessionTokenType = useSession();
       console.log('1. -- authzHandler session:', JSON.stringify(session));

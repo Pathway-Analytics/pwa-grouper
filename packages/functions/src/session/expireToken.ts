@@ -39,7 +39,7 @@ const main = ApiHandler(async (event) => {
                 encrypted: 'true',
                 secure: true,
                 httpOnly: true,
-                expires: 0,
+                expires: new Date(0).toUTCString(),
                 sameSite: 'None',
                 path: '/'
             })
