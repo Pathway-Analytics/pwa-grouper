@@ -1,6 +1,7 @@
 <script lang='ts'>
 import { onMount } from 'svelte';
 import { lookUp } from '$lib/migrate/04_adminAreas';
+import { env } from '$env/dynamic/public'
 import { 
   Table, TableHead, TableHeadCell,
   TableBody,  TableBodyRow, TableBodyCell,  
@@ -19,8 +20,8 @@ $: {
     }
   }
 
-async function triggerEvent() {
-  const response = await fetch('/trigger', {
+async function triggerEvent(event: string) {
+  const response = await fetch(`${env.PUBLIC_API_URL}/process/trigger/${event}`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -49,8 +50,7 @@ async function fetchData(type: string, within?: string) {
   });
 
 </script>
-
-  <Button on:click={triggerEvent}>Trigger Event</Button>
+  <Button on:click={() => triggerEvent("fetchChildren")}>Trigger Event</Button>
   <input bind:value={type} placeholder="Enter type" />
   <input bind:value={within} placeholder="Enter collection" />
   <p>Record count: {#if data}{data.length}{:else}0{/if}</p>
