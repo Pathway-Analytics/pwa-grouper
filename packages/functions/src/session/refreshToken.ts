@@ -66,7 +66,7 @@ const main = async () => {
                 // set the cookie
                 return useResponse()
                     .status(200)
-                    .cookies({
+                    .cookie({
                         key: 'auth-token',
                         value: token,
                         encrypted: true,
