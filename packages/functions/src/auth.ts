@@ -210,7 +210,8 @@ async function handleClaim(claims:Record<string,any>): Promise<UserType | undefi
                     picture: claims.picture,
                     firstName: claims.given_name,
                     lastName: claims.family_name,
-                    roles: Role.ADMIN
+                    roles: Role.ADMIN,
+                    lastLogin: new Date()
                 };
                 return await User.createUpdate(newUser);
             }

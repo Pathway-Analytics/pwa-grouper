@@ -14,4 +14,6 @@ export type UserType = {
     lastName?: string | null;
     picture?: string | null;
     roles?: string | null;
+    lastLogin?: Date | null;
+    contactTel?: string | null;
   };

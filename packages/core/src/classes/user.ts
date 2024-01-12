@@ -72,7 +72,9 @@ export class User implements UserType {
                 picture: newuser.picture,
                 firstName: newuser.firstName,
                 lastName: newuser.lastName,
-                roles: newuser.roles
+                roles: newuser.roles,
+                lastLogin: newuser.lastLogin,
+                contactTel: newuser.contactTel
             };
         
             try {
@@ -84,7 +86,9 @@ export class User implements UserType {
                     email: user.email,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    roles: user.roles
+                    roles: user.roles,
+                    lastLogin: newuser.lastLogin,
+                    contactTel: newuser.contactTel    
                 })
                 .onConflict((oc) => oc
                     .column('id')
@@ -93,7 +97,9 @@ export class User implements UserType {
                     picture: user.picture,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    roles: user.roles
+                    roles: user.roles,
+                    lastLogin: newuser.lastLogin,
+                    contactTel: newuser.contactTel    
                 })
                 )
                 .execute();
@@ -121,11 +127,12 @@ export class User implements UserType {
                 .selectFrom('users')
                 .selectAll()
             if (!!user) {
-                const { id, email, firstName, lastName } = user;
+                const { id, email, firstName, lastName, contactTel } = user;
                 if (id) query = query.where('id', 'like', `%${id}%`);
                 if (email) query = query.where('email', 'like', `%${email}%`);
                 if (firstName) query = query.where('firstName', 'like', `%${firstName}%`);
                 if (lastName) query = query.where('lastName', 'like', `%${lastName}%`);
+                if (contactTel) query = query.where('contactTel', 'like', `%${contactTel}%`)
             }
             const result: any[] = await query.execute();
             // console.log('7. --- /packages/core/users.ts User.filterListUser', `result.length: ${result.length}`);
