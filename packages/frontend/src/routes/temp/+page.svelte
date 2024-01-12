@@ -25,7 +25,7 @@ async function triggerEvent() {
     headers: {
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify({collections:["E92"], within:"England", lastItem: false})
+    body: JSON.stringify({collections:["E92"], within:"E92000001", lastItem: false})
   });
 
   if (!response.ok) {

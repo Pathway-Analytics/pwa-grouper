@@ -24,6 +24,7 @@ const eventBridge = new EventBridge();
 export async function main(event: AWSLambda.SQSEvent) {
     for (const record of event.Records) {
         // Process each record here
+        console.log('Processing record : ', record);
         const { collections, within, lastItem } = JSON.parse(record.body);
         if (collections.length !== 0) {
             try {
