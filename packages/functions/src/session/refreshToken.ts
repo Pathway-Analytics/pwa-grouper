@@ -46,7 +46,7 @@ const main = async () => {
                 'secure:', true,
                 'httpOnly:', true,
                 'expires:', date,
-                'sameSite:', 'None',
+                'sameSite:', 'Lax',
                 'path:', '/',
                 'domain:' , `.${Config.DOMAIN}`,
                 'body:', JSON.stringify(session)
@@ -60,7 +60,7 @@ const main = async () => {
                         secure: true,
                         httpOnly: true,
                         expires: date,
-                        sameSite: 'None',
+                        sameSite: 'Lax',
                         domain: `.${Config.DOMAIN}`,
                         path: '/'
                     })
