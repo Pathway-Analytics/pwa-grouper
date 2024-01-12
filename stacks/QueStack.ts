@@ -10,6 +10,9 @@ export function QueStack({ stack, app }: StackContext ) {
     consumer:{
       function: {
         handler: "packages/functions/src/adminAreaSpider/fetchChildrenHandler.main",
+        currentVersionOptions: {  
+          provisionedConcurrentExecutions: 5, // concurrent executions allowed 
+          },  
         environment: {
           STAGE: app.stage,
         },
