@@ -33,6 +33,8 @@ const main = ApiHandler(async (event) => {
             .status(200)
             .header('Content-Type', 'application/json')
             .header('Access-Control-Allow-Origin', `${process.env.SITE_URL}`)
+            .header('Access-Control-Allow-Credentials', 'true')
+            // remove both the original subdmain and the domain cookie
             .cookie({
                 key: 'auth-token',
                 value: '',

@@ -50,22 +50,10 @@ const main = async () => {
                 'domain:' , '.pathwayanalytics.com',
                 'body:', JSON.stringify(session)
                 );
-                // setting two cookies, expiring one and setting the other
-                // does not seem to work so we are call the expireToken function to clear it.
-                // and then setting setting the one
-                
-                // call api/expiredToken to clear the cookie
-                // await fetch(`${process.env.API_URL}/logout`, {
-                //     method: 'GET',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'Access-Control-Allow-Origin': `${process.env.SITE_URL}`
-                //     },
-                //     credentials: 'include'
-                // });
                 // set the cookie
                 return useResponse()
                     .status(200)
+                    // remove subdomain cookie and set domain cookie
                     .cookie({
                         key: 'auth-token',
                         value: '',

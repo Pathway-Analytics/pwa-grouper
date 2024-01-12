@@ -196,6 +196,7 @@ async function handleClaim(claims:Record<string,any>): Promise<UserType | undefi
                     roles.push('ADMIN');
                     // Convert roles array back to CSV string
                     existingUser.roles = roles.join(',');
+                    existingUser.lastLogin = new Date();
                     return await User.createUpdate(existingUser);
                 } else {
                     console.log('8. ---*** auth.ts createUpdate(newUser) Admin User already has ADMIN role: ', claims.email);
