@@ -53,7 +53,7 @@ const main = async () => {
                 // setting two cookies, expiring one and setting the other
                 // does not seem to work so we are call the expireToken function to clear it.
                 // and then setting setting the one
-                
+                console.log('5. -- logout: ', `fetch(${process.env.API_URL}/logout`);
                 // call api/expiredToken to clear the cookie
                 await fetch(`${process.env.API_URL}/logout`, {
                     method: 'GET',
@@ -64,21 +64,18 @@ const main = async () => {
                     credentials: 'include'
                 });
                 // set the cookie
-                const cookie = "auth-token=" + token + "; expires=" + date + "; secure; httpOnly; sameSite=Lax; domain=.pathwayanalytics.com; path=/";
                 return useResponse()
                     .status(200)
-                    .cookies(
-                    {
-                        cookie
-                        // key: 'auth-token',
-                        // value: token,
-                        // encrypted: true,
-                        // secure: true,
-                        // httpOnly: true,
-                        // expires: date,
-                        // sameSite: 'Lax',
-                        // domain:  '.pathwayanalytics.com',
-                        // path: '/'
+                    .cookies({
+                        key: 'auth-token',
+                        value: token,
+                        encrypted: true,
+                        secure: true,
+                        httpOnly: true,
+                        expires: date,
+                        sameSite: 'Lax',
+                        domain:  '.pathwayanalytics.com',
+                        path: '/'
                     })
                     .serialize({ body: JSON.stringify(session)});
             } else {
