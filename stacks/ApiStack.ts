@@ -72,6 +72,9 @@ export function ApiStack({ stack, app }: StackContext) {
             },
         },
         routes: {
+            "POST  /prcoess/trigger/{event}": "packages/functions/src/process/trigger.handler",
+            "GET  /process/queue/{queue}": "packages/functions/src/process/queue.handler",
+
             "POST /user":        "packages/functions/src/users/update.handler",
             "GET /user/{id}":    "packages/functions/src/users/get.handler",
             "GET /users":         "packages/functions/src/users/list.handler",
