@@ -4,9 +4,10 @@ import { lookUp } from '$lib/migrate/04_adminAreas';
 import { 
   Table, TableHead, TableHeadCell,
   TableBody,  TableBodyRow, TableBodyCell,  
-  Checkbox, TableSearch 
+  Checkbox, TableSearch, 
+  Button
 } from 'flowbite-svelte';
-
+ 
 
 let data: any = [];
 let type: string;
@@ -18,15 +19,28 @@ $: {
     }
   }
 
-  async function fetchData(type: string, within?: string) {
-    console.log('loading...', type, within);
-    try {
-      data = await lookUp(type, within);
-      console.log('Function executed successfully');
-    } catch (error) {
-      console.error('Error executing function', error);
-    }
+async function triggerEvent() {
+  const response = await fetch('/trigger', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({collections:["E92"], within:"England", lastItem: false})
+  });
+
+  if (!response.ok) {
+    console.error('Failed to trigger event', await response.text());
   }
+}
+async function fetchData(type: string, within?: string) {
+  console.log('loading...', type, within);
+  try {
+    data = await lookUp(type, within);
+    console.log('Function executed successfully');
+  } catch (error) {
+    console.error('Error executing function', error);
+  }
+}
 
   onMount(async () => {
     if (type) {
@@ -35,6 +49,8 @@ $: {
   });
 
 </script>
+
+  <Button on:click={triggerEvent}>Trigger Event</Button>
   <input bind:value={type} placeholder="Enter type" />
   <input bind:value={within} placeholder="Enter collection" />
   <p>Record count: {#if data}{data.length}{:else}0{/if}</p>
