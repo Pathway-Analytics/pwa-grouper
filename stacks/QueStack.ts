@@ -1,7 +1,7 @@
 import { Queue, StackContext, use } from "sst/constructs";
 import { EventBusStack } from "./EventBusStack";
 
-export function ProcessingQueStack({ stack, app }: StackContext ) {
+export function QueStack({ stack, app }: StackContext ) {
 
   const { eventBus } = use(EventBusStack);
 
