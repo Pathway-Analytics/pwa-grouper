@@ -10,9 +10,6 @@ export function QueStack({ stack, app }: StackContext ) {
     consumer:{
       function: {
         handler: "packages/functions/src/adminAreaSpider/fetchChildrenHandler.main",
-        currentVersionOptions: {  
-          provisionedConcurrentExecutions: 5, // concurrent executions allowed 
-          },  
         environment: {
           STAGE: app.stage,
         },
@@ -46,7 +43,7 @@ export function QueStack({ stack, app }: StackContext ) {
     "eventErrorQueue":{
       pattern: { source: [`eventErrorQueue`] },
       targets: {
-        queueEntityFetchQueueTarget: ErrorQueue,
+        eventEntityFetchQueueTarget: ErrorQueue,
       },
     },
   });
