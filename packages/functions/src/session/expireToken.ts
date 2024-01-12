@@ -43,6 +43,17 @@ const main = ApiHandler(async (event) => {
                 sameSite: 'None',
                 path: '/'
             })
+            .cookie({
+                key: 'auth-token',
+                value: '',
+                encrypted: 'true',
+                secure: true,
+                httpOnly: true,
+                expires: new Date(0),
+                sameSite: 'None',
+                domain: '.pathwayanalytics.com',
+                path: '/'
+            })
             .serialize({
                 body: JSON.stringify(session)
             });
