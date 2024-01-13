@@ -68,6 +68,7 @@ export function ApiStack({ stack, app }: StackContext) {
                     SITE_URL: site_url,
                     API_URL: api_url,
                 },
+                timeout: 30,  // 30 seconds
                 bind: [cluster],
             },
         },
