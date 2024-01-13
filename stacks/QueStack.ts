@@ -26,6 +26,8 @@ export function QueStack({ stack, app }: StackContext ) {
     },
   });
 
+  queueEntityFetchQueue.attachPermissions(["events:PutEvents"]);
+  
   const ErrorQueue = new Queue(stack, "ErrorQueue", {
     // currently dead letter queue 
     // Queue configurations
