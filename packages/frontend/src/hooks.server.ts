@@ -1,8 +1,9 @@
 import SessionManager from '$lib/classes/SessionManager';
-import {sequence} from '@sveltejs/kit/hooks';
+import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
+import { cookie } from 'sst/node/auth';
 
 // This server hook is called for every frontend request to the server
 // It checks if the request has a valid session cookie
@@ -23,22 +24,51 @@ function isPublicRoute(route:string) {
 // this is only needed for the first request after login
 const sessionManager = SessionManager.getInstance()
 
+// check if a token is in the query params if so set the cookie and clear the query param
+// this is used for the callback from the auth server
+// this is only needed for localhost 
+const checkQueryParamToken: Handle = async ({ event, resolve }) => {
+
+    // set token to query param if it exists
+    const token = await event.url.searchParams.get('token') || '';
+    console.log('0. hooks.server ');
+
+    console.log('00. hooks.server checkQueryParamToken mode token: ', env.PUBLIC_MODE, token);
+
+    if (token && env.PUBLIC_MODE === 'local') {
+        console.log('000. hooks.server checkQueryParamToken local ');
+        // set the cookie
+        event.locals.token = token;
+        // clear the query param
+        event.params.token = '';
+        // reload the page with new cookie in the header
+        const setCookie = await sessionManager.refreshSession(token);
+        console.log('1. hooks.server checkQueryParamToken setCookie: ', setCookie);
+    }
+    return resolve(event);
+}
+
+
 // a hook to authz 
 // if it exists, load the session
 // if it does not exist, redirect to login
 const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
+    console.log('0. hooks.server authHook event: ', JSON.stringify(event));
     let session: SessionType = emptySession;
     const mode = env.PUBLIC_MODE;
+    console.log('1. hooks.serverauthHook mode: ', mode);
     const isLocalHost = mode === 'local';
     const route = event.url.pathname;
     const IsProtected = !isPublicRoute(route);
-
+    console.log('2. hooks.server authHook route: ', route);
     // if the route is public
     if (!IsProtected) {
+        console.log('3. hooks.server authHook route is public: ', route);
         return resolve(event)
     } 
 
     else {
+        console.log('4. hooks.server authHook route is protected: ', route);
         // get the session 
         session = (await sessionManager.getSession()).session;
             // getSession will get session from local store if there
@@ -51,9 +81,10 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
             // but the local store is used to keep session details including expiry time.
             // so the local store is used to check if the session is valid or not.
             // calls to the api are always validated by the cookie though.
-
+        console.log('5. hooks.server authHook session isValid: ', JSON.stringify(session.isValid));
         if (session.isValid || isLocalHost) {
 
+            console.log('6. hooks.server authHook session is valid');
             // set the event.locals.session to the session
             // this is available as an alternative to the store
             // event.locals is a server side session store so it more secure than local store.
@@ -63,6 +94,7 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
         } 
         // redirect to login
         else {
+            console.log('7. hooks.serverauthHook session is not valid');
             return new Response('Redirect', {
                 status: 302,
                 headers: {
@@ -73,12 +105,4 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
     }
 }
 
-const oneHook: Handle = async ({ event, resolve }) => {
-    return resolve(event);
-}
-
-const twoHook: Handle = async ({ event, resolve }) => {
-    return resolve(event);
-}
-
-export const handle: Handle = sequence(authHook, oneHook, twoHook);
+export const handle: Handle = sequence(checkQueryParamToken, authHook);

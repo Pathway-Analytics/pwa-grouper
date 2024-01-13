@@ -119,24 +119,51 @@ class SessionManager {
      }
     
     //  an internal function to hit the /session api and return the result
-    private async refreshSession(): Promise<SessionResponseType>{
+    async refreshSession(token?: string): Promise<SessionResponseType>{
         console.log('1. -- getSession.refreshSession() calling :', `${env.PUBLIC_API_URL}/session`);
         // call /session api
-        const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
-            method: 'GET',
-            credentials: 'include',
-        });
+        console.log('1.1 - -getSession.refreshSession() mode: ', env.PUBLIC_MODE);
+        
+        let session: SessionType = emptySession;
+        let errMsg: string = '';
+        let status: number = 0;
+        // if we are in local mode, we need to add the auth header
+        if (env.PUBLIC_MODE === 'local') {
+            const authHeader = `Bearer ${token}`;
+            console.log('1.2 - -getSession.refreshSession() authHeader: ', authHeader);
+            const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `${authHeader}`,    
+                },
+                credentials: 'include',
+            });
+            // get JSON data from response
+            const session = await response.json();
+            errMsg = response.statusText;
+            status = response.status;
+        } 
 
-        // get JSON data from response
-        const session = await response.json();
+        // otherwise we can just call the api
+        else {
+            console.log('1.3 - -getSession.refreshSession() no authHeader: ');
+            const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            // get JSON data from response
+            const session = await response.json();
+            errMsg = response.statusText;
+            status = response.status;
+        };
+
         console.log('2. -- getSession.refreshSession() :', JSON.stringify(session));
 
         return {
             session: session,
-            errMsg: response.statusText,
-            status: response.status
+            errMsg: errMsg,
+            status: status
         }
-            ;
     }
 
     /**

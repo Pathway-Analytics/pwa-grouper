@@ -2,7 +2,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context
 import { useSession } from "sst/node/auth"
 import { SessionUserType, emptySession, type SessionTokenType } from '@pwa-grouper/core/types/session';
 import type { RoleType } from '@pwa-grouper/core/types/role';
-import { useResponse, useMethod, useJsonBody, usePath, useCookie } from 'sst/node/api';
+import { useResponse, useMethod, useJsonBody, usePath, useCookie, useQueryParam, usePathParam } from 'sst/node/api';
 
 type LambdaHandler = (event: APIGatewayProxyEventV2, context: Context) => Promise<APIGatewayProxyStructuredResultV2>;
 
@@ -54,8 +54,9 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
       }
 
       console.log('6. -- authzHandler session looks good:', JSON.stringify(session));
+  
       return await handler(event, context);
-      
+
     } catch (error) {
       console.log('6. -- authzHandler error: ', JSON.stringify(error));
 

@@ -2,6 +2,7 @@
 import { onMount } from 'svelte';
 import { lookUp } from '$lib/migrate/04_adminAreas';
 import { env } from '$env/dynamic/public'
+import { page } from '$app/stores';
 import { 
   Table, TableHead, TableHeadCell,
   TableBody,  TableBodyRow, TableBodyCell,  
@@ -9,7 +10,6 @@ import {
   Button
 } from 'flowbite-svelte';
  
-
 let data: any = [];
 let type: string;
 let within: string;
@@ -52,6 +52,10 @@ async function fetchData(type: string, within?: string) {
   });
 
 </script>
+  {#if $page.data.session}
+    <p>Session: {$page.data.session.user.email}</p>
+  {/if}
+  
   <Button on:click={() => triggerEvent("fetchChildren")}>Trigger Event</Button>
   <input bind:value={type} placeholder="Enter type" />
   <input bind:value={within} placeholder="Enter collection" />

@@ -154,7 +154,7 @@ function getSessionCookies (userId: string):{
             // expiresIn: 60 * 60 * 24 * 1000, // 1 day
         },
         // redirect to a Frontend page where the session is set in localstorage via hooks.client.ts
-        redirect: `${Config.SITE_URL}/session`
+        redirect: `${Config.SITE_URL}/dashboard`
     };
 }
 
