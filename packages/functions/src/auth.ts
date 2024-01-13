@@ -111,11 +111,11 @@ export const handler = AuthHandler({
                     if (Config.STAGE !== 'prod' && Config.STAGE !== 'dev' ) {
                         console.log('11. authhandler magiclink onSuccess using sessionParams, mode is: ', Config.STAGE);
                         const params = getSessionParameter(authUser.id || '');
+                        const newSession = Session.parameter(params);
                         return Session.parameter(params);
                     } else {
                         console.log('12. authhandler magiclink onSuccess using sessionCookie, mode is: ', Config.STAGE);
                         const cookies = getSessionCookies(authUser.id || '');
-
                         return Session.cookie(cookies);
                     }
                     // decide whether to use cookies or params for session management 

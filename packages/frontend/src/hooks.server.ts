@@ -4,6 +4,7 @@ import type { Handle } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
 import { cookie } from 'sst/node/auth';
+import { Config } from 'sst/node/config';
 
 // This server hook is called for every frontend request to the server
 // It checks if the request has a valid session cookie
@@ -36,6 +37,12 @@ const checkQueryParamToken: Handle = async ({ event, resolve }) => {
     console.log('00. hooks.server checkQueryParamToken mode token: ', env.PUBLIC_MODE, token);
 
     if (token && env.PUBLIC_MODE === 'local') {
+        // make sure credentials are being sent...
+        const resource = `${Config.API_URL}/session`
+        event.fetch(resource, {
+            credentials: 'include'
+        });   
+    
         console.log('000. hooks.server checkQueryParamToken local ');
         // set the cookie
         event.locals.token = token;
@@ -47,7 +54,6 @@ const checkQueryParamToken: Handle = async ({ event, resolve }) => {
     }
     return resolve(event);
 }
-
 
 // a hook to authz 
 // if it exists, load the session
@@ -105,4 +111,4 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
     }
 }
 
-export const handle: Handle = sequence(checkQueryParamToken, authHook);
+export const handle: Handle = sequence( checkQueryParamToken, authHook);
