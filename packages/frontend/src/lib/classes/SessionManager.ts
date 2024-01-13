@@ -1,7 +1,7 @@
 // /packages/frontend/src/classes/SessionManager.ts
 import { writable } from 'svelte/store';
-import type { SessionType, SessionResponseType } from '@sst-starter3/core/types/session';
-import  { emptySession, SessionUserType as SessionUser } from '@sst-starter3/core/types/session';
+import type { SessionType, SessionResponseType } from '@pwa-grouper/core/types/session';
+import  { emptySession, SessionUserType as SessionUser } from '@pwa-grouper/core/types/session';
 import { get } from 'svelte/store';
 import { env } from "$env/dynamic/public";
 
@@ -119,7 +119,7 @@ class SessionManager {
      }
     
     //  an internal function to hit the /session api and return the result
-    async refreshSession(): Promise<SessionResponseType>{
+    private async refreshSession(): Promise<SessionResponseType>{
         console.log('1. -- getSession.refreshSession() calling :', `${env.PUBLIC_API_URL}/session`);
         // call /session api
         const response = await fetch(`${env.PUBLIC_API_URL}/session`, {

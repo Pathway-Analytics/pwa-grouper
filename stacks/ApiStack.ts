@@ -67,6 +67,7 @@ export function ApiStack({ stack, app }: StackContext) {
                 environment: {
                     SITE_URL: site_url,
                     API_URL: api_url,
+                    MODE: app.local? 'local': app.mode,
                 },
                 timeout: 30,  // 30 seconds
                 bind: [cluster],

@@ -48,25 +48,35 @@ export const handler = AuthHandler({
 
         onSuccess: async (tokenset) => {
             const claims = tokenset.claims();
-            console.log('0. onSuccess -- tokenset.claims: ', JSON.stringify(tokenset.claims(), null, 4));
+            console.log('1. authhandler google onSuccess -- tokenset.claims: ', JSON.stringify(tokenset.claims(), null, 4));
             const authUser = await handleClaim(claims);
             if(authUser) {
-                const params = getSessionParameter(authUser.id || '');
-                const cookies = getSessionCookies(authUser.id || '');
-                // return Session.parameter(params);
-                return Session.cookie(cookies);
+                // if we are in localhost mode then use session parameters
+                if (Config.STAGE !== 'prod' && Config.STAGE !== 'dev' ) {
+                    console.log('2. authhandler google using sessionParams, mode is: ', Config.STAGE);
+                    const params = getSessionParameter(authUser.id || '');
+                    return Session.parameter(params);
+                } else {
+                    console.log('3. authhandler google using sessionCookie, mode is: ', Config.STAGE);
+                    const cookies = getSessionCookies(authUser.id || '');
+                    return Session.cookie(cookies);
+                }
             } else {
+                console.log('4. authhandler google user not found')
+
                 return {
                     statusCode: 403,
-                    body: JSON.stringify({ 'Authentication Error': "Credentials not valid" }),
+                    body: JSON.stringify({ 'Authentication google Error': "Credentials not valid" }),
                 };
             }
-        }
+        },
     
     }),
         link: LinkAdapter({
 
             onLink: async (link, claims) => {
+                console.log('6. authhandler magiclink onLink')
+
                 // swap out the domain in the link for the api domain so we hide the aws api gateway url
                 // we need to do this for secure cookies to work
                 link = link.replace(Config.AWS_API_URL, Config.API_URL);
@@ -79,26 +89,32 @@ export const handler = AuthHandler({
             },
 
             onSuccess: async (tokenset) => {
-                console.log('1. onSuccess -- tokenset', tokenset);
+                console.log('7. authhandler magiclink onSuccess(tokenset): ' , JSON.stringify(tokenset, null, 4));
                 const claims: Record<string, any> = tokenset;
-                console.log('2. onSuccess -- claims', claims);
+                console.log('8. authhandler magiclink onSuccess claims: ' , JSON.stringify(claims, null, 4));
                 const authUser: UserType | undefined = await handleClaim(claims);
                 // take the authUser.id and return a session parameter
-                console.log('3. onSuccess -- authUser', authUser);
+                console.log('9. authhandler magiclink onSuccess authUser: ', authUser);
                 if (authUser?.id !== undefined) {
-                    console.log('4. onSuccess -- authUser.id gettingSessParams authUser.id', authUser.id);
-                    const params = getSessionParameter(authUser.id || '');
-                    const cookies = getSessionCookies(authUser.id || '');
-                    console.log('5. onSuccess -- authUser.id gettingCookies', cookies);
+                    console.log('10. authhandler magiclink onSuccess  authUser.id', authUser.id);
+                    if (Config.STAGE !== 'prod' && Config.STAGE !== 'dev' ) {
+                        console.log('11. authhandler magiclink onSuccess using sessionParams, mode is: ', Config.STAGE);
+                        const params = getSessionParameter(authUser.id || '');
+                        return Session.parameter(params);
+                    } else {
+                        console.log('12. authhandler magiclink onSuccess using sessionCookie, mode is: ', Config.STAGE);
+                        const cookies = getSessionCookies(authUser.id || '');
+
+                        return Session.cookie(cookies);
+                    }
                     // decide whether to use cookies or params for session management 
                     // https://docs.sst.dev/auth#cookies
                     // if using cookie: set cors, requests must use 'include' for credentials
                     // this only sets the cookie for the api domain
                     // to setting the cookie in the site domain needs to done on the site server
                     // hooks.
-                    return Session.cookie(cookies);
-                    // return Session.parameter(params);
                 } else {
+                    console.log('13. authhandler magiclink onSuccess authUser not found')
                     return {
                         statusCode: 403,
                         body: JSON.stringify({ 'Authentication Error': "Credentials not valid" }),
@@ -107,6 +123,7 @@ export const handler = AuthHandler({
             },
             
             onError: async () => {
+                console.log('14. authhandler MagicLink onError')
                 return {
                     statusCode: 500,
                     body: JSON.stringify({ 'Link message': "An error occurred" }),
@@ -175,7 +192,7 @@ function getSessionParameter (userId: string):{
 // else ignore
 async function handleClaim(claims:Record<string,any>): Promise<UserType | undefined> {
 
-    console.log('6. ---*** auth.ts handleClaim claims', claims);
+    console.log('14. authhandler handleClaim claims: ', claims);
     const adminEmail:string = Config.ADMIN_USER_EMAIL || '';
     const selfReg:boolean = Boolean(Config.SELF_REG) || false;
 
@@ -184,27 +201,27 @@ async function handleClaim(claims:Record<string,any>): Promise<UserType | undefi
         // is this an admin user?
         if (adminEmail === claims.email) {
             // check if user exists
-            console.log('7. ---*** auth.ts createUpdate(newUser) Admin User: ', claims.email);
+            console.log('15. authhandler handleClaim createUpdate(newUser) Admin User: ', claims.email);
             if (existingUser.id) {
-                console.log('7a. ---*** auth.ts existing User: ', JSON.stringify(existingUser));
+                console.log('16. authhandler handleClaim  existing User: ', JSON.stringify(existingUser));
                 // Check if user has ADMIN role
                 // Convert roles CSV string to array
                 let roles = existingUser.roles ? existingUser.roles.split(',') : [];
                 // Add 'ADMIN' to roles array if it's not already there
                 if (!roles.includes('ADMIN')) {
-                    console.log('7b. ---*** auth.ts check roles : ', existingUser.roles);
+                    console.log('17. authhandler handleClaim  check roles : ', existingUser.roles);
                     roles.push('ADMIN');
                     // Convert roles array back to CSV string
                     existingUser.roles = roles.join(',');
                     existingUser.lastLogin = new Date();
                     return await User.createUpdate(existingUser);
                 } else {
-                    console.log('8. ---*** auth.ts createUpdate(newUser) Admin User already has ADMIN role: ', claims.email);
+                    console.log('18. authhandler handleClaim createUpdate(newUser) Admin User already has ADMIN role: ', claims.email);
                     return existingUser;
                 }
             } else {
                 // add new user with ADMIN role
-                console.log('9. ---*** auth.ts createUpdate(newUser) create new Admin user: ', claims.email);
+                console.log('19. authhandler handleClaim createUpdate(newUser) create new Admin user: ', claims.email);
                 const newUser: UserType = {
                     id: uuidv4(),
                     email: claims.email as string,
@@ -231,18 +248,18 @@ async function handleClaim(claims:Record<string,any>): Promise<UserType | undefi
                     roles: '',
                     lastLogin: new Date()
                 };
-                console.log('10. ---*** auth.ts createUpdate(newUser) : ', newUser);
+                console.log('20. authhandler handleClaim createUpdate(newUser) : ', newUser);
                 return await User.createUpdate(newUser);
             }
         // Does the user exist already?
         } else {
             if (!existingUser) {
-                console.log('11. ---*** auth.ts handleClaim error user not found', existingUser);
+                console.log('21. authhandler handleClaim error user not found', existingUser);
             } 
             return existingUser;
         }
     } else {
-        console.log('12. ---*** auth.ts handleClaim error claims.email not found', claims);
+        console.log('22. authhandler handleClaim error claims.email not found', claims);
         return undefined;
     }
 }

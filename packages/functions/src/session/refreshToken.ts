@@ -5,8 +5,15 @@ import type { SessionType } from '@pwa-grouper/core/types/session';
 import { SessionUserType } from '@pwa-grouper/core/types/session';
 import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
+// This function check for the original cookie posted on api.mystage-myapp.mydomain.com
+// and replaces it with a new cookie on .mydomain.com with sameSite set to Lax
+// This allows the cookie to be used on the frontend site at mystage-myapp.mydomain.com
+// and the backend api.mystage-myapp.mydomain.com
+// If the original cookie but the .mydomain.com cookie is found instead
+// the cookie is reffreshed with a new expiration date
+
 const main = async () => {
-    console.log('0. -- refreshToken token:', JSON.stringify(useCookie('auth-token')));
+    console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );
     const token = useCookie('auth-token');
     console.log('1. -- refreshToken token:', JSON.stringify(token));
     interface DecodedToken {
@@ -24,12 +31,12 @@ const main = async () => {
 
     try {
         if (!!token) {
-            console.log('2. -- refreshToken token:', JSON.stringify(token));
+            console.log('2. -- decoding session...');
             let decodedToken: DecodedToken = useSession();
             console.log('3. -- refreshToken decodedToken:', JSON.stringify(decodedToken));
 
             if (decodedToken.type !== SessionUserType.PUBLIC) {
-                console.log('4. -- refreshToken decodedToken.type !== public:', JSON.stringify(decodedToken.type));
+                console.log('4. -- refreshToken looks like the session is NOT public');
                 session.sessionUser = decodedToken.type;
                 session.iat = decodedToken.iat;
                 session.exp = Math.floor(Date.now() / 1000) + 3600;
@@ -37,23 +44,11 @@ const main = async () => {
                 session.isValid = true;
 
                 let date = new Date(session.exp * 1000);
-                console.log('5. -- refreshToken session data{}:', JSON.stringify(session));
-                console.log('5. -- refreshToken Response:',
-                'key:', 'auth-token',
-                'value:', token,
-                'encrypted:', true,
-                'secure:', true,
-                'httpOnly:', true,
-                'expires:', date,
-                'sameSite:', 'Lax',
-                'path:', '/',
-                'domain:' , '.pathwayanalytics.com',
-                'body:', JSON.stringify(session)
-                );
+                console.log('5. -- refreshToken setting expiry to ',date);
                 // set the cookie
                 return useResponse()
                     .status(200)
-                    // remove subdomain cookie and set domain cookie
+                    // remove the original cookie if it is still there
                     .cookie({
                         key: 'auth-token',
                         value: '',
@@ -63,7 +58,9 @@ const main = async () => {
                         expires: new Date(0),
                         sameSite: 'none',
                         path: '/'
-                    }).cookie({
+                    })
+                    //  and set the new or refresh the cookie for the domain
+                    .cookie({
                         key: 'auth-token',
                         value: token,
                         encrypted: true,
@@ -74,9 +71,11 @@ const main = async () => {
                         domain:  '.pathwayanalytics.com',
                         path: '/'
                     })
+                    // add the session details to the response body
+                    // so we dont have to decode the token on the frontend
                     .serialize({ body: JSON.stringify(session)});
             } else {
-                console.log('6. -- refreshToken decodedToken.type == public:', JSON.stringify(session));
+                console.log('6. -- refreshToken oops, PUBLIC session details: ', JSON.stringify(session));
                 return useResponse()
                     .status(200)
                     .serialize({ body: JSON.stringify(session) });
