@@ -47,6 +47,7 @@ export function FrontendStack({ stack, app }: StackContext) {
             PUBLIC_ADMIN_USER_ROLE: process.env.ADMIN_USER_ROLE || '',
             PUBLIC_ADMIN_USER_EMAIL: process.env.ADMIN_USER_EMAIL || '',
         },
+        timeout: 30,
     });
 
     // now we have it, add the site url env. variable
