@@ -34,8 +34,6 @@ export function EventBusStack({ stack, app }: StackContext) {
     },
   });
 
-  eventBus.attachPermissions(["events:PutEvents"]);
-
   stack.addOutputs({
     EventBusName: eventBus.eventBusName,    
   });

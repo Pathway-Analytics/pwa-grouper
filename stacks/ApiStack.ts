@@ -74,6 +74,8 @@ export function ApiStack({ stack, app }: StackContext) {
         routes: {
             "POST  /process/trigger/{event}": "packages/functions/src/process/trigger.handler",
             "GET  /process/queue/{queue}": "packages/functions/src/process/queue.handler",
+            // add   eventBus.attachPermissions(["events:PutEvents"]); to the route function
+            
 
             "POST /user":        "packages/functions/src/users/update.handler",
             "GET /user/{id}":    "packages/functions/src/users/get.handler",
@@ -95,6 +97,9 @@ export function ApiStack({ stack, app }: StackContext) {
         },
 });
     
+    // Attach permissions for eventBus
+    api.attachPermissions(["events:PutEvents"]);  
+
     // Show the resource info in the output
     stack.addOutputs({
         ApiEndpoint: api_url,
