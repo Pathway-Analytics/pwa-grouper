@@ -62,7 +62,7 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
     const IsProtected = !isPublicRoute(route);
     console.log('2. hooks.server authHook route: ', route);
     // if the route is public
-    if (!IsProtected) {
+    if (!IsProtected || isLocalHost) {
         console.log('3. hooks.server authHook route is public: ', route);
         return resolve(event)
     } 
