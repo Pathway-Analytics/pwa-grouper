@@ -25,8 +25,9 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
       console.log('2. -- authzHandler session found: ', JSON.stringify(session));  
   
       // ignore if the path is /session 
+      console.log('3. -- authzHandler session path: ', JSON.stringify(usePath()));
       if (!session || usePath().includes('/session')) {
-        console.log('3. -- authzHandler session path: ', JSON.stringify(usePath()));
+        console.log('3. -- authzHandler ignoreing the authzHandler for the /session path: ');
 
         return await handler(event, context);
 
