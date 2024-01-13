@@ -15,6 +15,8 @@
         firstName: '',
         lastName: '',
         picture: '',
+        lastLogin: new Date(),
+        contactTel: ''
     };
     let roles: RoleType[] = [];
     type ExtendedUser = UserType & {
@@ -132,6 +134,8 @@
         <TableHeadCell>First Name</TableHeadCell>
         <TableHeadCell>Last Name</TableHeadCell>
         <TableHeadCell>Picture</TableHeadCell>
+        <TableHeadCell>Last Login</TableHeadCell>
+        <TableHeadCell>Tel</TableHeadCell>
         <TableHeadCell>Roles</TableHeadCell>
         <TableHeadCell></TableHeadCell>
     </TableHead>
@@ -154,6 +158,7 @@
                             <TableBodyCell class='px-2 py-0 m-0'><Input class='' id='email' size="sm" bind:value={localUser.email} /></TableBodyCell>
                             <TableBodyCell class='px-2 py-0'><Input class='' id='firstName' size="sm" bind:value={localUser.firstName} /></TableBodyCell>
                             <TableBodyCell class='px-2 py-0'><Input class='' id='lastName' size="sm" bind:value={localUser.lastName} /></TableBodyCell>
+                            <TableBodyCell class='px-2 py-0'><Input class='' id='contactTel' size="sm" bind:value={localUser.contactTel} /></TableBodyCell>
                             <TableBodyCell class='px-2 py-0'><Input class='' id='roles' size="sm" bind:value={localUser.picture} /></TableBodyCell>
                         {:else}
                             <TableBodyCell class='px-2 py-0'>{extUser.id}</TableBodyCell>
@@ -161,6 +166,8 @@
                             <TableBodyCell class='px-2 py-0'>{extUser.firstName}</TableBodyCell>
                             <TableBodyCell class='px-2 py-0'>{extUser.lastName}</TableBodyCell>
                             <TableBodyCell class='px-2 py-0'>{extUser.picture}</TableBodyCell>
+                            <TableBodyCell class='px-2 py-0'>{extUser.lastLogin}</TableBodyCell>
+                            <TableBodyCell class='px-2 py-0'>{extUser.contactTel}</TableBodyCell>
                         {/if}
                         <TableBodyCell class='px-2 py-0'>{extUser.roles}</TableBodyCell>
                         <TableBodyCell class='px-2 py-0'>
