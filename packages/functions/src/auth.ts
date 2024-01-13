@@ -80,12 +80,23 @@ export const handler = AuthHandler({
                 // swap out the domain in the link for the api domain so we hide the aws api gateway url
                 // we need to do this for secure cookies to work
                 link = link.replace(Config.AWS_API_URL, Config.API_URL);
-                const email = await composeEmail(claims.email, link);
-                const sentEmail = await sendEmail(email.recipient, email.sender, email.subject, email.textBody, email.htmlBody);
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ message: "Link sent successfully" }),
-                };
+
+                const emailmsg = await composeEmail(claims.email, link);
+                const userExists = await User.getByIdOrEmail(claims.email);
+                if (Config.SELF_REG === 'true' || userExists || Config.ADMIN_USER_EMAIL === claims.email) {
+                    const sentEmail = await sendEmail(emailmsg.recipient, emailmsg.sender, emailmsg.subject, emailmsg.textBody, emailmsg.htmlBody);
+                    console.log('6. authhandler magiclink onLink sentEmail: ', sentEmail);
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify({ message: "Link sent successfully" }),
+                    };
+                } else {
+                    console.log('6. authhandler magiclink onLink error: ', 'SELF_REG is not enabled', ` request made by: ${claims.email}`);
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify({ message: "goodluck..." }),
+                    };
+                }
             },
 
             onSuccess: async (tokenset) => {
