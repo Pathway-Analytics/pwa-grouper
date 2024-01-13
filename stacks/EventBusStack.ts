@@ -4,6 +4,7 @@ export function EventBusStack({ stack, app }: StackContext) {
   const stage = stack.stage;
 
   const eventBus = new EventBus(stack, "DataEventBus", {
+    
     rules: {
 
       // // Queue for eventEntityFetch added in ProcessingQueStack.ts
@@ -32,6 +33,8 @@ export function EventBusStack({ stack, app }: StackContext) {
       },
     },
   });
+
+  eventBus.attachPermissions("*"),
 
   stack.addOutputs({
     EventBusName: eventBus.eventBusName,    
