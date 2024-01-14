@@ -191,7 +191,7 @@ function getSessionParameter (userId: string):{
             // expiresIn: 60 * 60 * 24 * 1000, // 1 day
         },
         // redirect to frontend session page where the session is set in localstorage 
-        redirect: `${Config.SITE_URL}/session`
+        redirect: `${Config.SITE_URL}/admin/users`
     };
 }
 
