@@ -62,40 +62,6 @@ const test: Handle = async ({ event, resolve }) => {
 
 }
 
-// check if a token is in the query params if so set the cookie and clear the query param
-// this is used for the callback from the auth server
-// this is only needed for localhost 
-const checkQueryParamToken: Handle = async ({ event, resolve }) => {
-
-    // console log the request in a readable format
-    console.log( ' hooks isCallbackRequest request: ', JSON.stringify(event.request, null, 2) );
-     const requestHost = event.request.referrer
-
-    // set token to query param if it exists
-    const token = await event.url.searchParams.get('token') || '';
-    console.log('0. hooks.server ');
-
-    console.log('00. hooks.server checkQueryParamToken mode token: ', env.PUBLIC_MODE, token);
-
-    if (token && env.PUBLIC_MODE === 'local') {
-        // make sure credentials are being sent...
-        const resource = `${env.PUBLIC_API_URL}/session`
-        event.fetch(resource, {
-            credentials: 'include'
-        });   
-    
-        console.log('000. hooks.server checkQueryParamToken local ');
-        // set the cookie
-        event.locals.token = token;
-        // clear the query param
-        event.params.token = '';
-        // reload the page with new cookie in the header
-        const setCookie = await sessionManager.refreshSession(token);
-        console.log('1. hooks.server checkQueryParamToken setCookie: ', setCookie);
-    }
-    return resolve(event);
-}
-
 // a hook to authz 
 // if it exists, load the session
 // if it does not exist, redirect to login
