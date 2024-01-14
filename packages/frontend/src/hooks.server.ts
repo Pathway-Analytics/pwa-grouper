@@ -154,4 +154,4 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
 }
 
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
-export const handle: Handle = sequence();
+export const handle: Handle = sequence(authHook);
