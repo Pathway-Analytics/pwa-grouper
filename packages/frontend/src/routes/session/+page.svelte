@@ -2,8 +2,10 @@
 	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
     import type { SessionType } from '@pwa-grouper/core/types/session';
+    import SessionManager from '$lib/classes/SessionManager';
 
     let session: SessionType;
+    let sessionManager =  SessionManager.getInstance();
 
     async function handleGetUsers() {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
@@ -18,8 +20,10 @@
     }
 
     onMount(async () => {
-        await handleGetUsers();
+        // await handleGetUsers();
+        session = (await sessionManager.refreshSession()).session;
         handleRedirectToDashboard();
+
     });
 
 
