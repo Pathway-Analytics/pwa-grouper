@@ -9,7 +9,7 @@
     import { onMount } from 'svelte';
 
     let user: UserType = {
-        id: '',
+        id: '' ,
         email: '',
         roles: '',
         firstName: '',
@@ -116,6 +116,14 @@
         users = [...users];
     }
 
+    // function to add an empty new user to the users array
+    // and set the isEditing flag to true
+    function handleNewUser() {
+        newUser.isEditing = true;
+        users = [newUser, ...users];
+    }
+
+
 </script>
 
 <h1>Users</h1>
@@ -124,7 +132,7 @@
 <!-- https://flowbite.com/docs/components/pagination/ -->
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-<button class="btn btn-primary" on:click={() => handleUpdateUser()}>Add User</button>
+<button class="btn btn-primary" on:click={() => handleNewUser()}>Add User</button>
 
 <Table items={users} striped={true} class="divide-y">
     <TableHead>
