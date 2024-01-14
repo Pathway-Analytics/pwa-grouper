@@ -15,7 +15,10 @@
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
         { credentials: 'include' }
         );
-        return res.json();
+
+        console.log('sessionClientFetch', res);
+        return res.body;
+        
     }
 
     // function redirect to dashboard 
@@ -26,8 +29,10 @@
     onMount(async () => {
         // await handleGetUsers();
         // sessionRefreshSession = (await sessionManager.refreshSession()).session;
-        sessionClientFetch = await handleFetchSession();
+        // sessionClientFetch = match the json element sessionType returned from the fetch
+        sessionClientFetch = (await sessionManager.refreshSession()).session;
         sessionGetSession = (await sessionManager.getSession()).session;
+
         // handleRedirectToDashboard();
     });
 
