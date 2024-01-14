@@ -12,9 +12,9 @@
     let sessionClientFetch: SessionType;
     let sessionLocals: SessionType;
     
-    export let data;
+    export let data: any;
     
-    let sessionServerFetch = { data } //data 
+    let sessionServerFetch =  data.serverFetchSession  //data 
 
     async function handleFetchSession() {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
@@ -53,7 +53,7 @@
 </script>
 
 <div class="scrollable">
-    <p>Locals: page.data.session</p>
+    <p>Locals: page.data</p>
     {#await $page.data}
         <p>loading...</p>
     {:then session}
@@ -64,7 +64,7 @@
         {/if}
     {/await}
 
-    <p>Session Manager: getSession</p>
+    <p>Client Side Session Manager: getSession</p>
     {#await sessionGetSession}
         <p>loading...</p>
     {:then session}
@@ -87,7 +87,7 @@
         {/if}
     {/await} -->
 
-    <p>Client Fetch Session</p>
+    <p>Client Side Fetch Session direct from api/session</p>
     {#await sessionClientFetch}
         <p>loading...</p>
     {:then session}

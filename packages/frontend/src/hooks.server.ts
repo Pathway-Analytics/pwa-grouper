@@ -88,8 +88,9 @@ const test: Handle = async ({ event, resolve }) => {
 
     // set the event.locals.session to the session
     // this is available as an alternative to the store
-    event.locals.session = session;
     
+    event.locals.serverSession = session;
+    console.log('3. hooks.server test event.locals.serverSession set to: ', JSON.stringify(event.locals.serverSession, null, 2));
     return resolve(event);
 
 }

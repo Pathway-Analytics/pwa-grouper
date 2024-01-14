@@ -5,7 +5,7 @@ export const load: LayoutServerLoad = async (
 ) => {
     return {
         
-            session: locals.session
+            session: locals.serverSession
         
     };
 };
