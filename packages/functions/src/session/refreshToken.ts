@@ -47,34 +47,82 @@ const main = async () => {
                 let date = new Date(session.exp * 1000);
                 console.log('5. -- refreshToken, USER session details: ', JSON.stringify(session, null, 2));
                 // set the cookie
-                return useResponse()
-                    .status(200)
-                    // remove the original cookie if it is still there
-                    .cookie({
-                        key: 'auth-token',
-                        value: '',
-                        encrypted: true,
-                        secure: true,
-                        httpOnly: true,
-                        expires: new Date(0),
-                        sameSite: 'none',
-                        path: '/'
-                    })
-                    //  and set the new or refresh the cookie for the domain
-                    .cookie({
-                        key: 'auth-token',
-                        value: token,
-                        encrypted: true,
-                        secure: true,
-                        httpOnly: true,
-                        expires: date,
-                        sameSite: 'Lax',
-                        domain:  '.pathwayanalytics.com',
-                        path: '/'
-                    })
-                    // add the session details to the response body
-                    // so we dont have to decode the token on the frontend
-                    .serialize({ body: session });
+                // try differnt approach
+                const responseData = {
+                    message: "cooklie set",
+                    data: {
+                        session
+                    }
+                };
+                const cookieOld = `auth-token=${token}; Path=/; HttpOnly; Secure; SameSite=None;`;
+                const cookieNew = `auth-token=${token}1; Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
+                // Return a successful response
+                return {
+                    statusCode: 200,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    cookies: [cookieOld, cookieNew],
+                    body: JSON.stringify(responseData)
+                };
+
+                // return useResponse()
+                //     .status(200)
+                //     // remove the original cookie if it is still there
+                //     .cookies([{
+                //         key: 'auth-token',
+                //         value: '',
+                //         encrypted: true,
+                //         secure: true,
+                //         httpOnly: true,
+                //         expires: new Date(0),
+                //         sameSite: 'none',
+                //         path: '/'
+                //     },
+                //     //  and set the new or refresh the cookie for the domain
+                //     {
+                //         key: 'auth-token',
+                //         value: '',
+                //         encrypted: true,
+                //         secure: true,
+                //         httpOnly: true,
+                //         expires: new Date(0),
+                //         sameSite: 'Lax',
+                //         domain:  '.pathwayanalytics.com',
+                //         path: '/'
+                //     }])
+                //     // add the session details to the response body
+                //     .serialize({ body: session });
+                    
+                // 
+                // return useResponse()
+                //     .status(200)
+                //     // remove the original cookie if it is still there
+                //     .cookie({
+                //         key: 'auth-token',
+                //         value: '',
+                //         encrypted: true,
+                //         secure: true,
+                //         httpOnly: true,
+                //         expires: new Date(0),
+                //         sameSite: 'none',
+                //         path: '/'
+                //     })
+                //     //  and set the new or refresh the cookie for the domain
+                //     .cookie({
+                //         key: 'auth-token',
+                //         value: token,
+                //         encrypted: true,
+                //         secure: true,
+                //         httpOnly: true,
+                //         expires: date,
+                //         sameSite: 'Lax',
+                //         domain:  '.pathwayanalytics.com',
+                //         path: '/'
+                //     })
+                //     // add the session details to the response body
+                //     // so we dont have to decode the token on the frontend
+                //     .serialize({ body: session });
 
             } else {
                 console.log('6. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));

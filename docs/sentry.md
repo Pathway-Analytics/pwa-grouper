@@ -73,3 +73,18 @@ export default {
       // .stack(SentryStack)
   }
 } satisfies SSTConfig;
+
+
+Try using Layers
+
+https://docs.sst.dev/constructs/App#adddefaultfunctionlayers
+addDefaultFunctionLayers
+
+here's how you can deploy Sentry on your SST Lambda functions and SST SvelteKit project:
+
+For SST Lambda functions:
+
+Import the Lambda layer using the LayerVersion construct and set it by calling addDefaultFunctionLayers.
+Set the NODE_OPTIONS, SENTRY_DSN, and SENTRY_TRACES_SAMPLE_RATE environment variables with the addDefaultFunctionEnv method.
+For more information, you can read how this integration works and the SST docs.
+
