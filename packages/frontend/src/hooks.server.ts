@@ -30,9 +30,13 @@ function isCallbackRequest(requestHost: string): boolean{
 const sessionManager = SessionManager.getInstance()
 
 // this is applied to every fetch throughout the app...
-export async function handleFetch({ event, request, fetch }) {
+// server side pages do not have access direct access to cookies in the browser
+// any cookies needed in a server side page request must be forwarded in the request
+export default async function handleFetch({ event, request, fetch }) {
+    console.log('0. hooks.server handleFetch started...') ;
 	if (request.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
 
+        console.log('0. hooks.server handleFetch adding ', `${event.request.headers.get('auth-token')}`) ;
 		request.headers.set('auth-token', event.request.headers.get('auth-token') || '');
 	}
 
