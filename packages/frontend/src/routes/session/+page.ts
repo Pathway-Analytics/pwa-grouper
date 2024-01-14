@@ -11,10 +11,10 @@ export async function load() {
         );
 
         const serverFetchSession = await res.json();
-        const serverGetSession = await sessionManager.getSession();
+        // const serverGetSession = await sessionManager.getSession();
         const exportData = {
             serverFetchSession: serverFetchSession, 
-            serverGetSession: serverGetSession
+            // serverGetSession: serverGetSession
         };
         return exportData;
 }
