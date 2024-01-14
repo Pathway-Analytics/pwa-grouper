@@ -3,12 +3,14 @@
 	import { env } from '$env/dynamic/public';
     import type { SessionType } from '@pwa-grouper/core/types/session';
     import SessionManager from '$lib/classes/SessionManager';
+    import { page } from '$app/stores';
 
     const sessionManager =  SessionManager.getInstance();
 
     let sessionGetSession: SessionType;
     // let sessionRefreshSession: SessionType;
     let sessionClientFetch: SessionType;
+    let sessionLocals: SessionType;
     
     export let data;
     
@@ -43,6 +45,7 @@
         sessionGetSession = (await sessionManager.getSession()).session;
         sessionClientFetch = (await handleFetchSession());
 
+
         // handleRedirectToDashboard();
     });
 
@@ -50,6 +53,17 @@
 </script>
 
 <div class="scrollable">
+    <p>Locals: page.data.session</p>
+    {#await $page.data.session}
+        <p>loading...</p>
+    {:then session}
+        {#if session}
+            <pre>{JSON.stringify(session, null, 2)}</pre>
+        {:else}
+            <p>waiting...</p>
+        {/if}
+    {/await}
+
     <p>Session Manager: getSession</p>
     {#await sessionGetSession}
         <p>loading...</p>

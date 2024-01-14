@@ -43,11 +43,37 @@ export default async function handleFetch({ event, request, fetch }) {
 	return fetch(request);
 }
 
+async function handleFetchSession() {
+    const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
+    { credentials: 'include' }
+    );
+    console.log('sessionClientFetch response: ', res);
+    const data = await res.json(); // parse the response body as JSON
+    let iatDate = new Date(data.data.session.iat * 1000);
+    let expDate = new Date(data.data.session.exp * 1000);
+    data.data.session = {
+        ...data.data.session,
+        iat_date: iatDate.toUTCString(),
+        exp_date: expDate.toUTCString(),
+    }
+    return data; // return the parsed body
+    
+}
+
 const test2: Handle = async ({ event, resolve }) => {
     console.log('0. hooks.server test2 event: ', JSON.stringify(event, null, 2));
 
     // const session = (await sessionManager.getSession()).session;
-    // console.log('1. hooks.server test2 session: ', JSON.stringify(session, null, 2));
+    if (event.locals.session) {
+        console.log('1. hooks.server test2 session: ', JSON.stringify(event.locals.session, null, 2));
+    } else {
+        console.log('2. hooks.server test2 session: ', 'no session');
+        const responseData = await handleFetchSession()
+        console.log('3. hooks.server test2 session: ', JSON.stringify(responseData, null, 2));
+
+        event.locals.session = responseData.data.session;
+    }
+
 
     return resolve(event);
 }
