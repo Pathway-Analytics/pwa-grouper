@@ -11,9 +11,18 @@
         );
         session = await res.json();
     }
+
+    // function redirect to dashboard 
+    function handleRedirectToDashboard() {
+        window.location.href = '/dashboard';
+    }
+
     onMount(async () => {
         await handleGetUsers();
+        handleRedirectToDashboard();
     });
+
+
 </script>
 
 {#await session}
