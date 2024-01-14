@@ -5,7 +5,7 @@
     import SessionManager from '$lib/classes/SessionManager';
 
     let sessionGetSession: SessionType;
-    let sessionRefreshSession: SessionType;
+    // let sessionRefreshSession: SessionType;
     let sessionClientFetch: SessionType;
     export let data;
     let sessionServerFetch = data 
@@ -25,7 +25,7 @@
 
     onMount(async () => {
         // await handleGetUsers();
-        sessionRefreshSession = (await sessionManager.refreshSession()).session;
+        // sessionRefreshSession = (await sessionManager.refreshSession()).session;
         sessionClientFetch = await handleFetchSession();
         sessionGetSession = (await sessionManager.getSession()).session;
         // handleRedirectToDashboard();
@@ -47,7 +47,7 @@
     {/await}
 
 
-    <p>Session Manager: refreshSession</p>
+    <!-- <p>Session Manager: refreshSession</p>
     {#await sessionRefreshSession}
         <p>loading...</p>
     {:then session}
@@ -56,7 +56,7 @@
         {:else}
             <p>no session</p>
         {/if}
-    {/await}
+    {/await} -->
 
     <p>Client Fetch Session</p>
     {#await sessionClientFetch}
