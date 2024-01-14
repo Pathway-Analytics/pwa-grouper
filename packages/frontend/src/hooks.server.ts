@@ -30,14 +30,14 @@ function isCallbackRequest(requestHost: string): boolean{
 const sessionManager = SessionManager.getInstance()
 
 // this is applied to every fetch throughout the app...
-// export async function handleFetch({ event, request, fetch }) {
-// 	if (request.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
+export async function handleFetch({ event, request, fetch }) {
+	if (request.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
 
-// 		request.headers.set('auth-token', event.request.headers.get('auth-token') || '');
-// 	}
+		request.headers.set('auth-token', event.request.headers.get('auth-token') || '');
+	}
 
-// 	return fetch(request);
-// }
+	return fetch(request);
+}
 
 const test: Handle = async ({ event, resolve }) => {
 
@@ -119,4 +119,4 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
 }
 
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
-export const handle: Handle = sequence(authHook);
+export const handle: Handle = sequence(test);
