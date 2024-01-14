@@ -51,3 +51,10 @@
         <p>no session</p>
     {/if}
 {/await}
+
+<p>
+    <a href="/dashboard">Dashboard</a>
+</p>
+<p>
+    <a href="/admin/users">users</a>
+</p>

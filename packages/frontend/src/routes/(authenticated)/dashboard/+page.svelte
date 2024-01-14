@@ -8,3 +8,12 @@
 <p>hello</p>
 {/if}
 
+<!-- link to /session  page here -->
+<p>
+    <a href="/session">Session</a>
+</p>
+<p>
+    <a href="/admin/users">users</a>
+</p>
+
+

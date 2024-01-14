@@ -196,3 +196,12 @@
     </TableBody>
 </Table>
 </div>
+
+
+<p>
+    <a href="/dashboard">Dashboard</a>
+</p>
+
+<p>
+    <a href="/session">Session</a>
+</p>
