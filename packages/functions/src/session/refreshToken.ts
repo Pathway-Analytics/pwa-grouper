@@ -13,7 +13,7 @@ import { authzHandler } from '@pwa-grouper/core/authzHandler';
 // the cookie is reffreshed with a new expiration date
 
 const main = async () => {
-    console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );
+    console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );   
     const token = useCookie('auth-token');
     console.log('1. -- refreshToken token:', JSON.stringify(token));
     interface DecodedToken {
@@ -54,8 +54,8 @@ const main = async () => {
                         session
                     }
                 };
-                const cookieOld = `auth-token=${token}; Path=/; HttpOnly; Secure; SameSite=None;`;
-                const cookieNew = `auth-token=${token}1; Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
+                const cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; Secure; SameSite=None;`;
+                const cookieNew = `auth-token=${token}; Expires=${date}, Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
                 // Return a successful response
                 return {
                     statusCode: 200,
@@ -82,11 +82,11 @@ const main = async () => {
                 //     //  and set the new or refresh the cookie for the domain
                 //     {
                 //         key: 'auth-token',
-                //         value: '',
+                //         value: `${token}`,
                 //         encrypted: true,
                 //         secure: true,
                 //         httpOnly: true,
-                //         expires: new Date(0),
+                //         expires: date,
                 //         sameSite: 'Lax',
                 //         domain:  '.pathwayanalytics.com',
                 //         path: '/'
