@@ -118,9 +118,10 @@
 
     // function to add an empty new user to the users array
     // and set the isEditing flag to true
-    function handleNewUser() {
+    async function handleNewUser() {
         newUser.isEditing = true;
         users = [newUser, ...users];
+        usersPromise = Promise.resolve(users);
     }
 
 
