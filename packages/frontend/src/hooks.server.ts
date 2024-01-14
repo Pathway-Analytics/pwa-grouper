@@ -44,7 +44,10 @@ export default async function handleFetch({ event, request, fetch }) {
 }
 
 const test2: Handle = async ({ event, resolve }) => {
-    
+    console.log('0. hooks.server test2 event: ', JSON.stringify(event, null, 2));
+
+    const session = (await sessionManager.getSession()).session;
+    console.log('1. hooks.server test2 session: ', JSON.stringify(session, null, 2));
 
     return resolve(event);
 }
