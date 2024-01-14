@@ -3,9 +3,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
-import { cookie } from 'sst/node/auth';
-import { Config } from 'sst/node/config';
-import { json } from 'stream/consumers';
+
 
 // This server hook is called for every frontend request to the server
 // It checks if the request has a valid session cookie
@@ -35,7 +33,7 @@ const test: Handle = async ({ event, resolve }) => {
 
     console.log('0. hooks.server test event: ', JSON.stringify(event, null, 2));
     console.log('0. hooks.server test now redirecting to /api/session... ');
-    const resource = `${Config.API_URL}/session`
+    const resource = `${env.PUBLIC_API_URL}/session`
     event.fetch(resource, {
         credentials: 'include'
     });   
@@ -61,7 +59,7 @@ const checkQueryParamToken: Handle = async ({ event, resolve }) => {
 
     if (token && env.PUBLIC_MODE === 'local') {
         // make sure credentials are being sent...
-        const resource = `${Config.API_URL}/session`
+        const resource = `${env.PUBLIC_API_URL}/session`
         event.fetch(resource, {
             credentials: 'include'
         });   
