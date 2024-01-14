@@ -44,20 +44,20 @@ export default async function handleFetch({ event, request, fetch }) {
 }
 
 async function handleFetchSession() {
-    const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
-    { credentials: 'include' }
-    );
-    console.log('sessionClientFetch response: ', res);
-    const data = await res.json(); // parse the response body as JSON
-    let iatDate = new Date(data.data.session.iat * 1000);
-    let expDate = new Date(data.data.session.exp * 1000);
-    data.data.session = {
-        ...data.data.session,
-        iat_date: iatDate.toUTCString(),
-        exp_date: expDate.toUTCString(),
+    try {
+        const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
+        { credentials: 'include' }
+        );
+        console.log('sessionClientFetch response: ', res);
+        const data = await res.json(); // parse the response body as JSON
+        console.log('sessionClientFetch data: ', JSON.stringify(data, null, 2));
+        
+        return data; // return the parsed body
     }
-    return data; // return the parsed body
-    
+    catch (err) {
+        console.log('sessionClientFetch error: ', err);
+        return err;
+    }    
 }
 
 const test2: Handle = async ({ event, resolve }) => {
@@ -71,7 +71,7 @@ const test2: Handle = async ({ event, resolve }) => {
         const responseData = await handleFetchSession()
         console.log('3. hooks.server test2 session: ', JSON.stringify(responseData, null, 2));
 
-        event.locals.session = responseData.data.session;
+        event.locals.session = responseData.data;
     }
 
 
