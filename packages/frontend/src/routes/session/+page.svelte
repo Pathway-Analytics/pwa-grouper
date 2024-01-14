@@ -20,7 +20,7 @@
     <p>loading...</p>
 {:then session}
     {#if session}
-        <p>session</p>
+        <pre>${JSON.stringify(session, null, 2)}</pre>
     {:else}
         <p>no session</p>
     {/if}
