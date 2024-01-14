@@ -1,6 +1,7 @@
 import SessionManager from '$lib/classes/SessionManager';
 import { sequence } from '@sveltejs/kit/hooks';
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, HandleFetch } from '@sveltejs/kit';
+
 import { env } from '$env/dynamic/public';
 import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
 
@@ -28,6 +29,15 @@ function isCallbackRequest(requestHost: string): boolean{
 // if the SessionManager is not initialized, initialize it
 // this is only needed for the first request after login
 const sessionManager = SessionManager.getInstance()
+
+// this is applied to every fetch throughout the app...
+export async function handleFetch({ event, request, fetch }) {
+	if (request.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
+		request.headers.set('cookie', event.request.headers.get('cookie') || '');
+	}
+
+	return fetch(request);
+}
 
 const test: Handle = async ({ event, resolve }) => {
 
