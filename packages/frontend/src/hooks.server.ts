@@ -46,21 +46,14 @@ export default async function handleFetch({ event, request, fetch }) {
 const test: Handle = async ({ event, resolve }) => {
 
     console.log('0. hooks.server test event: ', JSON.stringify(event, null, 2));
-    console.log('0. hooks.server test now redirecting to ', `${env.PUBLIC_API_URL}/session`);
-    const resource = `${env.PUBLIC_API_URL}/session`
+    console.log('1. hooks.server test now redirecting to ', `${env.PUBLIC_API_URL}/session`);
 
-    // 
-    const session = await fetch (resource, {
-        method: 'GET',
-        credentials: 'include'
-    });
+    const session = (await sessionManager.getSession()).session;
+    console.log('2. hooks.server test session: ', JSON.stringify(session, null, 2));
 
-    console.log('1. hooks.server test session: ', JSON.stringify(session, null, 2));
-    // redirect to /api/session
-    event.setHeaders({
-        Location: resource,
-        Credentials: 'include',
-    });
+    // set the event.locals.session to the session
+    // this is available as an alternative to the store
+    event.locals.session = session;
     
     return resolve(event);
 

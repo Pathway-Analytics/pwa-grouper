@@ -35,7 +35,12 @@ class SessionManager {
         }
         return this.instance;
     }
+
+    private updateSessionStore(session: SessionType) {
+        this.sessionStore.set(session);
+    }
     
+
     /**
      * returns the session cookie from the frontend store
      * if no session in the store gets a session from api/session
@@ -60,93 +65,69 @@ class SessionManager {
      *
      * */
      async getSession(): Promise<SessionResponseType> {
-        console.log('1. -- getSession() :');
-        let session: SessionType = emptySession;
-        
-        // check the localStore
-        const unsubscribe = this.sessionStore.subscribe(value => {
-            session = value;
-        });
-    
-        // Ensure the subscription has a chance to update localSession
-        await new Promise(resolve => setTimeout(resolve, 0));
-        console.log('2. -- getSession() localStore:', JSON.stringify(session));
-        // free up resources
-        unsubscribe();
+        console.log('1. -- sessionManager.getSession()');
 
-        console.log('3. -- getSession() localStore after unsubscribe:', JSON.stringify(session));
-    
-        // if no local session, check api for token, 
-        if (!session) {
-            console.log('4. -- getSession() !session :', JSON.stringify(session));
-            let newSession: SessionResponseType = await this.refreshSession();//await this.refreshSession();
-            newSession.errMsg = 'getSession checking new session: '+ newSession.errMsg
-            return newSession
-        }         
-        // if the the local session is public 
-        else if (session.sessionUser === SessionUser.PUBLIC) {
-            console.log('5. -- getSession() session.sessionUser === public :', JSON.stringify(session));
-            let newSession: SessionResponseType = await this.refreshSession();
-            newSession.errMsg = 'getSession refreshing session: '+ newSession.errMsg
-            return newSession
+        let session = get(this.sessionStore);
+        console.log('2. -- sessionManager.getSession() session:', JSON.stringify(session));
+
+        console.log('3. -- sessionManager.getSession() session.sessionUser === ', session.sessionUser);
+        console.log('4. -- sessionManager.getSession() session.exp - Date.now() === ', session.exp - Date.now());  
+        if (!session || session.sessionUser === SessionUser.PUBLIC || session.exp - Date.now() < this.ttlThreshold) {
+
+            console.log('5. -- sessionManager.getSession() session.sessionUser getting new session: ');
+            return await this.refreshSession();
+
         } 
 
-        // if there is a local session and ttl is near
+        // test for ttl
         else if (session.exp - Date.now() < this.ttlThreshold) {
-            console.log('5. -- getSession() session.exp - Date.now() < this.ttlThreshold :', JSON.stringify(session));
-            let newSession: SessionResponseType = await this.refreshSession();
-            newSession.errMsg = 'getSession refreshing session: '+ newSession.errMsg
-            return newSession
-        } 
-        // local session is not expired
+            console.log('6. -- sessionManager.getSession() session.exp - Date.now() < this.ttlThreshold, remaining :', session.exp - Date.now());
+            return await this.refreshSession();
+        }
+        
+        // test for expiry
         else if (session.exp > Date.now()) {
-            console.log('6. -- getSession() session.exp > Date.now() :', JSON.stringify(session));
+            console.log('7. -- sessionManager.getSession() session.exp is good, using local session');
             return {
                 session: session,
-                errMsg: 'getSession using local session: ',
+                errMsg: 'Using local session',
                 status: 200
-            }
+            };
         } 
-        // else return empty session
+        
+        // well that's it then, it officially expired
         else {
-            console.log('7. -- getSession() else :', JSON.stringify(session));
+            console.log('8. -- sessionManager.getSession() session is expired, returning empty session');
             return {
                 session: emptySession,
                 errMsg: 'Local session expired',
                 status: 401
-            }
+            };
         }
-     }
-    
-    //  an internal function to hit the /session api and return the result
-    async refreshSession(token?: string): Promise<SessionResponseType>{
-        console.log('1. -- getSession.refreshSession() calling :', `${env.PUBLIC_API_URL}/session`);
-        // call /session api
-        console.log('1.1 - -getSession.refreshSession() mode: ', env.PUBLIC_MODE);
-        
+    }
+
+    async refreshSession(token?: string): Promise<SessionResponseType> {
+        console.log('9 - sessionManager.refreshSession() mode: ', env.PUBLIC_MODE);
+
         let session: SessionType = emptySession;
         let errMsg: string = '';
         let status: number = 0;
+
         // if we are in local mode, we need to add the auth header
         if (env.PUBLIC_MODE === 'local') {
             const authHeader = `Bearer ${token}`;
-            console.log('1.2 - -getSession.refreshSession() authHeader: ', authHeader);
+            console.log('10 - sessionManager.refreshSession() authHeader: ', authHeader);
             const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `${authHeader}`,    
+                    Authorization: `${authHeader}`,    
                 },
                 credentials: 'include',
             });
-            // get JSON data from response
-            const session = await response.json();
-            errMsg = response.statusText;
-            status = response.status;
-        } 
-
-        // otherwise we can just call the api
+        }
+        // otherwise we can just hit the api
         else {
-            console.log('1.3 - -getSession.refreshSession() no authHeader: ');
+            console.log('12 - sessionManager.refreshSession() no authHeader, calling api/session: ');
             const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
                 method: 'GET',
                 credentials: 'include',
@@ -157,8 +138,20 @@ class SessionManager {
             status = response.status;
         };
 
-        console.log('2. -- getSession.refreshSession() :', JSON.stringify(session));
+        // if it is available we now have a session
+        console.log('13. -- sessionManager.getSession.refreshSession() new session:', JSON.stringify(session, null,2));
 
+        // update the store
+        if (session.isValid) {
+            console.log('14 - sessionManager.refreshSession() updating store', JSON.stringify(session, null,2));
+            this.updateSessionStore(session);
+        } else {
+            console.log('15 - sessionManager.refreshSession() session is not valid, store set to emptySession');
+            this.updateSessionStore(emptySession);
+        }
+
+        // return the session, 
+        // and update the event.locals in the hooks.server.ts
         return {
             session: session,
             errMsg: errMsg,
@@ -166,44 +159,113 @@ class SessionManager {
         }
     }
 
-    /**
-     * returns the session cookie from the frontend store
-     * if no session in the store returns empty session
-     * 
-     * @param void
-     * @returns session
-     * @example
-     * 
-     * ```typescript
-     * import { SessionManager } from '@sst-starter3/frontend/classes/SessionManager';
-     * 
-     * const sessionManager = new SessionManager();
-     * let session = sessionManager.getSessionSync();
-     * ```
-     * */
-    getSessionSync(): SessionType {
-        // iniitial local var sessionData state...
-        let sessionData: SessionType = {
-            sessionUser: SessionUser.PUBLIC,
-            iat: 0,
-            exp: 0,
-            isValid: false,
-            user: {
-                id: '',
-                email: '',
-                firstName: '',
-                lastName: '',
-                picture: '',
-                roles: '',
-            },
-        };
+    //  async getSession(): Promise<SessionResponseType> {
+    //     console.log('1. -- getSession() :');
+    //     let session: SessionType = emptySession;
         
-        const unsubscribe = this.sessionStore.subscribe(value => {
-            sessionData = value;
-        });
-        unsubscribe();
-        return sessionData;
-    }
+    //     // check the localStore
+    //     const unsubscribe = this.sessionStore.subscribe(value => {
+    //         session = value;
+    //     });
+    
+    //     // Ensure the subscription has a chance to update localSession
+    //     await new Promise(resolve => setTimeout(resolve, 0));
+    //     console.log('2. -- getSession() localStore:', JSON.stringify(session));
+    //     // free up resources
+    //     unsubscribe();
+
+    //     console.log('3. -- getSession() localStore after unsubscribe:', JSON.stringify(session));
+    
+    //     // if no local session, check api for token, 
+    //     if (!session) {
+    //         console.log('4. -- getSession() !session :', JSON.stringify(session));
+    //         let newSession: SessionResponseType = await this.refreshSession();//await this.refreshSession();
+    //         newSession.errMsg = 'getSession checking new session: '+ newSession.errMsg
+    //         return newSession
+    //     }         
+    //     // if the the local session is public 
+    //     else if (session.sessionUser === SessionUser.PUBLIC) {
+    //         console.log('5. -- getSession() session.sessionUser === public :', JSON.stringify(session));
+    //         let newSession: SessionResponseType = await this.refreshSession();
+    //         newSession.errMsg = 'getSession refreshing session: '+ newSession.errMsg
+    //         return newSession
+    //     } 
+
+    //     // if there is a local session and ttl is near
+    //     else if (session.exp - Date.now() < this.ttlThreshold) {
+    //         console.log('5. -- getSession() session.exp - Date.now() < this.ttlThreshold :', JSON.stringify(session));
+    //         let newSession: SessionResponseType = await this.refreshSession();
+    //         newSession.errMsg = 'getSession refreshing session: '+ newSession.errMsg
+    //         return newSession
+    //     } 
+    //     // local session is not expired
+    //     else if (session.exp > Date.now()) {
+    //         console.log('6. -- getSession() session.exp > Date.now() :', JSON.stringify(session));
+    //         return {
+    //             session: session,
+    //             errMsg: 'getSession using local session: ',
+    //             status: 200
+    //         }
+    //     } 
+    //     // else return empty session
+    //     else {
+    //         console.log('7. -- getSession() else :', JSON.stringify(session));
+    //         return {
+    //             session: emptySession,
+    //             errMsg: 'Local session expired',
+    //             status: 401
+    //         }
+    //     }
+    //  }
+    
+    //  an internal function to hit the /session api and return the result
+    // async refreshSession(token?: string): Promise<SessionResponseType>{
+    //     console.log('1. -- getSession.refreshSession() calling :', `${env.PUBLIC_API_URL}/session`);
+    //     // call /session api
+    //     console.log('1.1 - -getSession.refreshSession() mode: ', env.PUBLIC_MODE);
+        
+    //     let session: SessionType = emptySession;
+    //     let errMsg: string = '';
+    //     let status: number = 0;
+    //     // if we are in local mode, we need to add the auth header
+    //     if (env.PUBLIC_MODE === 'local') {
+    //         const authHeader = `Bearer ${token}`;
+    //         console.log('1.2 - -getSession.refreshSession() authHeader: ', authHeader);
+    //         const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Authorization': `${authHeader}`,    
+    //             },
+    //             credentials: 'include',
+    //         });
+    //         // get JSON data from response
+    //         const session = await response.json();
+    //         errMsg = response.statusText;
+    //         status = response.status;
+    //     } 
+
+    //     // otherwise we can just call the api
+    //     else {
+    //         console.log('1.3 - -getSession.refreshSession() no authHeader: ');
+    //         const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
+    //             method: 'GET',
+    //             credentials: 'include',
+    //         });
+    //         // get JSON data from response
+    //         const session = await response.json();
+    //         errMsg = response.statusText;
+    //         status = response.status;
+    //     };
+
+    //     console.log('2. -- getSession.refreshSession() :', JSON.stringify(session));
+
+    //     return {
+    //         session: session,
+    //         errMsg: errMsg,
+    //         status: status
+    //     }
+    // }
+
 
     /**
      * logs out the user by setting the session cookie to public
