@@ -54,7 +54,7 @@
 
 <div class="scrollable">
     <p>Locals: page.data.session</p>
-    {#await $page.data.session}
+    {#await $page.data}
         <p>loading...</p>
     {:then session}
         {#if session}
