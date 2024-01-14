@@ -146,7 +146,7 @@ class SessionManager {
             console.log('14 - sessionManager.refreshSession() updating store', JSON.stringify(session, null,2));
             this.updateSessionStore(session);
         } else {
-            console.log('15 - sessionManager.refreshSession() session is not valid, store set to emptySession');
+            console.log('15 - sessionManager.refreshSession() session is not valid, store set to emptySession', JSON.stringify(session, null,2));
             this.updateSessionStore(emptySession);
         }
 
