@@ -20,10 +20,12 @@
         );
         console.log('sessionClientFetch response: ', res);
         const data = await res.json(); // parse the response body as JSON
+        let iatDate = new Date(data.data.session.iat * 1000);
+        let expDate = new Date(data.data.session.exp * 1000);
         data.data.session = {
             ...data.data.session,
-            iat_date: data.data.session.iat.toUTCString(),
-            exp_date: data.data.session.exp.toUTCString(),
+            iat_date: iatDate.toUTCString(),
+            exp_date: expDate.toUTCString(),
         }
         return data; // return the parsed body
         
@@ -53,7 +55,7 @@
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>{JSON.stringify(session.sessionUser, null, 2)}</pre>
+            <pre>{JSON.stringify(session, null, 2)}</pre>
         {:else}
             <p>waiting...</p>
         {/if}
