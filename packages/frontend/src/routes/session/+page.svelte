@@ -4,19 +4,22 @@
     import type { SessionType } from '@pwa-grouper/core/types/session';
     import SessionManager from '$lib/classes/SessionManager';
 
+    const sessionManager =  SessionManager.getInstance();
+
     let sessionGetSession: SessionType;
     // let sessionRefreshSession: SessionType;
     let sessionClientFetch: SessionType;
-    export let data;
-    let sessionServerFetch = data 
-    let sessionManager =  SessionManager.getInstance();
+    
+    // export let data;
+    
+    let sessionServerFetch = {} //data 
 
     async function handleFetchSession() {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
         { credentials: 'include' }
         );
 
-        console.log('sessionClientFetch', res);
+        console.log('sessionClientFetch response: ', JSON.stringify(res, null, 2));
         return res.body;
         
     }
@@ -31,7 +34,7 @@
         // sessionRefreshSession = (await sessionManager.refreshSession()).session;
         // sessionClientFetch = match the json element sessionType returned from the fetch
         sessionClientFetch = (await sessionManager.refreshSession()).session;
-        sessionGetSession = (await sessionManager.getSession()).session;
+        // sessionGetSession = (await sessionManager.getSession()).session;
 
         // handleRedirectToDashboard();
     });
