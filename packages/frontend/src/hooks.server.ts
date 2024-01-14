@@ -42,7 +42,11 @@ export default async function handleFetch({ event, request, fetch }) {
 
 	return fetch(request);
 }
-
+async function hadleError(error: Error) {
+    console.log('error: ', error);
+    // return a response indicating the error if needed
+    // return error;
+}
 async function handleFetchSession() {
     try {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
