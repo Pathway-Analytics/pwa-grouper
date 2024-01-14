@@ -5,6 +5,7 @@ import { env } from '$env/dynamic/public';
 import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
 import { cookie } from 'sst/node/auth';
 import { Config } from 'sst/node/config';
+import { json } from 'stream/consumers';
 
 // This server hook is called for every frontend request to the server
 // It checks if the request has a valid session cookie
@@ -14,11 +15,16 @@ const publicPages = [
     '/login',
     '/session',
     '/public',
+    '/dashbaord',
     '/sentry-example',
 ];
 
 function isPublicRoute(route:string) {
     return publicPages.includes(route);
+}
+
+function isCallbackRequest(requestHost: string): boolean{
+    return true;
 }
 
 // if the SessionManager is not initialized, initialize it
@@ -29,6 +35,10 @@ const sessionManager = SessionManager.getInstance()
 // this is used for the callback from the auth server
 // this is only needed for localhost 
 const checkQueryParamToken: Handle = async ({ event, resolve }) => {
+
+    // console log the request in a readable format
+    console.log( ' hooks isCallbackRequest request: ', JSON.stringify(event.request, null, 2) );
+     const requestHost = event.request.referrer
 
     // set token to query param if it exists
     const token = await event.url.searchParams.get('token') || '';

@@ -30,6 +30,7 @@ const main = async () => {
     };
 
     try {
+        
         if (!!token) {
             console.log('2. -- decoding session...');
             let decodedToken: DecodedToken = useSession();

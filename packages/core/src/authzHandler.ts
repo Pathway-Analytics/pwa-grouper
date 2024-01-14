@@ -2,7 +2,7 @@ import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context
 import { useSession } from "sst/node/auth"
 import { SessionUserType, emptySession, type SessionTokenType } from '@pwa-grouper/core/types/session';
 import type { RoleType } from '@pwa-grouper/core/types/role';
-import { useResponse, useMethod, useJsonBody, usePath, useCookie, useQueryParam, usePathParam } from 'sst/node/api';
+import { useResponse, useMethod, useJsonBody, usePath, useCookie, usePathParam } from 'sst/node/api';
 
 type LambdaHandler = (event: APIGatewayProxyEventV2, context: Context) => Promise<APIGatewayProxyStructuredResultV2>;
 
