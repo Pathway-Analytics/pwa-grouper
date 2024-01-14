@@ -45,7 +45,7 @@ const main = async () => {
                 session.isValid = true;
 
                 let date = new Date(session.exp * 1000);
-                console.log('5. -- refreshToken oops, USER session details: ', JSON.stringify(session, null, 2));
+                console.log('5. -- refreshToken, USER session details: ', JSON.stringify(session, null, 2));
                 // set the cookie
                 return useResponse()
                     .status(200)
@@ -76,7 +76,7 @@ const main = async () => {
                     // so we dont have to decode the token on the frontend
                     .serialize({ body: session });
             } else {
-                console.log('6. -- refreshToken oops, PUBLIC session details: ', JSON.stringify(session, null, 2));
+                console.log('6. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
                 return useResponse()
                     .status(200)
                     .serialize({ body: session });
