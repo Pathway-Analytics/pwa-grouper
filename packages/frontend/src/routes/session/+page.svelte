@@ -36,11 +36,11 @@
 
 <div class="scrollable">
     <p>Session Manager: getSession</p>
-    {#await sessionGetSession.sessionUser}
+    {#await sessionGetSession}
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session, null, 2)}</pre>
+            <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
         {:else}
             <p>no session</p>
         {/if}
@@ -48,29 +48,29 @@
 
 
     <p>Session Manager: refreshSession</p>
-    {#await sessionRefreshSession.sessionUser}
+    {#await sessionRefreshSession}
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session, null, 2)}</pre>
+            <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
         {:else}
             <p>no session</p>
         {/if}
     {/await}
 
     <p>Client Fetch Session</p>
-    {#await sessionClientFetch.sessionUser}
+    {#await sessionClientFetch}
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session, null, 2)}</pre>
+            <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
         {:else}
             <p>no session</p>
         {/if}
     {/await}
 
     <p>Server Fetch Session</p>
-    {#await sessionServerFetch.sessionUser}
+    {#await sessionServerFetch}
         <p>loading...</p>
     {:then session}
         {#if session}
