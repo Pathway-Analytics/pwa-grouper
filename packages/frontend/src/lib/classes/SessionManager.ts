@@ -133,6 +133,7 @@ class SessionManager {
                 credentials: 'include',
             });
             // get JSON data from response
+            console.log('12.1 - sessionManager.refreshSession() response: ', JSON.stringify(response, null, 2));
             const session = await response.json();
             errMsg = response.statusText;
             status = response.status;
