@@ -12,6 +12,16 @@ import { authzHandler } from '@pwa-grouper/core/authzHandler';
 // If the original cookie but the .mydomain.com cookie is found instead
 // the cookie is reffreshed with a new expiration date
 
+function serializeSession(session: SessionType) {
+    return JSON.stringify({
+      sessionUser: session.sessionUser,
+      iat: session.iat,
+      exp: session.exp,
+      isValid: session.isValid,
+      user: session.user
+    });
+  }
+
 const main = async () => {
     console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );
     const token = useCookie('auth-token');
@@ -30,7 +40,7 @@ const main = async () => {
     };
 
     try {
-        
+
         if (!!token) {
             console.log('2. -- decoding session...');
             let decodedToken: DecodedToken = useSession();
@@ -74,18 +84,18 @@ const main = async () => {
                     })
                     // add the session details to the response body
                     // so we dont have to decode the token on the frontend
-                    .serialize({ body: JSON.stringify(session)});
+                    .serialize({ body: serializeSession(session)});
             } else {
                 console.log('6. -- refreshToken oops, PUBLIC session details: ', JSON.stringify(session));
                 return useResponse()
                     .status(200)
-                    .serialize({ body: JSON.stringify(session) });
+                    .serialize({ body: serializeSession(session)});
             }
         } else {
             console.log('7. -- refreshToken NO token:');  
             return useResponse()
                 .status(200)
-                .serialize({ body: JSON.stringify(session) });
+                .serialize({ body: serializeSession(session)});
         }
     } catch (error) {
         console.log('8. -- refreshToken error:', JSON.stringify(error));
