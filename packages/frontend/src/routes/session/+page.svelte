@@ -50,7 +50,7 @@
         {#if session}
             <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
         {:else}
-            <p>no session</p>
+            <p>waiting...</p>
         {/if}
     {/await}
 
@@ -71,9 +71,9 @@
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
+            <pre>${JSON.stringify(session, null, 2)}</pre>
         {:else}
-            <p>no session</p>
+            <p>waiting...</p>
         {/if}
     {/await}
 
@@ -84,7 +84,7 @@
         {#if session}
             <pre>${JSON.stringify(session, null, 2)}</pre>
         {:else}
-            <p>no session</p>
+            <p>waiting...</p>
         {/if}
     {/await}
 
