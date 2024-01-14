@@ -20,6 +20,11 @@
         );
         console.log('sessionClientFetch response: ', res);
         const data = await res.json(); // parse the response body as JSON
+        data.data.session = {
+            ...data.data.session,
+            iat_date: data.data.session.iat.toUTCString(),
+            exp_date: data.data.session.exp.toUTCString(),
+        }
         return data; // return the parsed body
         
     }
