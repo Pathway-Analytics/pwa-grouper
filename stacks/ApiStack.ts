@@ -57,7 +57,7 @@ export function ApiStack({ stack, app }: StackContext) {
         cors: {
             allowOrigins: [`${api_url}`, `${site_url}`],
             allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
-            allowHeaders: ["Content-Type", "Authorization"
+            allowHeaders: ["Origin", "Accept", "Content-Type", "Authorization"
             , "X-Requested-With", "X-Amz-Date", "X-Amz-Security-Token", "X-Api-Key"],
             allowCredentials: true
         },
