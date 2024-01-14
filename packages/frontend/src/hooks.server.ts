@@ -15,7 +15,7 @@ const publicPages = [
     '/login',
     '/session',
     '/public',
-    '/dashbaord',
+    '/dashboard',
     '/sentry-example',
 ];
 
