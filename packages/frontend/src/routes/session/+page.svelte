@@ -6,7 +6,9 @@
 
     let sessionGetSession: SessionType;
     let sessionRefreshSession: SessionType;
-    let sessionFetch: SessionType;
+    let sessionClientFetch: SessionType;
+    export let data;
+    let sessionServerFetch = data 
     let sessionManager =  SessionManager.getInstance();
 
     async function handleFetchSession() {
@@ -24,7 +26,7 @@
     onMount(async () => {
         // await handleGetUsers();
         sessionRefreshSession = (await sessionManager.refreshSession()).session;
-        sessionFetch = await handleFetchSession();
+        sessionClientFetch = await handleFetchSession();
         sessionGetSession = (await sessionManager.getSession()).session;
         // handleRedirectToDashboard();
     });
@@ -32,43 +34,64 @@
 
 </script>
 
-<p>Session Manager: getSession</p>
-{#await sessionGetSession}
-    <p>loading...</p>
-{:then session}
-    {#if session}
-        <pre>${JSON.stringify(session, null, 2)}</pre>
-    {:else}
-        <p>no session</p>
-    {/if}
-{/await}
+<div class="scrollable">
+    <p>Session Manager: getSession</p>
+    {#await sessionGetSession.sessionUser}
+        <p>loading...</p>
+    {:then session}
+        {#if session}
+            <pre>${JSON.stringify(session, null, 2)}</pre>
+        {:else}
+            <p>no session</p>
+        {/if}
+    {/await}
 
 
-<p>Session Manager: refreshSession</p>
-{#await sessionRefreshSession}
-    <p>loading...</p>
-{:then session}
-    {#if session}
-        <pre>${JSON.stringify(session, null, 2)}</pre>
-    {:else}
-        <p>no session</p>
-    {/if}
-{/await}
+    <p>Session Manager: refreshSession</p>
+    {#await sessionRefreshSession.sessionUser}
+        <p>loading...</p>
+    {:then session}
+        {#if session}
+            <pre>${JSON.stringify(session, null, 2)}</pre>
+        {:else}
+            <p>no session</p>
+        {/if}
+    {/await}
 
-<p>Fetch Session</p>
-{#await sessionFetch}
-    <p>loading...</p>
-{:then session}
-    {#if session}
-        <pre>${JSON.stringify(session, null, 2)}</pre>
-    {:else}
-        <p>no session</p>
-    {/if}
-{/await}
+    <p>Client Fetch Session</p>
+    {#await sessionClientFetch.sessionUser}
+        <p>loading...</p>
+    {:then session}
+        {#if session}
+            <pre>${JSON.stringify(session, null, 2)}</pre>
+        {:else}
+            <p>no session</p>
+        {/if}
+    {/await}
 
-<p>
-    <a href="/dashboard">Dashboard</a>
-</p>
-<p>
-    <a href="/admin/users">users</a>
-</p>
+    <p>Server Fetch Session</p>
+    {#await sessionServerFetch.sessionUser}
+        <p>loading...</p>
+    {:then session}
+        {#if session}
+            <pre>${JSON.stringify(session, null, 2)}</pre>
+        {:else}
+            <p>no session</p>
+        {/if}
+    {/await}
+
+    <p>
+        <a href="/dashboard">Dashboard</a>
+    </p>
+    <p>
+        <a href="/admin/users">users</a>
+    </p>
+</div>
+
+<style>
+    .scrollable {
+      height: 100vh; /* Adjust as needed */
+      overflow-y: auto;
+    }
+  </style>
+  
