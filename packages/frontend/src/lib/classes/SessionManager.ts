@@ -133,9 +133,9 @@ class SessionManager {
                 credentials: 'include',
             });
             // get JSON data from response
-            console.log('12.1 - sessionManager.refreshSession() response: ', JSON.stringify(response, null, 2));
             status = response.status
             const data = await response.json();
+            console.log('12.1 - sessionManager.refreshSession() data: ', JSON.stringify(data, null, 2));
             session = data.data.session;
             errMsg = data.message;
         };
