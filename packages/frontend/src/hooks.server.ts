@@ -33,7 +33,8 @@ const sessionManager = SessionManager.getInstance()
 // this is applied to every fetch throughout the app...
 export async function handleFetch({ event, request, fetch }) {
 	if (request.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
-		request.headers.set('cookie', event.request.headers.get('cookie') || '');
+        
+		request.headers.set('auth-token', event.request.headers.get('auth-token') || '');
 	}
 
 	return fetch(request);
