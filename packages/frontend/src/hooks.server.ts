@@ -32,12 +32,15 @@ const sessionManager = SessionManager.getInstance()
 const test: Handle = async ({ event, resolve }) => {
 
     console.log('0. hooks.server test event: ', JSON.stringify(event, null, 2));
-    console.log('0. hooks.server test now redirecting to /api/session... ');
+    console.log('0. hooks.server test now redirecting to ', `${env.PUBLIC_API_URL}/session`);
     const resource = `${env.PUBLIC_API_URL}/session`
-    event.fetch(resource, {
-        credentials: 'include'
-    });   
 
+    // redirect to /api/session
+    event.setHeaders({
+        Location: resource,
+        Credentials: 'include',
+    });
+    
     return resolve(event);
 
 }
