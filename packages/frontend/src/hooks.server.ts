@@ -35,6 +35,12 @@ const test: Handle = async ({ event, resolve }) => {
     console.log('0. hooks.server test now redirecting to ', `${env.PUBLIC_API_URL}/session`);
     const resource = `${env.PUBLIC_API_URL}/session`
 
+    // 
+    const session = await fetch (resource, {
+        credentials: 'include'
+    });
+
+    console.log('1. hooks.server test session: ', JSON.stringify(session, null, 2));
     // redirect to /api/session
     event.setHeaders({
         Location: resource,
