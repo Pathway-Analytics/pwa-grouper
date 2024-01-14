@@ -4,7 +4,7 @@
     import type { SessionType } from '@pwa-grouper/core/types/session';
     import SessionManager from '$lib/classes/SessionManager';
 
-    // const sessionManager =  SessionManager.getInstance();
+    const sessionManager =  SessionManager.getInstance();
 
     let sessionGetSession: SessionType;
     // let sessionRefreshSession: SessionType;
@@ -33,7 +33,7 @@
         // await handleGetUsers();
         // sessionRefreshSession = (await sessionManager.refreshSession()).session;
         // sessionClientFetch = match the json element sessionType returned from the fetch
-        // sessionGetSession = (await sessionManager.getSession()).session;
+        sessionGetSession = (await sessionManager.getSession()).session;
         sessionClientFetch = (await handleFetchSession());
 
         // handleRedirectToDashboard();
