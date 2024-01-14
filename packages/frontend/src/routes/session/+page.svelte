@@ -10,9 +10,9 @@
     // let sessionRefreshSession: SessionType;
     let sessionClientFetch: SessionType;
     
-    // export let data;
+    export let data;
     
-    let sessionServerFetch = {} //data 
+    let sessionServerFetch = { data } //data 
 
     async function handleFetchSession() {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
