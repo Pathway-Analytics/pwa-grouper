@@ -4,11 +4,12 @@
     import type { SessionType } from '@pwa-grouper/core/types/session';
     import SessionManager from '$lib/classes/SessionManager';
 
+    let sessionGetSession: SessionType;
     let sessionRefreshSession: SessionType;
     let sessionFetch: SessionType;
     let sessionManager =  SessionManager.getInstance();
 
-    async function handleGetSession() {
+    async function handleFetchSession() {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
         { credentials: 'include' }
         );
@@ -23,14 +24,27 @@
     onMount(async () => {
         // await handleGetUsers();
         sessionRefreshSession = (await sessionManager.refreshSession()).session;
-        sessionFetch = await handleGetSession();
+        sessionFetch = await handleFetchSession();
+        sessionGetSession = (await sessionManager.getSession()).session;
         // handleRedirectToDashboard();
     });
 
 
 </script>
 
-<p>sessionRefreshSession</p>
+<p>Session Manager: getSession</p>
+{#await sessionGetSession}
+    <p>loading...</p>
+{:then session}
+    {#if session}
+        <pre>${JSON.stringify(session, null, 2)}</pre>
+    {:else}
+        <p>no session</p>
+    {/if}
+{/await}
+
+
+<p>Session Manager: refreshSession</p>
 {#await sessionRefreshSession}
     <p>loading...</p>
 {:then session}
@@ -41,8 +55,8 @@
     {/if}
 {/await}
 
-<p>sessionFetch</p>
-{#await sessionRefreshSession}
+<p>Fetch Session</p>
+{#await sessionFetch}
     <p>loading...</p>
 {:then session}
     {#if session}
