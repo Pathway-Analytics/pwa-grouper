@@ -37,6 +37,7 @@ const test: Handle = async ({ event, resolve }) => {
 
     // 
     const session = await fetch (resource, {
+        method: 'GET',
         credentials: 'include'
     });
 
