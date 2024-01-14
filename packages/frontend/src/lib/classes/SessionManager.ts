@@ -134,9 +134,10 @@ class SessionManager {
             });
             // get JSON data from response
             console.log('12.1 - sessionManager.refreshSession() response: ', JSON.stringify(response, null, 2));
-            const session = await response.json();
-            errMsg = response.statusText;
-            status = response.status;
+            status = response.status
+            const data = await response.json();
+            session = data.data.session;
+            errMsg = data.message;
         };
 
         // if it is available we now have a session
