@@ -3,7 +3,7 @@
 </script>
 <h1>Dashboard</h1>
 {#if $page.data}
-<p>Session: {$page.data}</p>
+<pre>Session: {JSON.stringify($page.data, null,2)}</pre>
 {:else}
 <p>hello</p>
 {/if}
