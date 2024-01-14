@@ -31,6 +31,19 @@ function isCallbackRequest(requestHost: string): boolean{
 // this is only needed for the first request after login
 const sessionManager = SessionManager.getInstance()
 
+const test: Handle = async ({ event, resolve }) => {
+
+    console.log('0. hooks.server test event: ', JSON.stringify(event, null, 2));
+    console.log('0. hooks.server test now redirecting to /api/session... ');
+    const resource = `${Config.API_URL}/session`
+    event.fetch(resource, {
+        credentials: 'include'
+    });   
+
+    return resolve(event);
+
+}
+
 // check if a token is in the query params if so set the cookie and clear the query param
 // this is used for the callback from the auth server
 // this is only needed for localhost 
@@ -121,4 +134,5 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
     }
 }
 
-export const handle: Handle = sequence( checkQueryParamToken, authHook);
+// export const handle: Handle = sequence( checkQueryParamToken, authHook);
+export const handle: Handle = sequence(test);
