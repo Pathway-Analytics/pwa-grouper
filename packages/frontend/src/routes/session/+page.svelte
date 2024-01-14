@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { onMount } from 'svelte';
-	import { env } from '$env/dynamic/private';
+	import { env } from '$env/dynamic/public';
     import type { SessionType } from '@pwa-grouper/core/types/session';
 
     let session: SessionType;
