@@ -119,6 +119,7 @@
     // function to add an empty new user to the users array
     // and set the isEditing flag to true
     async function handleNewUser() {
+        let newUser = {} as ExtendedUser;
         newUser.isEditing = true;
         newUser.id = '';
         users = [newUser, ...users];
