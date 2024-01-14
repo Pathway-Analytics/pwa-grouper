@@ -30,7 +30,7 @@
 
     // instantiate a new user for adding
     const newUser: ExtendedUser = {
-    id: '', // or some default value
+    id: 'new', // or some default value
     email: '@', // or some default value
     rolesArray: [],
     isEditing: true
@@ -120,10 +120,10 @@
     // and set the isEditing flag to true
     async function handleNewUser() {
         newUser.isEditing = true;
+        newUser.id = '';
         users = [newUser, ...users];
         usersPromise = Promise.resolve(users);
     }
-
 
 </script>
 

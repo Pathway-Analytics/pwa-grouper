@@ -64,10 +64,9 @@ export class User implements UserType {
         } else if (!newuser.id && newuser.email == '') {
             throw new Error("You must provide an email to create or update a user");
         } else {
-            const id = newuser.id || uuidv4();
-
+            
             const user: UserType = {
-                id: id,
+                id: (!newuser.id || newuser.id === 'new') ? uuidv4() : newuser.id,
                 email: newuser.email || '',
                 picture: newuser.picture,
                 firstName: newuser.firstName,
