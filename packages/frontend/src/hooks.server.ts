@@ -43,6 +43,12 @@ export default async function handleFetch({ event, request, fetch }) {
 	return fetch(request);
 }
 
+const test2: Handle = async ({ event, resolve }) => {
+    
+
+    return resolve(event);
+}
+
 const test: Handle = async ({ event, resolve }) => {
 
     console.log('0. hooks.server test event: ', JSON.stringify(event, null, 2));
@@ -116,4 +122,4 @@ const authHook: Handle = async ({ event, resolve }): Promise<Response> => {
 }
 
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
-export const handle: Handle = sequence(test);
+export const handle: Handle = sequence(test2);
