@@ -4,7 +4,7 @@
     import type { SessionType } from '@pwa-grouper/core/types/session';
     import SessionManager from '$lib/classes/SessionManager';
 
-    const sessionManager =  SessionManager.getInstance();
+    // const sessionManager =  SessionManager.getInstance();
 
     let sessionGetSession: SessionType;
     // let sessionRefreshSession: SessionType;
@@ -18,9 +18,9 @@
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
         { credentials: 'include' }
         );
-
-        console.log('sessionClientFetch response: ', JSON.stringify(res, null, 2));
-        return res.body;
+        console.log('sessionClientFetch response: ', res);
+        const data = await res.json(); // parse the response body as JSON
+        return data; // return the parsed body
         
     }
 
@@ -33,8 +33,8 @@
         // await handleGetUsers();
         // sessionRefreshSession = (await sessionManager.refreshSession()).session;
         // sessionClientFetch = match the json element sessionType returned from the fetch
-        sessionClientFetch = (await sessionManager.refreshSession()).session;
         // sessionGetSession = (await sessionManager.getSession()).session;
+        sessionClientFetch = (await handleFetchSession());
 
         // handleRedirectToDashboard();
     });
@@ -48,7 +48,7 @@
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
+            <pre>{JSON.stringify(session.sessionUser, null, 2)}</pre>
         {:else}
             <p>waiting...</p>
         {/if}
@@ -60,7 +60,7 @@
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session.sessionUser, null, 2)}</pre>
+            <pre>{JSON.stringify(session.sessionUser, null, 2)}</pre>
         {:else}
             <p>no session</p>
         {/if}
@@ -71,7 +71,7 @@
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session, null, 2)}</pre>
+            <pre>{JSON.stringify(session, null, 2)}</pre>
         {:else}
             <p>waiting...</p>
         {/if}
@@ -82,7 +82,7 @@
         <p>loading...</p>
     {:then session}
         {#if session}
-            <pre>${JSON.stringify(session, null, 2)}</pre>
+            <pre>{JSON.stringify(session, null, 2)}</pre>
         {:else}
             <p>waiting...</p>
         {/if}
