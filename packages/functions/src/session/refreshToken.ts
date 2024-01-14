@@ -75,6 +75,7 @@ const main = async () => {
                     // add the session details to the response body
                     // so we dont have to decode the token on the frontend
                     .serialize({ body: session });
+                    
             } else {
                 console.log('6. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
                 return useResponse()
