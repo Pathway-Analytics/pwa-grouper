@@ -8,7 +8,7 @@
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Content-Type': 'applicatio\n/json'
+                'Content-Type': 'application/json'
             }
         }).then(res => res.json());
 
