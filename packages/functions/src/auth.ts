@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '@pwa-grouper/core/classes/user';
 import { RoleType as Role } from '@pwa-grouper/core/types/role';
 import type { UserType } from '@pwa-grouper/core/types/user';
+import { useQueryParam } from 'sst/node/api';
 
 // we have also created an extend SessionTypes interface in the $shared_types folder
 declare module 'sst/node/auth' {
@@ -165,7 +166,7 @@ function getSessionCookies (userId: string):{
             // expiresIn: 60 * 60 * 24 * 1000, // 1 day
         },
         // redirect to a Frontend page where the session is set in localstorage via hooks.client.ts
-        redirect: `${Config.SITE_URL}/session`
+        redirect: useQueryParam('urlRedirect') || `${Config.SITE_URL}/dashboard`
     };
 }
 
@@ -191,7 +192,7 @@ function getSessionParameter (userId: string):{
             // expiresIn: 60 * 60 * 24 * 1000, // 1 day
         },
         // redirect to frontend session page where the session is set in localstorage 
-        redirect: `${Config.SITE_URL}/session`
+        redirect: useQueryParam('urlRedirect') || `${Config.SITE_URL}/dashboard`
     };
 }
 
