@@ -14,7 +14,8 @@ type LambdaHandler = (event: APIGatewayProxyEventV2, context: Context) => Promis
 export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): LambdaHandler => {
   return async (event, context): Promise<APIGatewayProxyStructuredResultV2> => {
 // TODO: Check user has required roles
-    console.log('0. authzHandler event:', JSON.stringify(event));
+  console.log('0. authzHandler', ` called by ${event.routeKey}`);
+  console.log('0. authzHandler event:', JSON.stringify(event));
     try {
       
       console.log('1. -- authzHandler cookie found: ', JSON.stringify(useCookie('auth-token')))

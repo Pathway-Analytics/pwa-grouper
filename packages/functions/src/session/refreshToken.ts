@@ -1,9 +1,11 @@
-import { ApiHandler, useCookie, useResponse } from 'sst/node/api';
+import { ApiHandler, useCookie, useQueryParam, useResponse } from 'sst/node/api';
 import { useSession } from "sst/node/auth"
 import { User } from '@pwa-grouper/core/classes/user';
 import type { SessionType } from '@pwa-grouper/core/types/session';
-import { SessionUserType } from '@pwa-grouper/core/types/session';
+import { SessionUserType, emptySession } from '@pwa-grouper/core/types/session';
 import { authzHandler } from '@pwa-grouper/core/authzHandler';
+import { Config } from 'sst/node/config';
+
 
 // This function check for the original cookie posted on api.mystage-myapp.mydomain.com
 // and replaces it with a new cookie on .mydomain.com with sameSite set to Lax
@@ -14,8 +16,7 @@ import { authzHandler } from '@pwa-grouper/core/authzHandler';
 
 const main = async () => {
     console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );   
-    const token = useCookie('auth-token');
-    console.log('1. -- refreshToken token:', JSON.stringify(token));
+    const mode = process.env.MODE;
     interface DecodedToken {
         type: SessionUserType;
         properties: { userId: string; };
@@ -31,7 +32,8 @@ const main = async () => {
 
     try {
 
-        if (!!token) {
+        if (useSession()) {
+            console.log('1. -- refreshToken useSession found: ', useSession()? true : false );   
             console.log('2. -- decoding session...');
             let decodedToken: DecodedToken = useSession();
             console.log('3. -- refreshToken decodedToken:', JSON.stringify(decodedToken));
@@ -45,17 +47,26 @@ const main = async () => {
                 session.isValid = true;
 
                 let date = new Date(session.exp * 1000);
+                let cookieOld = ''
+                let cookieNew = ''
                 console.log('5. -- refreshToken, USER session details: ', JSON.stringify(session, null, 2));
                 // set the cookie
                 // try differnt approach
                 const responseData = {
-                    message: "cooklie set",
-                    data: {
-                        session
-                    }
+                    message: "cookie reset",
+                    session
                 };
-                const cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; Secure; SameSite=None;`;
-                const cookieNew = `auth-token=${token}; Expires=${date}, Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
+                if (mode === 'local') {
+                    const token = useQueryParam('token');
+                    console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
+                    cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; Secure; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${date},  Path=/; `;
+                } else {
+                    const token = useCookie('auth-token');
+                    console.log('7. -- refreshToken token from cookie:', JSON.stringify(token));
+                    cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; Secure; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${date}, Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
+                }
                 // Return a successful response
                 return {
                     statusCode: 200,
@@ -66,76 +77,17 @@ const main = async () => {
                     body: JSON.stringify(responseData)
                 };
 
-                // return useResponse()
-                //     .status(200)
-                //     // remove the original cookie if it is still there
-                //     .cookies([{
-                //         key: 'auth-token',
-                //         value: '',
-                //         encrypted: true,
-                //         secure: true,
-                //         httpOnly: true,
-                //         expires: new Date(0),
-                //         sameSite: 'none',
-                //         path: '/'
-                //     },
-                //     //  and set the new or refresh the cookie for the domain
-                //     {
-                //         key: 'auth-token',
-                //         value: `${token}`,
-                //         encrypted: true,
-                //         secure: true,
-                //         httpOnly: true,
-                //         expires: date,
-                //         sameSite: 'Lax',
-                //         domain:  '.pathwayanalytics.com',
-                //         path: '/'
-                //     }])
-                //     // add the session details to the response body
-                //     .serialize({ body: session });
-                    
-                // 
-                // return useResponse()
-                //     .status(200)
-                //     // remove the original cookie if it is still there
-                //     .cookie({
-                //         key: 'auth-token',
-                //         value: '',
-                //         encrypted: true,
-                //         secure: true,
-                //         httpOnly: true,
-                //         expires: new Date(0),
-                //         sameSite: 'none',
-                //         path: '/'
-                //     })
-                //     //  and set the new or refresh the cookie for the domain
-                //     .cookie({
-                //         key: 'auth-token',
-                //         value: token,
-                //         encrypted: true,
-                //         secure: true,
-                //         httpOnly: true,
-                //         expires: date,
-                //         sameSite: 'Lax',
-                //         domain:  '.pathwayanalytics.com',
-                //         path: '/'
-                //     })
-                //     // add the session details to the response body
-                //     // so we dont have to decode the token on the frontend
-                //     .serialize({ body: session });
-
             } else {
-                console.log('6. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
+                console.log('8. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
                 return useResponse()
                     .status(200)
-                    .serialize({ body: session });
+                    .serialize({ 
+                        message: "public session",
+                        emptySession 
+                    });
             }
-        } else {
-            console.log('7. -- refreshToken NO token:');  
-            return useResponse()
-                .status(200)
-                .serialize({ body: session });
         }
+
     } catch (error) {
         console.log('8. -- refreshToken error:', JSON.stringify(error));
         console.error(`Error in refreshToken: `, error);

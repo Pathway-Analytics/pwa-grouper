@@ -21,25 +21,21 @@
   import { env } from '$env/dynamic/public';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import  SessionManager  from '$lib/classes/SessionManager';
-  import type { SessionType } from '@sst-starter3/core/types/session';
+  import type { SessionType } from '@pwa-grouper/core/types/session';
   
-  const sessionManager = SessionManager.getInstance();
-  let session: SessionType | null ;
+  let session: SessionType;
   let activeUrl: string | undefined
   let appName = env.PUBLIC_APP_NAME;
 
   onMount(async () => {
     activeUrl = $page.url.pathname;
     
-    session = (await sessionManager.getSession()).session;
-    console.log('NavBar session: ',JSON.stringify(session));
-
+  
   })
 
   async function handleLogout() {
     console.log('-- calling SessionManager.logout from session page: ');
-    session = await sessionManager.logout();
+    
   }
 
 </script>

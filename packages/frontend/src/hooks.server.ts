@@ -1,7 +1,5 @@
-import SessionManager from '$lib/classes/SessionManager';
 import { sequence } from '@sveltejs/kit/hooks';
-import type { Handle, HandleFetch } from '@sveltejs/kit';
-
+import { redirect, type Handle, type HandleFetch, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
 import { refreshSession } from '$lib/refreshSession';
@@ -10,16 +8,50 @@ import { refreshSession } from '$lib/refreshSession';
     // this is applied to every fetch throughout the app...
     // server side pages do not have access direct access to cookies in the browser
     // any cookies needed in a server side page request must be forwarded in the request
+    const createNewRequest = (request: Request, headers: Headers, url: string) => {
+        return new Request(url, { 
+            method: request.method,
+            headers: headers,
+            body: request.body,
+            mode: request.mode,
+            credentials: request.credentials,
+            cache: request.cache,
+            redirect: request.redirect,
+            referrer: request.referrer,
+            integrity: request.integrity
+        });
+    }
+    
     export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
         console.log('0. hooks.server handleFetch started...') ;
-        if (request.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
-            console.log('0. hooks.server handleFetch adding ', `${event.request.headers.get('auth-token')}`) ;
-            const newHeaders = new Headers(request.headers);
-            newHeaders.set('auth-token', event.request.headers.get('auth-token') || '');
-            request = new Request(request, { headers: newHeaders });
+        let newRequest: Request = request;
+    
+        if (newRequest.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
+            console.log('0. hooks.server handleFetch adding ', `${event.request.headers}`) ;
         }
-
-        return fetch(request);
+    
+        // if mode is local, add the auth-token header to the request
+        // this is needed for local development
+        if (env.PUBLIC_MODE === 'local') {
+            console.log('1. hooks.server handleFetch mode is local') ;
+            const token = event.url.searchParams.get('auth-token') || 
+                event.url.searchParams.get('token') ;
+            const newHeaders = new Headers(newRequest.headers);
+            
+            // add authorization header for local development
+            newHeaders.set('Authorization', `Bearer ${token}`);
+            newRequest = createNewRequest(newRequest, newHeaders, newRequest.url);
+    
+            // keep token in the url for local development
+            const url = new URL(newRequest.url);
+            url.searchParams.set('token', token || '');
+            newRequest = createNewRequest(newRequest, newRequest.headers, url.toString());
+            
+            console.log('2. hooks.server handleFetch ', `${JSON.stringify(newHeaders, null, 2)}`) ;
+          
+        }
+    
+        return fetch(newRequest);
     }
 
 // ===== Errors =====
@@ -46,31 +78,30 @@ import { refreshSession } from '$lib/refreshSession';
         return publicPages.includes(route);
     }
 
-    function isCallbackRequest(requestHost: string): boolean{
-        return true;
-    }
-
-    // if the SessionManager is not initialized, initialize it
-    // this is only needed for the first request after login
-    const sessionManager = SessionManager.getInstance()
-
-
-    const test: Handle = async ({ event, resolve }): Promise<Response> => {
-        console.log('0. hooks.server test event: ', JSON.stringify(event));
+    const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
+        console.log('0. hooks.server authHook mode: ', env.PUBLIC_MODE);
+        console.log('00. hooks.server test event: ', JSON.stringify(event));
         const locals = event.locals;
         const route = event.url.pathname;
+        const mode = env.PUBLIC_MODE;
+        locals.mode = env.PUBLIC_MODE
+        locals.devToken = event.url.searchParams.get('token') || '';
+        locals.session = emptySession;
+
         const ttlThreshold: number = 30 * 60 * 1000
         try{
             // if the route is public
             if (isPublicRoute(route)) {
                 console.log('1. hooks.server test route is public: ', event.url.pathname);
                 return resolve(event)
-            } else if (locals.session.isValid && !(locals.session.exp < Date.now()-ttlThreshold)) {
+            } else if (locals?.session?.isValid && !(locals?.session?.exp < Date.now()-ttlThreshold)) {
                 console.log('2. hooks.server test session is valid');
                 return resolve(event)
             } else {
                 console.log('3. hooks.server test refreshing session...');
-                locals.session = await refreshSession();
+                const token = event.url.searchParams.get('token') || '';
+                locals.session = await refreshSession(token);
+                console.log('4. hooks.server test session refreshed: ', JSON.stringify(locals.session, null, 2));
                 return resolve(event)
             }
         } catch (err) {
@@ -78,64 +109,8 @@ import { refreshSession } from '$lib/refreshSession';
             return resolve(event)
         }
     }
-    // a hook to authz 
-    // if it exists, load the session
-    // if it does not exist, redirect to login
-    const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
-        console.log('0. hooks.server authHook event: ', JSON.stringify(event));
-        let session: SessionType = emptySession;
-        const mode = env.PUBLIC_MODE;
-        console.log('1. hooks.serverauthHook mode: ', mode);
-        const isLocalHost = mode === 'local';
-        const route = event.url.pathname;
-        const IsProtected = !isPublicRoute(route);
-        console.log('2. hooks.server authHook route: ', route);
-        // if the route is public
-        if (!IsProtected || isLocalHost) {
-            console.log('3. hooks.server authHook route is public: ', route);
-            return resolve(event)
-        } 
-
-        else {
-            console.log('4. hooks.server authHook route is protected: ', route);
-            // get the session 
-            session = (await sessionManager.getSession()).session;
-                // getSession will get session from local store if there
-                // if it needs refreshing or not there it will fetch it from api server
-                // and set it in the local store
-                // note: this does not need the cookie to be set in the browser
-                // the initial login cookie is set to domain api.mydomain.com
-                // the getSession() call is made to api.mydomain.com and resets the cookie
-                // to the domain .mydomain.com for all subsequent calls.
-                // but the local store is used to keep session details including expiry time.
-                // so the local store is used to check if the session is valid or not.
-                // calls to the api are always validated by the cookie though.
-            console.log('5. hooks.server authHook session isValid: ', JSON.stringify(session.isValid));
-            if (session.isValid || isLocalHost) {
-
-                console.log('6. hooks.server authHook session is valid');
-                // set the event.locals.session to the session
-                // this is available as an alternative to the store
-                // event.locals is a server side session store so it more secure than local store.
-                event.locals.session = session;
-
-                return resolve(event)
-            } 
-            // redirect to login
-            else {
-                console.log('7. hooks.serverauthHook session is not valid');
-                return new Response('Redirect', {
-                    status: 302,
-                    headers: {
-                        Location: '/login'
-                    }
-                });
-            }
-        }
-    }
 
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 export const handle: Handle = sequence(
-    // handleAuth,
-    test
-);
+    handleAuth,
+)

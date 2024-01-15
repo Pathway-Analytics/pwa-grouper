@@ -11,7 +11,7 @@
 
 <!-- link to /session  page here -->
 <p>
-    <a href="/session">Session</a>
+    <a href="/">Home</a>
 </p>
 <p>
     <a href="/admin/users">users</a>

@@ -2,12 +2,14 @@
     // import list of users from api /users and display in a table
     // provide functionality to add, edit, delete users
     // provide functinality to assign roles to users of RoleType add to user.roles : string csv format
+    import { page } from '$app/stores';
     import { Input, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, TableSearch } from 'flowbite-svelte';
     import type { UserType } from '@pwa-grouper/core/types/user';
     import type { RoleType } from '@pwa-grouper/core/types/role';
     import { env } from '$env/dynamic/public';
     import { onMount } from 'svelte';
 
+    
     let user: UserType = {
         id: '' ,
         email: '',
@@ -49,11 +51,25 @@
     $: usersPromise = Promise.resolve(users);
 
     async function handleGetUsers() {
-        const res = await fetch(`${env.PUBLIC_API_URL}/users`, 
-        { credentials: 'include' }
-        );
-        users = await res.json();
-        users = [...users];
+        console.log('local mode, token: ',env.PUBLIC_MODE, $page.data.devToken);
+        if (env.PUBLIC_MODE === 'local'){
+
+            console.log('local mode, token: ', $page.data.devToken);
+            const authBearer = `Bearer ${$page.data.devToken}`;
+            const res = await fetch(`${env.PUBLIC_API_URL}/users`, { 
+                credentials: 'include', 
+                headers: { 'Authorization': authBearer }
+            }
+            );
+            users = await res.json();
+            users = [...users];
+        } else {
+            const res = await fetch(`${env.PUBLIC_API_URL}/users`, { 
+                credentials: 'include' }
+            );
+            users = await res.json();
+            users = [...users];
+        }
     }
 
     // we use this to take the edited record out of the users array
@@ -190,7 +206,7 @@
                         </TableBodyCell>
                     </TableBodyRow>
                 {/each}
-            <!-- {/if} -->
+        <!-- {/if} -->
         {:catch error}
             <p style="color: red">{error.message}</p>    
         {/await}
@@ -204,5 +220,5 @@
 </p>
 
 <p>
-    <a href="/session">Session</a>
+    <a href="/">Home</a>
 </p>
