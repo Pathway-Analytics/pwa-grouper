@@ -1,13 +1,29 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { redirect, type Handle, type HandleFetch, error } from '@sveltejs/kit';
+import { type Handle, type HandleFetch } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
-import  { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
+import { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
+import { RoleType } from '@pwa-grouper/core/types/role';
 import { refreshSession } from '$lib/refreshSession';
 
-// ===== Fetch ====
-    // this is applied to every fetch throughout the app...
-    // server side pages do not have access direct access to cookies in the browser
-    // any cookies needed in a server side page request must be forwarded in the request
+// ===== Helpers ====
+    // function isRestrictedRoute accepts route param of type string or undefined
+    // pass in the event.route.id and the optional required route 'provider' or 'admin'
+    function isRestrictedRoute(routeId: string | undefined, sessionRoles? :string): boolean {
+        // session roles array add authenticated
+        const roles: string[] = `${sessionRoles?.toLowerCase()},authenticated`?.split(',') || [];
+        
+        // does the roles array include 'admin', then return false (not restricted)
+        if (roles.includes(RoleType.ADMIN)) return false;
+        
+        // array of any string between parentheses in the routeId
+        const routes = routeId?.match(/\((.*?)\)/g)?.map(route => route.replace(/[\(\)]/g, ''));
+        
+        // does the roles array include all the required matches?
+        const allMatchesIncluded: boolean = routes?.every(route => roles.includes(route)) || true;
+        let isRestricted: boolean = !allMatchesIncluded;
+        
+        return isRestricted;
+    }
     const createNewRequest = (request: Request, headers: Headers, url: string) => {
         return new Request(url, { 
             method: request.method,
@@ -21,7 +37,11 @@ import { refreshSession } from '$lib/refreshSession';
             integrity: request.integrity
         });
     }
-    
+
+// ===== Fetch ====
+    // this is applied to every fetch throughout the app...
+    // server side pages do not have access direct access to cookies in the browser
+    // any cookies needed in a server side page request must be forwarded in the request    
     export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
         console.log('0. hooks.server handleFetch started...') ;
         let newRequest: Request = request;
@@ -67,22 +87,9 @@ import { refreshSession } from '$lib/refreshSession';
     }
 
 // ===== Handles ====
-
     // This server hook is called for every frontend request to the server
     // It checks if the request has a valid session cookie
     // process flow is avialble here: docs/Auth Flows-Session Refresh.drawio.png
-
-    const publicPages = [
-        '/login',
-        '/session',
-        '/public',
-        '/sentry-example',
-    ];
-
-    function isPublicRoute(route:string) {
-        return publicPages.includes(route);
-    }
-
     const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
         console.log('0. hooks.server handleAuth mode: ', env.PUBLIC_MODE);
         console.log('1. hooks.server handleAuth event: ', JSON.stringify(event));
@@ -96,7 +103,7 @@ import { refreshSession } from '$lib/refreshSession';
         const ttlThreshold: number = 30 * 60 * 1000
         try{
             // if the route is public
-            if (isPublicRoute(route)) {
+            if (!isRestrictedRoute(event.route.id || '')) {
                 console.log('2. hooks.server handleAuth route is public: ', event.url.pathname);
                 return resolve(event)
             } else if (locals?.session?.isValid && !(locals?.session?.exp < Date.now()-ttlThreshold)) {
@@ -116,27 +123,22 @@ import { refreshSession } from '$lib/refreshSession';
         }
     }
 
-    const handleAuthzAdmin: Handle = async ({ event, resolve }): Promise<Response> => {
-        return resolve(event)
+    // authorization hook to check the user is authorized to access the route
+    const handleAuth_z: Handle = async ({ event, resolve }): Promise<Response> => {
+        
+        // passes in the event.route.id and the session user roles if any
+        if (!isRestrictedRoute(event.route.id || '',  event.locals.session?.user?.roles || '')) {
+            return resolve(event)
+        }
+
+        // redirect to /dashboard
+        return new Response(null, { status: 302, headers: { Location: '/dashboard' } });
+    
     }
 
-    const handleAuthzProviderPlus: Handle = async ({ event, resolve }): Promise<Response> => {
-        return resolve(event)
-    }
-
-    const handleAuthzProviderBasic: Handle = async ({ event, resolve }): Promise<Response> => {
-        return resolve(event)
-    }
-
-    const handleAuthzCommissioner: Handle = async ({ event, resolve }): Promise<Response> => {
-        return resolve(event)
-    }
 
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 export const handle: Handle = sequence(
     handleAuth,
-    // handleAuthzAdmin,
-    // handleAuthzProviderPlus,
-    // handleAuthzProviderBasic,
-    // handleAuthzCommissioner,
+    handleAuth_z,
 )
