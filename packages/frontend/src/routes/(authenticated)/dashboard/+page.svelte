@@ -1,5 +1,19 @@
 <script lang='ts'>
     import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+
+    onMount( async () => {
+        const session = await fetch(`${process.env.API_URL}/session`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'applicatio\n/json'
+            }
+        }).then(res => res.json());
+
+        console.log('mounted');
+        console.log('session, ', session);
+    });
 </script>
 <h1>Dashboard</h1>
 {#if $page.data}
