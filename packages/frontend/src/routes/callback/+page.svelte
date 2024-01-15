@@ -19,7 +19,7 @@
     onMount(async () => {
         const url= new URL(window.location.href);
         if (session.isValid) {
-            goto(urlRedirect || '/dashboard');
+            goto(url.searchParams.get('urlRedirect') || '/dashboard');
         } else {
             try{
                 // if the route is public
