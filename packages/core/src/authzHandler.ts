@@ -60,7 +60,7 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
       return await handler(event, context);
 
     } catch (error) {
-      console.log('6. -- authzHandler error: ', JSON.stringify(error));
+      console.log('7. -- authzHandler error: ', JSON.stringify(error));
 
       const errorMessage = error instanceof Error ? error.message : 'Internal server error';
       console.error('Error in authHandler:', error);

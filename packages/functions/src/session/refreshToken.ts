@@ -78,22 +78,27 @@ const main = async () => {
                 };
 
             } else {
+                const responseData = {
+                    message: "public session",
+                    emptySession
+                };
                 console.log('8. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
                 return useResponse()
                     .status(200)
-                    .serialize({ 
-                        message: "public session",
-                        emptySession 
-                    });
+                    .serialize(responseData);
             }
         }
 
     } catch (error) {
         console.log('8. -- refreshToken error:', JSON.stringify(error));
         console.error(`Error in refreshToken: `, error);
+        const responseData = {
+            message: `Internal Server Error:  ${error}` ,
+            emptySession
+        };
         return useResponse()
             .status(500)
-            .serialize({ body: JSON.stringify({ message: 'Internal Server Error', 'error': error }) });
+            .serialize(responseData);    
     }
 };
 
