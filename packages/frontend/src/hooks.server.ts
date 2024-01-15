@@ -115,7 +115,27 @@ import { refreshSession } from '$lib/refreshSession';
         }
     }
 
+    const handleAuthzAdmin: Handle = async ({ event, resolve }): Promise<Response> => {
+        return resolve(event)
+    }
+
+    const handleAuthzProviderPlus: Handle = async ({ event, resolve }): Promise<Response> => {
+        return resolve(event)
+    }
+
+    const handleAuthzProviderBasic: Handle = async ({ event, resolve }): Promise<Response> => {
+        return resolve(event)
+    }
+
+    const handleAuthzCommissioner: Handle = async ({ event, resolve }): Promise<Response> => {
+        return resolve(event)
+    }
+
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 export const handle: Handle = sequence(
     handleAuth,
+    // handleAuthzAdmin,
+    // handleAuthzProviderPlus,
+    // handleAuthzProviderBasic,
+    // handleAuthzCommissioner,
 )
