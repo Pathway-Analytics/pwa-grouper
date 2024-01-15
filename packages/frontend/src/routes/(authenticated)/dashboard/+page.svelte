@@ -1,9 +1,10 @@
 <script lang='ts'>
     import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+    import { env } from '$env/dynamic/public';
 
     onMount( async () => {
-        const session = await fetch(`${process.env.API_URL}/session`, {
+        const session = await fetch(`${env.PUBLIC_API_URL}/session`, {
             method: 'GET',
             credentials: 'include',
             headers: {
