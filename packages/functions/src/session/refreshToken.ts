@@ -67,6 +67,9 @@ const main = async () => {
                     cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; Secure; SameSite=None;`;
                     cookieNew = `auth-token=${token}; Expires=${date}, Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
                 }
+                console.log('8. -- refreshToken cookieOld, cookieNew:', JSON.stringify({cookieOld: cookieOld, cookieNew: cookieNew}, null, 2));
+                console.log('9. -- refreshToken responseData:', JSON.stringify({responseData}, null, 2));
+                
                 // Return a successful response
                 return {
                     statusCode: 200,
@@ -82,7 +85,7 @@ const main = async () => {
                     message: "public session",
                     emptySession
                 };
-                console.log('8. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
+                console.log('10. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
                 return useResponse()
                     .status(200)
                     .serialize(responseData);
