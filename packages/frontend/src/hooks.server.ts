@@ -49,8 +49,13 @@ import { refreshSession } from '$lib/refreshSession';
             
             console.log('2. hooks.server handleFetch ', `${JSON.stringify(newHeaders, null, 2)}`) ;
           
+        } else {
+            console.log('3. hooks.server handleFetch mode is not local, forwarding headers...') ;
+            let newRequest: Request = request;
+            const newHeaders = new Headers(newRequest.headers);
+            newRequest = createNewRequest(newRequest, newHeaders, newRequest.url);
+            console.log('4. hooks.server handleFetch headers forwarded: ', `${JSON.stringify(newHeaders, null, 2)}`) ;    
         }
-    
         return fetch(newRequest);
     }
 
