@@ -84,8 +84,8 @@ import { refreshSession } from '$lib/refreshSession';
     }
 
     const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
-        console.log('0. hooks.server authHook mode: ', env.PUBLIC_MODE);
-        console.log('00. hooks.server test event: ', JSON.stringify(event));
+        console.log('0. hooks.server handleAuth mode: ', env.PUBLIC_MODE);
+        console.log('1. hooks.server handleAuth event: ', JSON.stringify(event));
         const locals = event.locals;
         const route = event.url.pathname;
         const mode = env.PUBLIC_MODE;
@@ -97,20 +97,21 @@ import { refreshSession } from '$lib/refreshSession';
         try{
             // if the route is public
             if (isPublicRoute(route)) {
-                console.log('1. hooks.server test route is public: ', event.url.pathname);
+                console.log('2. hooks.server handleAuth route is public: ', event.url.pathname);
                 return resolve(event)
             } else if (locals?.session?.isValid && !(locals?.session?.exp < Date.now()-ttlThreshold)) {
-                console.log('2. hooks.server test session is valid');
+                console.log('3. hooks.server handleAuth session is valid');
                 return resolve(event)
             } else {
-                console.log('3. hooks.server test refreshing session...');
+                console.log('4. hooks.server handleAuth refreshing session...');
                 const token = event.url.searchParams.get('token') || '';
+                console.log('5. hooks.server handleAuth session before refresh: ', JSON.stringify(locals.session, null, 2));
                 locals.session = await refreshSession(token);
-                console.log('4. hooks.server test session refreshed: ', JSON.stringify(locals.session, null, 2));
+                console.log('6. hooks.server handleAuth session after refresh: ', JSON.stringify(locals.session, null, 2));
                 return resolve(event)
             }
         } catch (err) {
-            console.log('4. hooks.server test error: ', err);
+            console.log('7. hooks.server handleAuth error: ', err);
             return resolve(event)
         }
     }
