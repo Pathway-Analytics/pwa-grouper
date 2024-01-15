@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     // save it in locals so it can be used in the layout
     // in the layout we can access it with $session
     return {
-        session: locals.session.session,
+        session: locals.session,
         mode: locals.mode,
         devToken: locals.devToken,
     };

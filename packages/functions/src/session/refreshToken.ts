@@ -102,7 +102,7 @@ const main = async () => {
         };
         return useResponse()
             .status(500)
-            .serialize(responseData);    
+            .serialize(responseData)
     }
 };
 
