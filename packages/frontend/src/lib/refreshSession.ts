@@ -22,7 +22,7 @@ export const refreshSession = async (token?: string): Promise<{message: string, 
       return data;  
 
     } else {
-      console.log('4.refreshSession() non-local mode: ', env.PUBLIC_MODE);
+      console.log('3.refreshSession() non-local mode: ', env.PUBLIC_MODE);
       console.log('4.refreshSession() fetching from', `${env.PUBLIC_API_URL}/session`);
       const res = await fetch(`${env.PUBLIC_API_URL}/session`,{
         method: 'GET',

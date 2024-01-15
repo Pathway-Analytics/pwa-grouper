@@ -85,15 +85,16 @@ const main = async () => {
                     message: "public session",
                     emptySession
                 };
-                console.log('10. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(session, null, 2));
-                return useResponse()
-                    .status(200)
-                    .serialize(responseData);
+                console.log('10. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(responseData, null, 2));
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify(responseData)
+                }
             }
         }
 
     } catch (error) {
-        console.log('8. -- refreshToken error:', JSON.stringify(error));
+        console.log('11. -- refreshToken error:', JSON.stringify(error));
         console.error(`Error in refreshToken: `, error);
         const responseData = {
             message: `Internal Server Error:  ${error}` ,
