@@ -52,14 +52,14 @@ async function handleFetchSession() {
         const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
         { credentials: 'include' }
         );
-        console.log('sessionClientFetch response: ', res);
+        // console.log('hooks.server handleFetchSession response: ', res);
         const data = await res.json(); // parse the response body as JSON
-        console.log('sessionClientFetch data: ', JSON.stringify(data, null, 2));
+        console.log('hooks.server handleFetchSession data: ', JSON.stringify(data, null, 2));
         
         return data; // return the parsed body
     }
     catch (err) {
-        console.log('sessionClientFetch error: ', err);
+        console.log('hooks.server handleFetchSession  error: ', err);
         return err;
     }    
 }
@@ -72,12 +72,22 @@ const test2: Handle = async ({ event, resolve }) => {
         console.log('1. hooks.server test2 session: ', JSON.stringify(event.locals.session, null, 2));
     } else {
         console.log('2. hooks.server test2 session: ', 'no session');
-        const responseData = await handleFetchSession()
-        console.log('3. hooks.server test2 session: ', JSON.stringify(responseData, null, 2));
+        try {
+            const res = await fetch(`${env.PUBLIC_API_URL}/session`, 
+            { credentials: 'include' }
+            );
+            // console.log('hooks.server handleFetchSession response: ', res);
+            const data = await res.json(); // parse the response body as JSON
+            console.log('hooks.server test2 data: ', JSON.stringify(data, null, 2));
+            
+            event.locals.session = data.data.session;
 
-        event.locals.session = responseData.data;
+        }
+        catch (err) {
+            console.log('hooks.server test2 error: ', err);
+          
+        }    
     }
-
 
     return resolve(event);
 }

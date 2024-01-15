@@ -12,9 +12,9 @@
             }
         }).then(res => res.json());
 
-        console.log('dasboard mounted');
-        console.log('dasboard session: ', session);
-        console.log( 'dasboard locals: ', JSON.stringify($page, null,2) );
+        console.log('dashboard mounted');
+        console.log('dashboard session: ', session);
+        console.log('dashboard locals: ', JSON.stringify($page, null,2) );
     });
 </script>
 <h1>Dashboard</h1>
