@@ -12,5 +12,5 @@ const tester: Handle = async ({ event, resolve }) => {
 
     return resolve(event);
 }
-export const handle: Handle = sequence(tester);
+export const handle: Handle = sequence();
 
