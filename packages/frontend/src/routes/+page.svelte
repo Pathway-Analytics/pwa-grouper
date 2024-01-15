@@ -1,7 +1,7 @@
 <script lang="ts">
     import { LightSwitch } from '@skeletonlabs/skeleton';
     import { page } from '$app/stores';
-        
+
 </script>
 <LightSwitch />
  {#if $page.data.session.user}

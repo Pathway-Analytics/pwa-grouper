@@ -157,6 +157,10 @@ function getSessionCookies (userId: string):{
     };
     redirect: string;
 }{
+    const urlRedirect = useQueryParam('urlRedirect');
+    const redirect = urlRedirect
+        ? `${Config.SITE_URL}/callback?urlRedirect=${urlRedirect}`
+        : `${Config.SITE_URL}/callback`;
     return {
         type: 'user' as keyof SessionTypes,
         properties: {
@@ -165,8 +169,8 @@ function getSessionCookies (userId: string):{
         options: {
             // expiresIn: 60 * 60 * 24 * 1000, // 1 day
         },
-        // redirect to a Frontend page where the session is set in localstorage via hooks.client.ts
-        redirect: useQueryParam('urlRedirect') || `${Config.SITE_URL}/dashboard`
+        // redirect to frontend callback to set the session cookie
+        redirect: redirect
     };
 }
 
@@ -183,6 +187,10 @@ function getSessionParameter (userId: string):{
     redirect: string;
 } 
 {
+    const urlRedirect = useQueryParam('urlRedirect');
+    const redirect = urlRedirect
+        ? `${Config.SITE_URL}/callback?urlRedirect=${urlRedirect}`
+        : `${Config.SITE_URL}/callback`;
     return {
         type: 'user' as keyof SessionTypes,
         properties: {
@@ -192,7 +200,7 @@ function getSessionParameter (userId: string):{
             // expiresIn: 60 * 60 * 24 * 1000, // 1 day
         },
         // redirect to frontend session page where the session is set in localstorage 
-        redirect: useQueryParam('urlRedirect') || `${Config.SITE_URL}/dashboard`
+        redirect: redirect
     };
 }
 
