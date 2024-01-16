@@ -9,6 +9,9 @@ import { useQueryParam } from 'sst/node/api';
 
 const frontendCallback = `${process.env.SITE_URL}/callback`;
 const isLocalMode = process.env.MODE === 'local';
+let domain = isLocalMode ? process.env.DOMAIN || '' : process.env.SITE_URL || '';
+domain = domain.replace('https://', '');
+domain = domain.replace('http://', '');
 
 // we have also created an extend SessionTypes interface in the $shared_types folder
 declare module 'sst/node/auth' {
@@ -104,11 +107,6 @@ export const handler = AuthHandler({
             },
 
             onSuccess: async (tokenset) => {
-                const isLocalMode = process.env.MODE === 'local';
-                let domain = isLocalMode ? process.env.DOMAIN || '' : process.env.SITE_URL || '';
-                domain = domain.replace('https://', '');
-                domain = domain.replace('http://', '');
-
                 console.log('7. authhandler magiclink onSuccess(tokenset): ' , JSON.stringify(tokenset, null, 4));
                 const claims: Record<string, any> = tokenset;
                 console.log('8. authhandler magiclink onSuccess claims: ' , JSON.stringify(claims, null, 4));

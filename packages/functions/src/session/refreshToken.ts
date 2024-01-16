@@ -13,6 +13,12 @@ import { authzHandler } from '@pwa-grouper/core/authzHandler';
 // If the original cookie but the .mydomain.com cookie is found instead
 // the cookie is reffreshed with a new expiration date
 
+const isLocalMode = process.env.MODE === 'local';
+let domain = isLocalMode ? process.env.DOMAIN || '' : process.env.SITE_URL || '';
+domain = domain.replace('https://', '');
+domain = domain.replace('http://', '');
+
+
 const main = async () => {
     console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );   
     const mode = process.env.MODE;
@@ -56,21 +62,26 @@ const main = async () => {
                     message: "cookie reset",
                     session
                 };
-                if (mode === 'local') {
+                if (isLocalMode) {
                     const token = useQueryParam('token');
                     console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
-                    cookieOld = `auth-token=${token}; Expires=${expiresDate};  Domain=${process.env.API_URL}; Path=/; HttpOnly; SameSite=None;`;
+                    cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
                     cookieNew = `auth-token=${token}; Expires=${refreshDate};  Path=/; `;
                 } else {
                     const token = useCookie('auth-token');
                     console.log('7. -- refreshToken token from cookie:', JSON.stringify(token));
-                    cookieOld = `auth-token=${token}; Expires=${expiresDate}; Domain=${process.env.API_URL}; Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${refreshDate}; Domain=.${process.env.DOMAIN}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
+                    cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${refreshDate}; Domain=.${domain}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
                 }
                 console.log('8. -- refreshToken cookieOld, cookieNew:', JSON.stringify({cookieOld: cookieOld, cookieNew: cookieNew}, null, 2));
                 console.log('9. -- refreshToken responseData:', JSON.stringify({responseData}, null, 2));
                 
                 // Return a successful response
+                // Caution: multivalue headers are not supported by API Gateway's HTTP proxy integration
+                // Payload v2 formt:
+                // Duplicate headers are combined with commas and included in the headers field. Duplicate query strings are combined with commas and included in the queryStringParameters field.
+                // Format 2.0 includes a new cookies field. All cookie headers in the request are combined with commas and added to the cookies field. In the response to the client, each cookie becomes a set-cookie header.
+                // https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
                 return {
                     statusCode: 200,
                     headers: {
