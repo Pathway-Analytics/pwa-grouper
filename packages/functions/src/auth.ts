@@ -60,13 +60,25 @@ export const handler = AuthHandler({
             if(authUser) {
                 // if we are in localhost mode then use session parameters
                 if (isLocalMode ) {
-                    console.log('2. authhandler google using sessionParams, mode is: ', isLocalMode ? 'local' : 'deployed');
+                    console.log('2.1. authhandler google onSuccess using sessionParams, mode is: ', isLocalMode ? 'local' : 'deployed');
                     const params = getSessionParameter(authUser.id || '');
-                    return Session.parameter(params);
+                    let cookie = Session.cookie(params)?.cookies?.[0] ?? '';
+                    cookie = cookie.replace('; Domain=', '');
+                    cookie = `${cookie}; Domain=localhost;`; //we wold need to remove port etc but in dev mode we use the authorization header anyway...
+                    console.log('2.2. authhandler google onSuccess set cookie is: ', cookie); 
+                    const newProxyStructure = Session.cookie(params);
+                    newProxyStructure.cookies = [cookie];
+                    return newProxyStructure;
                 } else {
-                    console.log('3. authhandler google using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
-                    const cookies = getSessionCookies(authUser.id || '');
-                    return Session.cookie(cookies);
+                    console.log('3.1. authhandler goolgle onSuccess using sessionParams, mode is: ', isLocalMode ? 'local' : 'deployed');
+                    const params = getSessionParameter(authUser.id || '');
+                    let cookie = Session.cookie(params)?.cookies?.[0] ?? '';
+                    cookie = cookie.replace('; Domain=', '');
+                    cookie = `${cookie}; Domain=localhost;`; //we wold need to remove port etc but in dev mode we use the authorization header anyway...
+                    console.log('3.2. authhandler google onSuccess set cookie is: ', cookie); 
+                    const newProxyStructure = Session.cookie(params);
+                    newProxyStructure.cookies = [cookie];
+                    return newProxyStructure;
                 }
             } else {
                 console.log('4. authhandler google user not found')
@@ -118,23 +130,24 @@ export const handler = AuthHandler({
                     if (isLocalMode ) {
                         console.log('11. authhandler magiclink onSuccess using sessionParams, mode is: ', isLocalMode ? 'local' : 'deployed');
                         const params = getSessionParameter(authUser.id || '');
-                        const newSession = Session.parameter(params);
                         let cookie = Session.cookie(params)?.cookies?.[0] ?? '';
                         cookie = cookie.replace('; Domain=', '');
-                        cookie = `${cookie}; Domain=.${domain}`; //we wold need to remove port etc but in dev mode we use the authorization header anyway...
+                        cookie = `${cookie}; Domain=localhost;`; //we wold need to remove port etc but in dev mode we use the authorization header anyway...
                         console.log('12. authhandler magiclink onSuccess set cookie is: ', cookie); 
-
-                        return Session.parameter(params);
+                        const newProxyStructure = Session.cookie(params);
+                        newProxyStructure.cookies = [cookie];
+                        return newProxyStructure;
                     } else {
                         console.log('13. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
-                        const cookies = getSessionCookies(authUser.id || '');
-
+                        //-X const cookies = getSessionCookies(authUser.id || '');
+                        const params = getSessionParameter(authUser.id || '');
                         // reset the cookie to the site subdomain: .my-stage-my-app.domain.com
-                        let cookie = Session.cookie(cookies)?.cookies?.[0] ?? '';
+                        //-X const newProxyStructure = Session.cookie(cookies);
+                        const newProxyStructure = Session.parameter(params);
+                        let cookie = newProxyStructure.cookies?.[0] ?? '';
                         cookie = cookie.replace('; Domain=', '');
                         cookie = `${cookie}; Domain=.${domain}`;
-                        console.log('14. authhandler magiclink onSuccess set cookie is: ', cookie);
-                        const newProxyStructure = Session.cookie(cookies);
+                        console.log('14. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
                         newProxyStructure.cookies = [cookie];
                         return newProxyStructure;
                     }

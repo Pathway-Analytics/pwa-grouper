@@ -3,7 +3,7 @@
 import { page } from '$app/stores';
 import { refreshSession } from '$lib/refreshSession';
 import { onMount } from 'svelte';
-
+    
     let SessionResponse={}
 
     onMount (async () => {
