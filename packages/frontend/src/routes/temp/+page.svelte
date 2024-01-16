@@ -32,7 +32,7 @@ async function triggerEvent(event: string) {
   });
 
   if (!response.ok) {
-    console.error('Failed to trigger event', await response.text());
+    console.log('Error: Failed to trigger event', await response.text());
   }
 }
 async function fetchData(type: string, within?: string) {
@@ -41,7 +41,7 @@ async function fetchData(type: string, within?: string) {
     data = await lookUp(type, within);
     console.log('Function executed successfully');
   } catch (error) {
-    console.error('Error executing function', error);
+    console.log('Error: Error executing function', error);
   }
 }
 

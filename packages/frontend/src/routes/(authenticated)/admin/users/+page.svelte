@@ -107,14 +107,14 @@
                 users[index] = updatedExtUser;
                 console.log('updated user: ', users[index] , JSON.stringify(updatedExtUser));
             } else {
-                console.error('User to update not found in the array');
+                console.log('Error: User to update not found in the array');
             }
         } else {
             // Add new user
             if (!users.some(user => user.id === updatedExtUser.id)) {
                 users = [updatedExtUser, ...users];
             } else {
-                console.error('Attempting to add a user with a duplicate ID');
+                console.log('Error: Attempting to add a user with a duplicate ID');
             }
         }
         users = [...users]; // Trigger reactivity

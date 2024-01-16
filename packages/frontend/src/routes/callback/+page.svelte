@@ -29,12 +29,12 @@ import { onMount } from 'svelte';
 
 {#if $page.data}
     <h1>
-    Hi {$page.data.session?.user?.firstName} {$page.data.session.user?.lastName}
+    Hi {$page.data.session?.user?.firstName} {$page.data.session?.user?.lastName}
     <p>
-        {$page.data.session.user?.email}
+        {$page.data.session?.user?.email}
     </p>
     <p>
-        {new Date($page.data.session.exp*1000).toUTCString()}
+        {new Date($page.data.session?.exp*1000).toUTCString()}
     </p>
     </h1>
 {:else}
