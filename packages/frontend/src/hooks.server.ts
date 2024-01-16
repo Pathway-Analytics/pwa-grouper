@@ -47,38 +47,14 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     // any cookies needed in a server side page request must be forwarded in the request    
     export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
         console.log('0. hooks.server handleFetch started...') ;
-        let newRequest: Request = request;
-    
-        if (newRequest.url.startsWith(`${env.PUBLIC_API_URL}/session`)) {
-            console.log('0. hooks.server handleFetch adding ', `${event.request.headers}`) ;
-        }
-    
-        // if mode is local, add the auth-token header to the request
-        // this is needed for local development
-        if (env.PUBLIC_MODE === 'local') {
-            console.log('1. hooks.server handleFetch mode is local') ;
-            const token = event.url.searchParams.get('auth-token') || 
-                event.url.searchParams.get('token') ;
-            const newHeaders = new Headers(newRequest.headers);
-            
-            // add authorization header for local development
-            newHeaders.set('Authorization', `Bearer ${token}`);
-            newRequest = createNewRequest(newRequest, newHeaders, newRequest.url);
-    
-            // keep token in the url for local development
-            const url = new URL(newRequest.url);
-            url.searchParams.set('token', token || '');
-            newRequest = createNewRequest(newRequest, newRequest.headers, url.toString());
-            
-            console.log('2. hooks.server handleFetch ', `${JSON.stringify(newHeaders, null, 2)}`) ;
-          
-        } else {
-            console.log('3. hooks.server handleFetch mode is not local, forwarding headers...') ;
-            let newRequest: Request = request;
-            const newHeaders = new Headers(newRequest.headers);
-            newRequest = createNewRequest(newRequest, newHeaders, newRequest.url);
-            console.log('4. hooks.server handleFetch headers forwarded: ', `${JSON.stringify(newHeaders, null, 2)}`) ;    
-        }
+
+        // wrap each request with an authorization header
+        const newHeaders = new Headers(request.headers);
+        event.locals.token && newHeaders.set('Authorization', `Bearer ${event.locals.token}`);
+        newHeaders.set('credentials', 'include');
+        
+        const newRequest: Request = createNewRequest(request, newHeaders, request.url);
+        
         return fetch(newRequest);
     }
 
@@ -178,6 +154,6 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 export const handle: Handle = sequence(
     // callback,
     useSessionHandler,
-    handleAuth,
+    // handleAuth,
     handleAuth_z,
 )
