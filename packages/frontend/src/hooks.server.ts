@@ -3,6 +3,10 @@ import { type Handle, type HandleFetch } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { RoleType } from '@pwa-grouper/core/types/role';
 import { refreshSession } from '$lib/refreshSession';
+import type { SessionResponseType } from '@pwa-grouper/core/types/session';
+
+const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refresh to keep alive
+
 
 // ===== Helpers ====
     // function isRestrictedRoute accepts route param of type string or undefined
@@ -103,8 +107,33 @@ import { refreshSession } from '$lib/refreshSession';
     // }
 
     const useSessionHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+        console.log('0. hooks.server useSessionHandler route: ', event.route.id);
+// check if the event.url.searchParam('token') is null
+// call the env.PUBLIC_API_URL/session
+// add the url.searchParam('token') as an Authorization header
+// return the response
+// set resonse in the event.locals
+// return resolve(event)
+        try {
+            if (event.url.searchParams.get('token') === null) return resolve(event);
+            const currentSession = event.locals.session;
+            if (currentSession && currentSession.exp > Date.now() + ttlThreshold) {
+                console.log('1. hooks.server useSessionHandler session is valid, returning...');
+                return resolve(event)
+            } else {
+                console.log('2. hooks.server useSessionHandler session is invalid, refreshing...');
+                const token = event.url.searchParams.get('token') || '';
+                const sessionResponse: SessionResponseType = await refreshSession(token);
+                event.locals.session = sessionResponse.session;
+                event.locals.token = sessionResponse.token;
 
-        return resolve(event)
+                console.log('3. hooks.server useSessionHandler session refreshed: ', JSON.stringify(event.locals.session, null, 2));
+                return resolve(event)
+            }
+        } catch (err) {
+            console.log('4. hooks.server useSessionHandler error: ', err);
+            return resolve(event)
+        }
     }
 
     const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
@@ -115,9 +144,8 @@ import { refreshSession } from '$lib/refreshSession';
         const route = event.url.pathname;
         const mode = env.PUBLIC_MODE;
         locals.mode = env.PUBLIC_MODE
-        locals.devToken = event.url.searchParams.get('token') || '';
+        locals.token = event.url.searchParams.get('token') || '';
 
-        const ttlThreshold: number = 30 * 60 * 1000
         try{
             console.log('2. hooks.server handleAuth refreshing locals.session...');
             const token = event.url.searchParams.get('token') || '';

@@ -33,8 +33,9 @@ export let emptySession: SessionType = {
 
 export type SessionResponseType = {
     session: SessionType,
-    errMsg: string,
-    status: number
+    errMsg?: string,
+    status?: number
+    token: string
 }
 
 /**

@@ -1,50 +1,61 @@
 import { env } from '$env/dynamic/public';
-import { emptySession, type SessionType  } from "@pwa-grouper/core/types/session";
+import { emptySession, type SessionType, type SessionResponseType  } from "@pwa-grouper/core/types/session";
+import { error } from 'console';
 
-// return session data of SessionType
-export const refreshSession = async (token?: string): Promise<{message: string, session: SessionType}> => {
+const isLocalMode = env.PUBLIC_MODE === 'local';
+const api_session = `${env.PUBLIC_API_URL}/session`;
+
+
+// return session data from the server
+// always include the token on server side requests
+export const refreshSession = async (token?: string): Promise<SessionResponseType> => {
   console.log('0. refreshSession() started...');
   try {
     // include credentials: 'include' to send cookies
-    console.log('1. refreshSession() mode: ', env.PUBLIC_MODE);
-    if (env.PUBLIC_MODE === 'local'){
+    console.log('1. refreshSession() mode: ', isLocalMode ? 'local' : 'deployed');
+    if (token){
+      console.log('2. refreshSession() Bearer Auth fetching from', api_session );
       const  authHeader = {Authorization: `Bearer ${token}`};
-      const res = await fetch(`${env.PUBLIC_API_URL}/session`,{
+      const res = await fetch(api_session,{
         method: 'GET',
         headers: authHeader,
         credentials: 'include',
       });
-      const data: {message: string, session: SessionType} = await res.json();
-      // console.log('2. refreshSession() res: ', res);
+      
+      const data: {message: string, session: SessionType, token: string} = await res.json();
+      
       if (res.ok) {
+        console.log('6. refreshSession() data: ', JSON.stringify(data, null, 2));
+        data.message = 'ok';
         return data;
       }
       return data;  
 
     } else {
-      console.log('3.refreshSession() non-local mode: ', env.PUBLIC_MODE);
-      console.log('4.refreshSession() fetching from', `${env.PUBLIC_API_URL}/session`);
-      const res = await fetch(`${env.PUBLIC_API_URL}/session`,{
+      console.log('4.refreshSession() Cookie Auth fetching from', api_session);
+      const res = await fetch(api_session,{
         method: 'GET',
         credentials: 'include',
       })
-      const data = await res.json();
+      const data: {message: string, session: SessionType, token: string} =await res.json();
       // const data: {message: string, session: SessionType} = await res.json();
       // console.log('5. refreshSession() res: ', res);
       if (res.ok) {
 
         console.log('6. refreshSession() data: ', JSON.stringify(data, null, 2));
+        data.message = 'ok';
         return data;
       }
       console.log('7. refreshSession() response had a problem, data: ', JSON.stringify(data, null, 2)); 
+      data.message = 'response had a problem';
       return data;  
     }
 
   }
   catch (err) {
     console.log(err);
-    
-    const data = {message: err as string, session: emptySession as SessionType};
+    const session: SessionType = emptySession;
+    const data = {message: err as string, session, token: token || ''};
     return data;
   }
 };
