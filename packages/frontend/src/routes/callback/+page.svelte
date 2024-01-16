@@ -1,8 +1,27 @@
 <script lang='ts'>
 
 import { page } from '$app/stores';
+import { refreshSession } from '$lib/refreshSession';
+import { onMount } from 'svelte';
 
+    let SessionResponse={}
+
+    onMount (async () => {
+        console.log('callback +page', $page);
+        const token = $page.url.searchParams.get('token') || '';
+         SessionResponse = await refreshSession(token);
+        console.log('SessionResponse', JSON.stringify(SessionResponse, null, 2));
+        
+    });
 </script>
+<div class="scrollable">
+{#if SessionResponse}
+    <pre>Session: {JSON.stringify(SessionResponse, null,2)}</pre>
+{:else}
+    <p>loading SessionResponse...</p>
+{/if}
+
+
 
 {#if $page.data}
     <h1>
@@ -17,3 +36,12 @@ import { page } from '$app/stores';
 {:else}
     <h1>Welcome </h1>
 {/if}
+
+<style>
+    div.scrollable {
+      width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    </style>
+</div>
