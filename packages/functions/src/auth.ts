@@ -7,7 +7,8 @@ import { RoleType as Role } from '@pwa-grouper/core/types/role';
 import type { UserType } from '@pwa-grouper/core/types/user';
 import { useQueryParam } from 'sst/node/api';
 
-const frontendCallback = `${Config.SITE_URL}/callback`;
+const frontendCallback = `${process.env.SITE_URL}/callback`;
+const isLocalMode = process.env.MODE === 'local';
 
 // we have also created an extend SessionTypes interface in the $shared_types folder
 declare module 'sst/node/auth' {
@@ -55,12 +56,12 @@ export const handler = AuthHandler({
             const authUser = await handleClaim(claims);
             if(authUser) {
                 // if we are in localhost mode then use session parameters
-                if (Config.STAGE !== 'prod' && Config.STAGE !== 'dev' ) {
-                    console.log('2. authhandler google using sessionParams, mode is: ', Config.STAGE);
+                if (isLocalMode ) {
+                    console.log('2. authhandler google using sessionParams, mode is: ', isLocalMode ? 'local' : 'deployed');
                     const params = getSessionParameter(authUser.id || '');
                     return Session.parameter(params);
                 } else {
-                    console.log('3. authhandler google using sessionCookie, mode is: ', Config.STAGE);
+                    console.log('3. authhandler google using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
                     const cookies = getSessionCookies(authUser.id || '');
                     return Session.cookie(cookies);
                 }
@@ -82,7 +83,7 @@ export const handler = AuthHandler({
 
                 // swap out the domain in the link for the api domain so we hide the aws api gateway url
                 // we need to do this for secure cookies to work
-                link = link.replace(Config.AWS_API_URL, Config.API_URL);
+                link = link.replace(Config.AWS_API_URL, process.env.API_URL || '');
 
                 const emailmsg = await composeEmail(claims.email, link);
                 const userExists = await User.getByIdOrEmail(claims.email);
@@ -103,6 +104,11 @@ export const handler = AuthHandler({
             },
 
             onSuccess: async (tokenset) => {
+                const isLocalMode = process.env.MODE === 'local';
+                let domain = isLocalMode ? process.env.DOMAIN || '' : process.env.SITE_URL || '';
+                domain = domain.replace('https://', '');
+                domain = domain.replace('http://', '');
+
                 console.log('7. authhandler magiclink onSuccess(tokenset): ' , JSON.stringify(tokenset, null, 4));
                 const claims: Record<string, any> = tokenset;
                 console.log('8. authhandler magiclink onSuccess claims: ' , JSON.stringify(claims, null, 4));
@@ -111,15 +117,28 @@ export const handler = AuthHandler({
                 console.log('9. authhandler magiclink onSuccess authUser: ', authUser);
                 if (authUser?.id !== undefined) {
                     console.log('10. authhandler magiclink onSuccess  authUser.id', authUser.id);
-                    if (Config.STAGE !== 'prod' && Config.STAGE !== 'dev' ) {
-                        console.log('11. authhandler magiclink onSuccess using sessionParams, mode is: ', Config.STAGE);
+                    if (isLocalMode ) {
+                        console.log('11. authhandler magiclink onSuccess using sessionParams, mode is: ', isLocalMode ? 'local' : 'deployed');
                         const params = getSessionParameter(authUser.id || '');
                         const newSession = Session.parameter(params);
+                        let cookie = Session.cookie(params)?.cookies?.[0] ?? '';
+                        cookie = cookie.replace('; Domain=', '');
+                        cookie = `${cookie}; Domain=.${domain}`; //we wold need to remove port etc but in dev mode we use the authorization header anyway...
+                        console.log('12. authhandler magiclink onSuccess set cookie is: ', cookie); 
+
                         return Session.parameter(params);
                     } else {
-                        console.log('12. authhandler magiclink onSuccess using sessionCookie, mode is: ', Config.STAGE);
+                        console.log('13. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
                         const cookies = getSessionCookies(authUser.id || '');
-                        return Session.cookie(cookies);
+
+                        // reset the cookie to the site subdomain: .my-stage-my-app.domain.com
+                        let cookie = Session.cookie(cookies)?.cookies?.[0] ?? '';
+                        cookie = cookie.replace('; Domain=', '');
+                        cookie = `${cookie}; Domain=.${domain}`;
+                        console.log('14. authhandler magiclink onSuccess set cookie is: ', cookie);
+                        const newProxyStructure = Session.cookie(cookies);
+                        newProxyStructure.cookies = [cookie];
+                        return newProxyStructure;
                     }
                     // decide whether to use cookies or params for session management 
                     // https://docs.sst.dev/auth#cookies
@@ -128,7 +147,7 @@ export const handler = AuthHandler({
                     // to setting the cookie in the site domain needs to done on the site server
                     // hooks.
                 } else {
-                    console.log('13. authhandler magiclink onSuccess authUser not found')
+                    console.log('15. authhandler magiclink onSuccess authUser not found')
                     return {
                         statusCode: 403,
                         body: JSON.stringify({ 'Authentication Error': "Credentials not valid" }),
@@ -137,7 +156,7 @@ export const handler = AuthHandler({
             },
             
             onError: async () => {
-                console.log('14. authhandler MagicLink onError')
+                console.log('16. authhandler MagicLink onError')
                 return {
                     statusCode: 500,
                     body: JSON.stringify({ 'Link message': "An error occurred" }),

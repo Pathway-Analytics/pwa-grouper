@@ -16,12 +16,16 @@ import { onMount } from 'svelte';
 </script>
 <div class="scrollable">
 {#if SessionResponse}
-    <pre>Session: {JSON.stringify(SessionResponse, null,2)}</pre>
+<p>Session from refreshSession() called from the client side: </p>
+    <pre>{JSON.stringify(SessionResponse, null,2)}</pre>
 {:else}
     <p>loading SessionResponse...</p>
 {/if}
 
 
+<p>
+    Session data extracted from local store:
+</p>
 
 {#if $page.data}
     <h1>
