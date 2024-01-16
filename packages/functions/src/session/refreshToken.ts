@@ -45,7 +45,8 @@ const main = async () => {
                 session.user = await User.getByIdOrEmail(decodedToken.properties.userId);
                 session.isValid = true;
 
-                let date = new Date(session.exp * 1000);
+                let refreshDate = new Date(session.exp * 1000).toUTCString();
+                let expiresDate = new Date().toUTCString();
                 let cookieOld = ''
                 let cookieNew = ''
                 console.log('5. -- refreshToken, USER session details: ', JSON.stringify(session, null, 2));
@@ -58,13 +59,13 @@ const main = async () => {
                 if (mode === 'local') {
                     const token = useQueryParam('token');
                     console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
-                    cookieOld = `auth-token=${token}; Expires=${new Date(0)}; Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${date};  Path=/; `;
+                    cookieOld = `auth-token=${token}; Expires=${expiresDate};  Domain=${process.env.API_URL}; Path=/; HttpOnly; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${refreshDate};  Path=/; `;
                 } else {
                     const token = useCookie('auth-token');
                     console.log('7. -- refreshToken token from cookie:', JSON.stringify(token));
-                    cookieOld = `auth-token=${token}; Expires=${new Date(0)}; Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${date}; Domain=.${process.env.DOMAIN}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
+                    cookieOld = `auth-token=${token}; Expires=${expiresDate}; Domain=${process.env.API_URL}; Path=/; HttpOnly; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${refreshDate}; Domain=.${process.env.DOMAIN}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
                 }
                 console.log('8. -- refreshToken cookieOld, cookieNew:', JSON.stringify({cookieOld: cookieOld, cookieNew: cookieNew}, null, 2));
                 console.log('9. -- refreshToken responseData:', JSON.stringify({responseData}, null, 2));
