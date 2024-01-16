@@ -1,6 +1,5 @@
 import { env } from '$env/dynamic/public';
 import { emptySession, type SessionType, type SessionResponseType  } from "@pwa-grouper/core/types/session";
-import { error } from 'console';
 
 const isLocalMode = env.PUBLIC_MODE === 'local';
 const api_session = `${env.PUBLIC_API_URL}/session`;
