@@ -3,7 +3,7 @@ import { type Handle, type HandleFetch } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { RoleType } from '@pwa-grouper/core/types/role';
 import { refreshSession } from '$lib/refreshSession';
-import type { SessionResponseType } from '@pwa-grouper/core/types/session';
+import type { SessionResponseType, SessionType } from '@pwa-grouper/core/types/session';
 
 const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refresh to keep alive
 
@@ -54,6 +54,8 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         newHeaders.set('credentials', 'include');
         
         const newRequest: Request = createNewRequest(request, newHeaders, request.url);
+
+
         
         return fetch(newRequest);
     }
@@ -82,78 +84,113 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     //     return resolve(event)
     // }
 
-    const useSessionHandler: Handle = async ({ event, resolve }): Promise<Response> => {
-        console.log('0. hooks.server useSessionHandler route: ', event.route.id);
-// check if the event.url.searchParam('token') is null
-// call the env.PUBLIC_API_URL/session
-// add the url.searchParam('token') as an Authorization header
-// return the response
-// set resonse in the event.locals
-// return resolve(event)
-        try {
-            if (event.url.searchParams.get('token') === null) return resolve(event);
-            const currentSession = event.locals.session;
-            if (currentSession && currentSession.exp > Date.now() + ttlThreshold) {
-                console.log('1. hooks.server useSessionHandler session is valid, returning...');
-                return resolve(event)
-            } else {
-                console.log('2. hooks.server useSessionHandler session is invalid, refreshing...');
+    // if the route is /callback and the token is there set the session
+    // anything hitting /callback with a token in the query string 
+    const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+        // if route.id is /callback
+        // and the event.url.searchParams.get('token') is not null
+        try{
+        
+            if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
+                console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
                 const token = event.url.searchParams.get('token') || '';
+                const urlRedirect = event.url.searchParams.get('urlRedirect')
+
+                console.log('0. hooks.server initAuthHandler session initialising... ', token? 'token found' : 'token not found');
                 const sessionResponse: SessionResponseType = await refreshSession(token);
                 event.locals.session = sessionResponse.session;
                 event.locals.token = sessionResponse.token;
+                event.locals.message = sessionResponse.errMsg;
+                console.log('1. hooks.server initAuthHandler session initialised: ', JSON.stringify(event.locals.session, null, 2));
+            
+                const response = await resolve(event);
+                response.headers.set('Status', '302');
+                response.headers.set('Location', urlRedirect || '');
+                console.log('2. hooks.server initAuthHandler session redirecting: ', urlRedirect || '');
+                return response;
 
-                console.log('3. hooks.server useSessionHandler session refreshed: ', JSON.stringify(event.locals.session, null, 2));
-                return resolve(event)
+            } else {
+                console.log('3. hooks.server initAuthHandler skipped... ');
+                const response = await resolve(event);
+                return response;
             }
         } catch (err) {
-            console.log('4. hooks.server useSessionHandler error: ', err);
-            return resolve(event)
+            console.log('4. hooks.server initAuthHandler error: ', err);
+            const response = await resolve(event);
+            response.headers.set('Status', '400');
+            response.headers.set('Location', '/error');
+            return response;
         }
     }
 
-    const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
-        console.log('0. hooks.server handleAuth route: ', event.route.id);
-        console.log('00. hooks.server handleAuth mode: ', env.PUBLIC_MODE);
-        console.log('1. hooks.server handleAuth event: ', JSON.stringify(event));
-        const locals = event.locals;
-        const route = event.url.pathname;
-        const mode = env.PUBLIC_MODE;
-        locals.mode = env.PUBLIC_MODE
-        locals.token = event.url.searchParams.get('token') || '';
+    // check if the session is valid on the frontend, if not try to refresh it
+    const authHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+        console.log('0. hooks.server authHandler route: ', event.route.id);
+        
+        try {
+            if (event.locals.token && // there is a token
+                event.locals.session.exp - Date.now() < ttlThreshold && //about to expire
+                event.locals.session.exp > Date.now() // not yet expired
+            ) {
+                // refresh the session
+                const token = event.locals.token;
+                console.log('1. hooks.server authHandler session expired, refreshing...');
+                const sessionResponse: SessionResponseType = await refreshSession(token);
+                event.locals.session = sessionResponse.session;
+                event.locals.token = sessionResponse.token;
+                event.locals.message = sessionResponse.errMsg;
+                console.log('2. hooks.server authHandler session refreshed: ', JSON.stringify(event.locals.session, null, 2));
+    
+                const response = await resolve(event);
+                return response;
 
-        try{
-            console.log('2. hooks.server handleAuth refreshing locals.session...');
-            const token = event.url.searchParams.get('token') || null;
-            console.log('3. hooks.server handleAuth locals.session before refresh: ', JSON.stringify(locals.session, null, 2));
-            const sessionResponse = await refreshSession(token);
-            locals.session = sessionResponse.session;
-            console.log('4. hooks.server handleAuth locals.session after refresh: ', JSON.stringify(locals.session, null, 2));
-            return resolve(event)
+            } else if (event.locals.token &&
+                event.locals.session.exp > Date.now() - ttlThreshold // not expired
+                ) {
+                // session is valid
+                console.log('3. hooks.server authHandler valid session: ');
+                const response = await resolve(event);
+	            return response;
+            } else {
+                // no session is not valid
+                console.log('4. hooks.server authHandler no session found: ');
+                const response = await resolve(event);
+                response.headers.set('Status', '401');
+                response.headers.set('Location', '/login');
+
+                return response;
+            }
+
         } catch (err) {
-            console.log('5. hooks.server handleAuth error: ', err);
-            return resolve(event)
+            console.log('4. hooks.server authHandler error: ', err);
+            const response = await resolve(event);
+            response.headers.set('Status', '400');
+            response.headers.set('Location', '/error');
+            return response;
         }
     }
 
     // authorization hook to check the user is authorized to access the route
-    const handleAuth_z: Handle = async ({ event, resolve }): Promise<Response> => {
-        
+    const authZHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+        console.log('0. hooks.server authZHandler route id: ', event.route.id);
+        console.log('1. hooks.server authZHandler route roles: ',  event.locals.session?.user?.roles || '');
+                        
         // passes in the event.route.id and the session user roles if any
         if (!isRestrictedRoute(event.route.id || '',  event.locals.session?.user?.roles || '')) {
-            return resolve(event)
+            console.log('3. hooks.server authZHandler route is not restricted ');
+            const response = await resolve(event);
+            return response;
+        } else {
+        console.log('4. hooks.server authZHandler route is RESTRICTED ');
+        return new Response(null, { status:  401, headers: { location: '/dashboard' } });
         }
-
-        // redirect to /dashboard
-        return new Response(null, { status: 302, headers: { Location: '/dashboard' } });
     
     }
 
 
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 export const handle: Handle = sequence(
-    // callback,
-    useSessionHandler,
-    // handleAuth,
-    handleAuth_z,
+    initAuthHandler,
+    authHandler,
+    authZHandler,
 )

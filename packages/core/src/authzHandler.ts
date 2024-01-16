@@ -15,24 +15,24 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
   return async (event, context): Promise<APIGatewayProxyStructuredResultV2> => {
 // TODO: Check user has required roles
   console.log('0. authzHandler', ` called by ${event.routeKey}`);
-  console.log('0. authzHandler event:', JSON.stringify(event));
+  console.log('1. authzHandler event:', JSON.stringify(event));
     try {
       
-      console.log('1. -- authzHandler cookie found: ', JSON.stringify(useCookie('auth-token')))
+      console.log('2. -- authzHandler cookie found: ', JSON.stringify(useCookie('auth-token')))
+  
+      // ignore if the path is /session 
+      console.log('3. -- authzHandler session path: ', JSON.stringify(usePath()));
+      if (event.rawPath === '/session' ) {
+        console.log('4. -- authzHandler ignoreing the authzHandler for the /session path: ');
+
+        return await handler(event, context);
+      }
+
       // useSession() returns the session object if the user is logged in
       // either session.Paramters({}) or session.Cookie({}) can be used
       // session.Cookie({}) is more secure but cannot be used with localhost.
       const session: SessionTokenType = useSession();
-      console.log('2. -- authzHandler session found: ', JSON.stringify(session));  
-  
-      // ignore if the path is /session 
-      console.log('3. -- authzHandler session path: ', JSON.stringify(usePath()));
-      if (!session || event.rawPath === '/session' ) {
-        console.log('3. -- authzHandler ignoreing the authzHandler for the /session path: ');
-
-        return await handler(event, context);
-
-      }
+      console.log('5. -- authzHandler session found: ', JSON.stringify(session));  
 
       // if no session or session is public, return 401
       if (!session || session.type === SessionUserType.PUBLIC ) {
@@ -45,7 +45,7 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
 
       // check if the request has a body and if so, parse it
       if (['POST', 'PUT', 'PATCH'].includes(useMethod())) {
-        console.log('5. -- authzHandler session:', JSON.stringify(useMethod()));
+        console.log('6. -- authzHandler session:', JSON.stringify(useMethod()));
 
         const body = useJsonBody();
         if (!body) {
@@ -55,12 +55,12 @@ export const authzHandler = (handler: LambdaHandler, roles?: RoleType[]): Lambda
         }
       }
 
-      console.log('6. -- authzHandler session looks good:', JSON.stringify(session));
+      console.log('7. -- authzHandler session looks good:', JSON.stringify(session));
   
       return await handler(event, context);
 
     } catch (error) {
-      console.log('7. -- authzHandler error: ', JSON.stringify(error));
+      console.log('8. -- authzHandler error: ', JSON.stringify(error));
 
       const errorMessage = error instanceof Error ? error.message : 'Internal server error';
       console.error('Error in authHandler:', error);

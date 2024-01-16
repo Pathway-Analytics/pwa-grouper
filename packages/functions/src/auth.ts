@@ -136,9 +136,10 @@ export const handler = AuthHandler({
                         console.log('12. authhandler magiclink onSuccess set cookie is: ', cookie); 
                         const newProxyStructure = Session.cookie(params);
                         newProxyStructure.cookies = [cookie];
+                        console.log('13. authhandler magiclink onSuccess set newcookie: ', newProxyStructure?.cookies?.[0]);
                         return newProxyStructure;
                     } else {
-                        console.log('13. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
+                        console.log('14. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
                         //-X const cookies = getSessionCookies(authUser.id || '');
                         const params = getSessionParameter(authUser.id || '');
                         // reset the cookie to the site subdomain: .my-stage-my-app.domain.com
@@ -147,7 +148,7 @@ export const handler = AuthHandler({
                         let cookie = newProxyStructure.cookies?.[0] ?? '';
                         cookie = cookie.replace('; Domain=', '');
                         cookie = `${cookie}; Domain=.${domain}`;
-                        console.log('14. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
+                        console.log('15. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
                         newProxyStructure.cookies = [cookie];
                         return newProxyStructure;
                     }
@@ -158,7 +159,7 @@ export const handler = AuthHandler({
                     // to setting the cookie in the site domain needs to done on the site server
                     // hooks.
                 } else {
-                    console.log('15. authhandler magiclink onSuccess authUser not found')
+                    console.log('16. authhandler magiclink onSuccess authUser not found')
                     return {
                         statusCode: 403,
                         body: JSON.stringify({ 'Authentication Error': "Credentials not valid" }),
@@ -167,7 +168,7 @@ export const handler = AuthHandler({
             },
             
             onError: async () => {
-                console.log('16. authhandler MagicLink onError')
+                console.log('17. authhandler MagicLink onError')
                 return {
                     statusCode: 500,
                     body: JSON.stringify({ 'Link message': "An error occurred" }),
@@ -220,6 +221,8 @@ function getSessionParameter (userId: string):{
 } 
 {
     const urlRedirect = useQueryParam('urlRedirect');
+    // add a urlRedirect query param to the redirect url 
+    // the urlRedirect is used to redirect to after the session is set in localstorage
     const redirect = urlRedirect
         ? `${frontendCallback}?urlRedirect=${urlRedirect}`
         : `${frontendCallback}`;
