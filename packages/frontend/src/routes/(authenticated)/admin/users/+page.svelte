@@ -61,8 +61,10 @@
                 headers: { 'Authorization': authBearer }
             }
             );
-            users = await res.json();
-            users = [...users];
+            if (res.ok) {
+                users = await res.json();
+                users = [...users];
+            }
         } else {
             const res = await fetch(`${env.PUBLIC_API_URL}/users`, { 
                 credentials: 'include' }
@@ -78,7 +80,7 @@
     function handleEdit(user: ExtendedUser) {
         localUser = { ...user };
         const index = users.findIndex(u => u.id === user.id);
-        if (index !== -1) {
+        if (index !== -1 && users.length > 0) {
             users[index].isEditing = true;
             users = [...users]; // Trigger reactivity
         }
@@ -98,6 +100,7 @@
             body: JSON.stringify(localUser),
             credentials: 'include',
         });
+        
         const updatedUser = await res.json();
         const updatedExtUser: ExtendedUser = { ...updatedUser.res, isEditing: false };
         if (isUpdatingUser) {
@@ -116,6 +119,13 @@
             } else {
                 console.log('Error: Attempting to add a user with a duplicate ID');
             }
+        }
+        if (res.ok) {
+            // Update local user with the updated user from the server
+            localUser = { ...updatedExtUser };
+        } else {
+            // Update local user with the original user
+            localUser = { ...userToUpdate };
         }
         users = [...users]; // Trigger reactivity
     }
@@ -176,6 +186,7 @@
                     <TableBodyCell colspan="6">No users found</TableBodyCell>
                 </TableBodyRow>
             {:else} -->
+            {#if users.length > 0}
                 {#each users as extUser (extUser.id)}   
                     <TableBodyRow>
                         <!-- <TableBodyCell class='px-2 py-0'>{extUser.id}</TableBodyCell> -->
@@ -206,6 +217,7 @@
                         </TableBodyCell>
                     </TableBodyRow>
                 {/each}
+            {/if}
         <!-- {/if} -->
         {:catch error}
             <p style="color: red">{error.message}</p>    

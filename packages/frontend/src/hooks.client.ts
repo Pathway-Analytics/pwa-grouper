@@ -8,8 +8,9 @@ import { env } from '$env/dynamic/public';
 const tester: Handle = async ({ event, resolve }) => {
 
     console.log('0. hooks.client test event: ', JSON.stringify(event, null, 2));
+    const response = await resolve(event);
 
-    return resolve(event);
+    return response;
 }
-export const handle: Handle = sequence(tester);
+//export const handle: Handle = sequence(tester);
 

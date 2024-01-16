@@ -15,6 +15,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
          
         // session roles array add authenticated
         let roles: string[] = [];
+        let routes: string[] = [];
         console.log('0. hooks.server isRestrictedRoute session: ', JSON.stringify(session, null, 2));
         if (session.isValid === true ){
              roles = `${session.user?.roles?.toLowerCase()},authenticated`?.split(',') || [];
@@ -24,8 +25,9 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         if (roles.includes(RoleType.ADMIN)) return false;
         
         // array of any string between parentheses in the routeId
-        const routes = routeId?.match(/\((.*?)\)/g)?.map(route => route.replace(/[\(\)]/g, ''));
+        routes = routeId?.match(/\((.*?)\)/g)?.map(route => route.replace(/[\(\)]/g, '')) || [];
         console.log('2. hooks.server isRestrictedRoute routes: ', routes);
+        
         // does the roles array include all the required matches?
         const allMatchesIncluded: boolean = routes?.every(route => roles.includes(route)) || false;
         let isRestricted: boolean = !allMatchesIncluded;
@@ -110,11 +112,13 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 event.locals.message = sessionResponse.errMsg;
                 console.log('2. hooks.server initAuthHandler session initialised: ', JSON.stringify(event.locals.session, null, 2));
             
-                const response = await resolve(event);
-                response.headers.set('Status', '302');
-                response.headers.set('Location', urlRedirect || '');
                 console.log('3. hooks.server initAuthHandler session redirecting: ', urlRedirect || '');
-                return response;
+                return new Response(null, {
+                    status: 302, // Temporary redirect
+                    headers: {
+                        Location: `/${urlRedirect}` || '/dashboard',
+                    }
+                });
                 
             } else {
                 console.log('4. hooks.server initAuthHandler skipped... ');
@@ -123,10 +127,12 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
             }
         } catch (err) {
             console.log('5. hooks.server initAuthHandler error: ', err);
-            const response = await resolve(event);
-            response.headers.set('Status', '400');
-            response.headers.set('Location', '/error');   
-            return response;
+            return new Response(null, {
+                status: 400, // Temporary redirect
+                headers: {
+                    Location: '/error',
+                }
+            });
         }
     }
 
@@ -159,21 +165,21 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 const response = await resolve(event);
                 return response;
             } else {
-                // no session is not valid
+                // no session is not valid 
+                // authZHandler will hanle any redirects later...
                 console.log('4. hooks.server authHandler no session found: ');
                 const response = await resolve(event);
-                response.headers.set('Status', '401');
-                response.headers.set('Location', '/login');
-
                 return response;
             }
 
         } catch (err) {
             console.log('5. hooks.server authHandler error: ', err);
-            const response = await resolve(event);
-            response.headers.set('Status', '400');
-            response.headers.set('Location', '/error');
-            return response;
+            return new Response(null, {
+                status: 400, // Temporary redirect
+                headers: {
+                    Location: '/error',
+                }
+            });
         }
     }
 
@@ -186,16 +192,17 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         if (!isRestrictedRoute(event.route.id || '',  event.locals.session?.user?.roles || '')) {
             console.log('3. hooks.server authZHandler route is not restricted ');
             const response = await resolve(event);
-            response.headers.set('Status', '401');
-            response.headers.set('Location', '/login');
-            console.log('4. hooks.server authZHandler redirecting...');
             return response;
 
         } else {
-        console.log('5. hooks.server authZHandler route is RESTRICTED ');
-        return new Response(null, { status:  401, headers: { location: '/dashboard' } });
+            console.log('5. hooks.server authZHandler route is RESTRICTED redirecting...');
+            return new Response(null, {
+                status: 302, // Temporary redirect
+                headers: {
+                    Location: '/login',
+                }
+            });
         }
-    
     }
 
 // we cannot garuntee the order of the hooks as some may be async
