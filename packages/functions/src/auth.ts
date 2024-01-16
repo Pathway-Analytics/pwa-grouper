@@ -159,8 +159,8 @@ function getSessionCookies (userId: string):{
 }{
     const urlRedirect = useQueryParam('urlRedirect');
     const redirect = urlRedirect
-        ? `${Config.SITE_URL}/callback?urlRedirect=${urlRedirect}`
-        : `${Config.SITE_URL}/callback`;
+        ? `${Config.SITE_URL}/dashboard?urlRedirect=${urlRedirect}`
+        : `${Config.SITE_URL}/dashboard`;
     return {
         type: 'user' as keyof SessionTypes,
         properties: {
@@ -189,8 +189,8 @@ function getSessionParameter (userId: string):{
 {
     const urlRedirect = useQueryParam('urlRedirect');
     const redirect = urlRedirect
-        ? `${Config.SITE_URL}/callback?urlRedirect=${urlRedirect}`
-        : `${Config.SITE_URL}/callback`;
+        ? `${Config.SITE_URL}/dashboard?urlRedirect=${urlRedirect}`
+        : `${Config.SITE_URL}/dashboard`;
     return {
         type: 'user' as keyof SessionTypes,
         properties: {

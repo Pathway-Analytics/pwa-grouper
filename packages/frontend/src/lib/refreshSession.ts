@@ -15,7 +15,7 @@ export const refreshSession = async (token?: string): Promise<{message: string, 
         credentials: 'include',
       });
       const data: {message: string, session: SessionType} = await res.json();
-      console.log('2. refreshSession() res: ', res);
+      // console.log('2. refreshSession() res: ', res);
       if (res.ok) {
         return data;
       }
@@ -29,10 +29,12 @@ export const refreshSession = async (token?: string): Promise<{message: string, 
         credentials: 'include',
       })
       const data: {message: string, session: SessionType} = await res.json();
-      console.log('5. refreshSession() res: ', res);
+      // console.log('5. refreshSession() res: ', res);
       if (res.ok) {
+        console.log('6. refreshSession() data: ', JSON.stringify(data, null, 2));
         return data;
       }
+      console.log('7. refreshSession() response had a problem, data: ', JSON.stringify(data, null, 2)); 
       return data;  
     }
 
