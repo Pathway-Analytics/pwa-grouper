@@ -100,6 +100,7 @@ const main = async () => {
             message: `Internal Server Error:  ${error}` ,
             emptySession
         };
+        console.log('12. -- refreshToken, oops error details: ', JSON.stringify(responseData, null, 2));
         return useResponse()
             .status(500)
             .serialize(responseData)

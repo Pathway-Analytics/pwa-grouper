@@ -28,9 +28,11 @@ export const refreshSession = async (token?: string): Promise<{message: string, 
         method: 'GET',
         credentials: 'include',
       })
-      const data: {message: string, session: SessionType} = await res.json();
+      const data = await res.json();
+      // const data: {message: string, session: SessionType} = await res.json();
       // console.log('5. refreshSession() res: ', res);
       if (res.ok) {
+
         console.log('6. refreshSession() data: ', JSON.stringify(data, null, 2));
         return data;
       }
