@@ -18,8 +18,12 @@ import { onMount } from 'svelte';
 {#if SessionResponse}
 <p>Session from refreshSession() called from the client side: </p>
     <pre>{JSON.stringify(SessionResponse, null,2)}</pre>
+    <p>
+        <a href="/dashboard">Dashboard</a>
+    </p>
 {:else}
     <p>loading SessionResponse...</p>
+
 {/if}
 
 
@@ -37,9 +41,17 @@ import { onMount } from 'svelte';
         {new Date($page.data.session?.exp*1000).toUTCString()}
     </p>
     </h1>
+
 {:else}
     <h1>Welcome </h1>
 {/if}
+
+
+
+
+<p>
+    <a href="/">Home</a>
+</p>
 
 <style>
     div.scrollable {
