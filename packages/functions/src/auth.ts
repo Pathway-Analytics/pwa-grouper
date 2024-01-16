@@ -7,6 +7,8 @@ import { RoleType as Role } from '@pwa-grouper/core/types/role';
 import type { UserType } from '@pwa-grouper/core/types/user';
 import { useQueryParam } from 'sst/node/api';
 
+const frontendCallback = `${Config.SITE_URL}/callback`;
+
 // we have also created an extend SessionTypes interface in the $shared_types folder
 declare module 'sst/node/auth' {
     export interface SessionTypes {
@@ -159,8 +161,8 @@ function getSessionCookies (userId: string):{
 }{
     const urlRedirect = useQueryParam('urlRedirect');
     const redirect = urlRedirect
-        ? `${Config.SITE_URL}/dashboard?urlRedirect=${urlRedirect}`
-        : `${Config.SITE_URL}/dashboard`;
+        ? `${frontendCallback}?urlRedirect=${urlRedirect}`
+        : `${frontendCallback}`;
     return {
         type: 'user' as keyof SessionTypes,
         properties: {
@@ -189,8 +191,8 @@ function getSessionParameter (userId: string):{
 {
     const urlRedirect = useQueryParam('urlRedirect');
     const redirect = urlRedirect
-        ? `${Config.SITE_URL}/dashboard?urlRedirect=${urlRedirect}`
-        : `${Config.SITE_URL}/dashboard`;
+        ? `${frontendCallback}?urlRedirect=${urlRedirect}`
+        : `${frontendCallback}`;
     return {
         type: 'user' as keyof SessionTypes,
         properties: {
