@@ -18,6 +18,19 @@ let domain = isLocalMode ? process.env.DOMAIN || '' : process.env.SITE_URL || ''
 domain = domain.replace('https://', '');
 domain = domain.replace('http://', '');
 
+const updateUserLastLogin = async (session: SessionType) => {
+    if (session.user?.id) {
+        let getUser = await User.getByIdOrEmail(session.user?.id || '');
+        getUser.lastLogin = new Date()
+        const updateUserLastLogin = await User.createUpdate(getUser);
+        const updatedSession = session
+        if (updateUserLastLogin){
+            updatedSession.user = getUser
+        }
+        return updatedSession;
+    }
+    return session;
+}
 
 const main = async () => {
     console.log('0. -- refreshToken auth-token found: ', useCookie('auth-token')? true : false );   
@@ -59,7 +72,7 @@ const main = async () => {
                 // set the cookie
                 let token: string | undefined = ''       
                 // if (isLocalMode) {
-                    // strip Bearer from the useHeader('Authorisation') token or useQueryParam('token')
+                // strip Bearer from the useHeader('Authorisation') token or useQueryParam('token')
                     token = useHeader('Authorization')?.replace('Bearer ', '') || useQueryParam('token');
                     
                     console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
@@ -71,6 +84,8 @@ const main = async () => {
                 //     cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
                     cookieNew = `auth-token=${token}; Expires=${refreshDate}; Domain=.${domain}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
                 // }
+                // update the user last login
+                session = await updateUserLastLogin(session);
                 const responseData = {
                     message: "cookie reset",
                     session, 
@@ -86,6 +101,7 @@ const main = async () => {
                 // Duplicate headers are combined with commas and included in the headers field. Duplicate query strings are combined with commas and included in the queryStringParameters field.
                 // Format 2.0 includes a new cookies field. All cookie headers in the request are combined with commas and added to the cookies field. In the response to the client, each cookie becomes a set-cookie header.
                 // https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+                
                 return {
                     statusCode: 200,
                     headers: {
