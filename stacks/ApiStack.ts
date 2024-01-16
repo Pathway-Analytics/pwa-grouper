@@ -65,6 +65,7 @@ export function ApiStack({ stack, app }: StackContext) {
             authorizer: 'none',
             function: {
                 environment: {
+                    DOMAIN: process.env.DOMAIN || '',
                     SITE_URL: site_url,
                     API_URL: api_url,
                     MODE: app.local? 'local': app.mode,
