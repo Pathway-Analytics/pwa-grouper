@@ -102,6 +102,11 @@ import { refreshSession } from '$lib/refreshSession';
     //     return resolve(event)
     // }
 
+    const useSessionHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+
+        return resolve(event)
+    }
+
     const handleAuth: Handle = async ({ event, resolve }): Promise<Response> => {
         console.log('0. hooks.server handleAuth route: ', event.route.id);
         console.log('00. hooks.server handleAuth mode: ', env.PUBLIC_MODE);
@@ -144,6 +149,7 @@ import { refreshSession } from '$lib/refreshSession';
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 export const handle: Handle = sequence(
     // callback,
+    useSessionHandler,
     handleAuth,
     handleAuth_z,
 )
