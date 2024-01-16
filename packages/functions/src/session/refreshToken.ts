@@ -4,7 +4,6 @@ import { User } from '@pwa-grouper/core/classes/user';
 import type { SessionType } from '@pwa-grouper/core/types/session';
 import { SessionUserType, emptySession } from '@pwa-grouper/core/types/session';
 import { authzHandler } from '@pwa-grouper/core/authzHandler';
-import { Config } from 'sst/node/config';
 
 
 // This function check for the original cookie posted on api.mystage-myapp.mydomain.com
@@ -65,7 +64,7 @@ const main = async () => {
                     const token = useCookie('auth-token');
                     console.log('7. -- refreshToken token from cookie:', JSON.stringify(token));
                     cookieOld = `auth-token=${token}; Expires=${new Date(0)}; Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${date}; Domain=.${Config.API_URL}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
+                    cookieNew = `auth-token=${token}; Expires=${date}; Domain=.${process.env.API_URL}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
                 }
                 console.log('8. -- refreshToken cookieOld, cookieNew:', JSON.stringify({cookieOld: cookieOld, cookieNew: cookieNew}, null, 2));
                 console.log('9. -- refreshToken responseData:', JSON.stringify({responseData}, null, 2));
