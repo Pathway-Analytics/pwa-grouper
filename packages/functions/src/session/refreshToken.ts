@@ -1,4 +1,4 @@
-import { ApiHandler, useCookie, useQueryParam, useResponse } from 'sst/node/api';
+import { ApiHandler, useCookie, useHeader, useQueryParam, useResponse } from 'sst/node/api';
 import { useSession } from "sst/node/auth"
 import { User } from '@pwa-grouper/core/classes/user';
 import type { SessionType } from '@pwa-grouper/core/types/session';
@@ -59,15 +59,17 @@ const main = async () => {
                 // set the cookie
                 let token: string | undefined = ''       
                 // if (isLocalMode) {
-                    token = useQueryParam('token');
+                    // strip Bearer from the useHeader('Authorisation') token or useQueryParam('token')
+                    token = useHeader('Authorization')?.replace('Bearer ', '') || useQueryParam('token');
+                    
                     console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
                     cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${refreshDate};  Path=/; `;
+                    // cookieNew = `auth-token=${token}; Expires=${refreshDate};  Path=/; `;
                 // } else {
                 //     token = useCookie('auth-token');
                 //     console.log('7. -- refreshToken token from cookie:', JSON.stringify(token));
                 //     cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
-                //     cookieNew = `auth-token=${token}; Expires=${refreshDate}; Domain=.${domain}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
+                    cookieNew = `auth-token=${token}; Expires=${refreshDate}; Domain=.${domain}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
                 // }
                 const responseData = {
                     message: "cookie reset",
