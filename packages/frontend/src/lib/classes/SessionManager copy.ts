@@ -2,7 +2,6 @@
 import { writable } from 'svelte/store';
 import type { SessionType, SessionResponseType } from '@pwa-grouper/core/types/session';
 import  { emptySession, SessionUserType as SessionUser } from '@pwa-grouper/core/types/session';
-import { get } from 'svelte/store';
 import { env } from "$env/dynamic/public";
 
 // a class to handle sessions in the frontend

@@ -81,9 +81,10 @@ const main = async () => {
                 };
 
             } else {
+                session = emptySession;
                 const responseData = {
                     message: "public session",
-                    emptySession
+                    session
                 };
                 console.log('10. -- refreshToken, oops PUBLIC session details: ', JSON.stringify(responseData, null, 2));
                 return {
@@ -96,9 +97,10 @@ const main = async () => {
     } catch (error) {
         console.log('11. -- refreshToken error:', JSON.stringify(error));
         console.error(`Error in refreshToken: `, error);
+        session = emptySession;
         const responseData = {
             message: `Internal Server Error:  ${error}` ,
-            emptySession
+            session
         };
         console.log('12. -- refreshToken, oops error details: ', JSON.stringify(responseData, null, 2));
         return useResponse()

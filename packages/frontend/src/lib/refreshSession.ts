@@ -43,7 +43,8 @@ export const refreshSession = async (token?: string): Promise<{message: string, 
   }
   catch (err) {
     console.log(err);
-    const data = {message: err as string, session: emptySession};
+    
+    const data = {message: err as string, session: emptySession as SessionType};
     return data;
   }
 };

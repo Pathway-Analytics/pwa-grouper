@@ -1,7 +1,6 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { type Handle, type HandleFetch } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
-import { emptySession, type SessionType } from '@pwa-grouper/core/types/session';
 import { RoleType } from '@pwa-grouper/core/types/role';
 import { refreshSession } from '$lib/refreshSession';
 
