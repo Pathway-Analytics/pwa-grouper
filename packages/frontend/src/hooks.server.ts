@@ -27,47 +27,47 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         
         return isRestricted;
     }
-    const createNewRequest = (request: Request, headers: Headers, url: string) => {
-        return new Request(url, { 
-            method: request.method,
-            headers: headers,
-            body: request.body,
-            mode: request.mode,
-            credentials: request.credentials,
-            cache: request.cache,
-            redirect: request.redirect,
-            referrer: request.referrer,
-            integrity: request.integrity
-        });
-    }
+        const createNewRequest = (request: Request, headers: Headers, url: string) => {
+            return new Request(url, { 
+                method: request.method,
+                headers: headers,
+                body: request.body,
+                mode: request.mode,
+                credentials: request.credentials,
+                cache: request.cache,
+                redirect: request.redirect,
+                referrer: request.referrer,
+                integrity: request.integrity
+            });
+        }
 
-// ===== Fetch ====
-    // this is applied to every fetch throughout the app...
-    // server side pages do not have access direct access to cookies in the browser
-    // any cookies needed in a server side page request must be forwarded in the request    
-    export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
-        console.log('0. hooks.server handleFetch started...') ;
+    // ===== Fetch ====
+        // this is applied to every fetch throughout the app...
+        // server side pages do not have access direct access to cookies in the browser
+        // any cookies needed in a server side page request must be forwarded in the request    
+        export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
+            console.log('0. hooks.server handleFetch started...') ;
 
-        // wrap each request with an authorization header
-        const newHeaders = new Headers(request.headers);
-        event.locals.token && newHeaders.set('Authorization', `Bearer ${event.locals.token}`);
-        newHeaders.set('credentials', 'include');
-        
-        const newRequest: Request = createNewRequest(request, newHeaders, request.url);
+            // wrap each request with an authorization header
+            const newHeaders = new Headers(request.headers);
+            event.locals.token && newHeaders.set('Authorization', `Bearer ${event.locals.token}`);
+            newHeaders.set('credentials', 'include');
+            
+            const newRequest: Request = createNewRequest(request, newHeaders, request.url);
 
 
-        
-        return fetch(newRequest);
-    }
+            
+            return fetch(newRequest);
+        }
 
-// ===== Errors =====
-    export async function handleError(error: Error) {
-        console.log('error: ', error);
-        // return a response indicating the error if needed
-        // return error;
-    }
+    // ===== Errors =====
+        export async function handleError(error: Error) {
+            console.log('error: ', error);
+            // return a response indicating the error if needed
+            // return error;
+        }
 
-// ===== Handles ====
+    // ===== Handles ====
     // This server hook is called for every frontend request to the server
     // It checks if the request has a valid session cookie
     // process flow is avialble here: docs/Auth Flows-Session Refresh.drawio.png
@@ -89,36 +89,38 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
         // if route.id is /callback
         // and the event.url.searchParams.get('token') is not null
+            
         try{
-        
+
             if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
                 console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
                 const token = event.url.searchParams.get('token') || '';
                 const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
 
-                console.log('0. hooks.server initAuthHandler session initialising... ', token? 'token found' : 'token not found');
+                console.log('1. hooks.server initAuthHandler session initialising... ', token? 'token found' : 'token not found');
+                    
                 const sessionResponse: SessionResponseType = await refreshSession(token);
                 event.locals.session = sessionResponse.session;
                 event.locals.token = sessionResponse.token;
                 event.locals.message = sessionResponse.errMsg;
-                console.log('1. hooks.server initAuthHandler session initialised: ', JSON.stringify(event.locals.session, null, 2));
+                console.log('2. hooks.server initAuthHandler session initialised: ', JSON.stringify(event.locals.session, null, 2));
             
                 const response = await resolve(event);
                 response.headers.set('Status', '302');
                 response.headers.set('Location', urlRedirect || '');
-                console.log('2. hooks.server initAuthHandler session redirecting: ', urlRedirect || '');
+                console.log('3. hooks.server initAuthHandler session redirecting: ', urlRedirect || '');
                 return response;
-
+                
             } else {
-                console.log('3. hooks.server initAuthHandler skipped... ');
+                console.log('4. hooks.server initAuthHandler skipped... ');
                 const response = await resolve(event);
                 return response;
             }
         } catch (err) {
-            console.log('4. hooks.server initAuthHandler error: ', err);
+            console.log('5. hooks.server initAuthHandler error: ', err);
             const response = await resolve(event);
             response.headers.set('Status', '400');
-            response.headers.set('Location', '/error');
+            response.headers.set('Location', '/error');   
             return response;
         }
     }
@@ -150,7 +152,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 // session is valid
                 console.log('3. hooks.server authHandler valid session: ');
                 const response = await resolve(event);
-	            return response;
+                return response;
             } else {
                 // no session is not valid
                 console.log('4. hooks.server authHandler no session found: ');
@@ -162,7 +164,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
             }
 
         } catch (err) {
-            console.log('4. hooks.server authHandler error: ', err);
+            console.log('5. hooks.server authHandler error: ', err);
             const response = await resolve(event);
             response.headers.set('Status', '400');
             response.headers.set('Location', '/error');
@@ -187,10 +189,11 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     
     }
 
-
+// we cannot garuntee the order of the hooks as some may be async
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 export const handle: Handle = sequence(
     initAuthHandler,
     authHandler,
     authZHandler,
 )
+
