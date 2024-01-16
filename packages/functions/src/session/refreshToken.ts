@@ -59,13 +59,13 @@ const main = async () => {
                 if (mode === 'local') {
                     const token = useQueryParam('token');
                     console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
-                    cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${date},  Path=/; `;
+                    cookieOld = `auth-token=${token}; Expires=${new Date(0)}; Path=/; HttpOnly; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${date};  Path=/; `;
                 } else {
                     const token = useCookie('auth-token');
                     console.log('7. -- refreshToken token from cookie:', JSON.stringify(token));
-                    cookieOld = `auth-token=${token}; Expires=${new Date(0)};, Path=/; HttpOnly; SameSite=None;`;
-                    cookieNew = `auth-token=${token}; Expires=${date}, Domain=.pathwayanalytics.com; Path=/; HttpOnly; Secure, SameSite=Lax;`;
+                    cookieOld = `auth-token=${token}; Expires=${new Date(0)}; Path=/; HttpOnly; SameSite=None;`;
+                    cookieNew = `auth-token=${token}; Expires=${date}; Domain=.${Config.API_URL}; Path=/; HttpOnly; Secure; SameSite=Lax;`;
                 }
                 console.log('8. -- refreshToken cookieOld, cookieNew:', JSON.stringify({cookieOld: cookieOld, cookieNew: cookieNew}, null, 2));
                 console.log('9. -- refreshToken responseData:', JSON.stringify({responseData}, null, 2));
