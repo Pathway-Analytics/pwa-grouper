@@ -6,7 +6,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     const props = {
         session: locals.session,
         mode: locals.mode,
-        devToken: locals.devToken
+        token: locals.token
     };
     console.log('+layout.server session in load before locals:', JSON.stringify(locals, null, 2));
 
@@ -16,7 +16,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     return {
         session: locals.session,
         mode: locals.mode,
-        devToken: locals.devToken,
+        token: locals.token,
     };
 };
 

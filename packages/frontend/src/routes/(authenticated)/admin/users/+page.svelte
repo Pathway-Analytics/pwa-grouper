@@ -51,11 +51,11 @@
     $: usersPromise = Promise.resolve(users);
 
     async function handleGetUsers() {
-        console.log('local mode, token: ',env.PUBLIC_MODE, $page.data.devToken);
+        console.log('local mode, token: ',env.PUBLIC_MODE, $page.data.token);
         if (env.PUBLIC_MODE === 'local'){
 
-            console.log('local mode, token: ', $page.data.devToken);
-            const authBearer = `Bearer ${$page.data.devToken}`;
+            console.log('local mode, token: ', $page.data.token);
+            const authBearer = `Bearer ${$page.data.token}`;
             const res = await fetch(`${env.PUBLIC_API_URL}/users`, { 
                 credentials: 'include', 
                 headers: { 'Authorization': authBearer }

@@ -4,7 +4,7 @@
 
 </script>
 <LightSwitch />
- {#if $page.data.session.user}
+ {#if $page.data.session?.user}
     <h1>
         Hi {$page.data.session?.user?.firstName} {$page.data.session.user?.lastName}
         <p>
