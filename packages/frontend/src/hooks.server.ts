@@ -11,20 +11,25 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 // ===== Helpers ====
     // function isRestrictedRoute accepts route param of type string or undefined
     // pass in the event.route.id and the optional required route 'provider' or 'admin'
-    function isRestrictedRoute(routeId: string | undefined, sessionRoles? :string): boolean {
+    function isRestrictedRoute(routeId: string | undefined, session :SessionType): boolean {
+         
         // session roles array add authenticated
-        const roles: string[] = `${sessionRoles?.toLowerCase()},authenticated`?.split(',') || [];
-        
+        let roles: string[] = [];
+        console.log('0. hooks.server isRestrictedRoute session: ', JSON.stringify(session, null, 2));
+        if (session.isValid === true ){
+             roles = `${session.user?.roles?.toLowerCase()},authenticated`?.split(',') || [];
+        } 
+        console.log('1. hooks.server isRestrictedRoute roles: ', roles);
         // does the roles array include 'admin', then return false (not restricted)
         if (roles.includes(RoleType.ADMIN)) return false;
         
         // array of any string between parentheses in the routeId
         const routes = routeId?.match(/\((.*?)\)/g)?.map(route => route.replace(/[\(\)]/g, ''));
-        
+        console.log('2. hooks.server isRestrictedRoute routes: ', routes);
         // does the roles array include all the required matches?
-        const allMatchesIncluded: boolean = routes?.every(route => roles.includes(route)) || true;
+        const allMatchesIncluded: boolean = routes?.every(route => roles.includes(route)) || false;
         let isRestricted: boolean = !allMatchesIncluded;
-        
+        console.log('3. hooks.server isRestrictedRoute allMatchesIncluded: ', allMatchesIncluded);
         return isRestricted;
     }
         const createNewRequest = (request: Request, headers: Headers, url: string) => {
@@ -181,9 +186,13 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         if (!isRestrictedRoute(event.route.id || '',  event.locals.session?.user?.roles || '')) {
             console.log('3. hooks.server authZHandler route is not restricted ');
             const response = await resolve(event);
+            response.headers.set('Status', '401');
+            response.headers.set('Location', '/login');
+            console.log('4. hooks.server authZHandler redirecting...');
             return response;
+
         } else {
-        console.log('4. hooks.server authZHandler route is RESTRICTED ');
+        console.log('5. hooks.server authZHandler route is RESTRICTED ');
         return new Response(null, { status:  401, headers: { location: '/dashboard' } });
         }
     
