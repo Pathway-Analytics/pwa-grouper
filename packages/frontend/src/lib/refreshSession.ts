@@ -8,7 +8,7 @@ const api_session = `${env.PUBLIC_API_URL}/session`;
 
 // return session data from the server
 // always include the token on server side requests
-export const refreshSession = async (token?: string): Promise<SessionResponseType> => {
+export const refreshSession = async (token: string | null): Promise<SessionResponseType> => {
   console.log('0. refreshSession() started...');
   try {
     // include credentials: 'include' to send cookies

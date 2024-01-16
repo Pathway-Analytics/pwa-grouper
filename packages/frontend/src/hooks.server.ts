@@ -148,7 +148,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
         try{
             console.log('2. hooks.server handleAuth refreshing locals.session...');
-            const token = event.url.searchParams.get('token') || '';
+            const token = event.url.searchParams.get('token') || null;
             console.log('3. hooks.server handleAuth locals.session before refresh: ', JSON.stringify(locals.session, null, 2));
             const sessionResponse = await refreshSession(token);
             locals.session = sessionResponse.session;
