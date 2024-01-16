@@ -3,7 +3,11 @@
 import { page } from '$app/stores';
 import { refreshSession } from '$lib/refreshSession';
 import { onMount } from 'svelte';
-    
+import { Input, Table, TableBody, Button, 
+    TableBodyCell, TableBodyRow, TableHead, 
+    TableHeadCell, Checkbox, TableSearch 
+} from 'flowbite-svelte';
+        
     let SessionResponse={}
 
     onMount (async () => {
@@ -18,9 +22,10 @@ import { onMount } from 'svelte';
 {#if SessionResponse}
 <p>Session from refreshSession() called from the client side: </p>
     <pre>{JSON.stringify(SessionResponse, null,2)}</pre>
-    <p>
-        <a href="/dashboard">Dashboard</a>
-    </p>
+        <Button>
+            <a href="/dashboard">Dashboard</a>
+        </Button>
+
 {:else}
     <p>loading SessionResponse...</p>
 
@@ -49,9 +54,9 @@ import { onMount } from 'svelte';
 
 
 
-<p>
+<Button>
     <a href="/">Home</a>
-</p>
+</Button>
 
 <style>
     div.scrollable {
