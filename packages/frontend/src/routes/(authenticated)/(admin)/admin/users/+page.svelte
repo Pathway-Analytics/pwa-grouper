@@ -167,8 +167,9 @@
 <!-- https://flowbite.com/docs/components/pagination/ -->
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- add a link to admin_areas route -->
+    <a href="/admin/admin_areas">Admin Areas</a>
 <button class="btn btn-primary" on:click={() => handleNewUser()}>Add User</button>
-
 <Table items={users} striped={true} class="divide-y">
     <TableHead>
         <!-- <TableHeadCell>id</TableHeadCell> -->

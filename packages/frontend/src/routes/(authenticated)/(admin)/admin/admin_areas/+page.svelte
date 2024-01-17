@@ -1,10 +1,54 @@
 <script lang='ts'>
-	import { Table, TableBodyRow, TableHeadCell, TableHead, TableBodyCell, TableBody } from 'flowbite-svelte';
+    import { onMount } from 'svelte';
+	import { Table, Button, TableBodyRow, TableHeadCell, TableHead, TableBodyCell, TableBody } from 'flowbite-svelte';
 	import { AdminAreaTypeType as AdminArea_Type, type AdminAreaType, type AdminAreaTypeType } from '@pwa-grouper/core/types/adminArea';
 
+    let collection: string = 'E92';
+    let within: string = 'E92000001';
     let adminAreas: AdminAreaType[] = [];
+    let responseString:string = '';
+    let responseData: JsonResponseObject;
+    
+    let resultsRecords: bindings[];
+    let collections: typeof collection[] = [collection]
 
-    async function fetchEntityRecords(collections: string[], within: string) {
+    onMount(async () => {
+        await fetchEntityRecords(collection, within);
+    });
+
+    interface areaRecord {
+        code: string;
+        name: string;
+        parentCode: string;
+        lastChanged: Date;
+        isActive: boolean;
+        type: AdminAreaTypeType;
+    }
+    interface typeValue {
+        type: string;
+        value: string;
+    }
+
+    interface bindings {
+        code: typeValue;
+        link: typeValue;
+        name: typeValue;
+        status: typeValue;
+    }
+
+    interface JsonResponseObject {
+        head: {
+            vars: string[];
+        };
+        results: {
+            bindings: bindings[];
+        };
+    }
+
+    async function fetchEntityRecords(collection: string, within: string) {
+        
+        // convert the csv collections string to an array of strings
+        collections = collection.split(',');
         
         const query : string = getSPARQL(collections, within);
         try {
@@ -22,17 +66,20 @@
             });
             // Get the actual data from the response
             
-            const data: SPARQLResponse[] =  await response.json() as SPARQLResponse[];
-
-            // map response to AdminAreaType
-            adminAreas = data.map((record: SPARQLResponse) => {
+            responseData =  await response.json() as JsonResponseObject;
+            const data: JsonResponseObject = responseData
+            responseString = JSON.stringify(data);
+            // set resultsrecords to the results array in the response
+            resultsRecords = responseData.results.bindings;
+            // map the resultsRecords to the areaRecord interface
+            adminAreas = resultsRecords.map((resultsRecord) => {
                 return {
-                    code: record.code,
-                    name: record.name,
+                    code: resultsRecord.code.value,
+                    name: resultsRecord.name.value,
                     parentCode: within,
                     lastChanged: new Date(),
                     isActive: true,
-                    type: getAdminAreaType(record.code)
+                    type: getAdminAreaType(resultsRecord.code.value.substring(0, 3)),
                 }
             });
 
@@ -66,7 +113,9 @@
     }
 
     function getAdminAreaType(code: string): AdminAreaTypeType {
-        switch (code.substring(1, 2)) {
+
+        switch (code.substring(1)) {
+            
             case "01":
                 return AdminArea_Type.LSOA_01;
             case "06":
@@ -91,13 +140,19 @@
     }
 
 </script>
-
+<!-- button to refetch the data with the async function fetchEntityRecords -->
+<Button on:click={() => fetchEntityRecords(collection, within)}>Fetch</Button>
+<!-- add two input fields for collections and within -->
+<input bind:value={collection} />
+<input bind:value={within} />
+<div>
 <Table>
     <TableHead>
         <TableHeadCell>Code</TableHeadCell>
         <TableHeadCell>Name</TableHeadCell>
         <TableHeadCell>Type</TableHeadCell>
     </TableHead>
+
     <TableBody>
         {#if adminAreas.length > 0}
             {#each adminAreas as adminArea}
@@ -108,7 +163,19 @@
                 </TableBodyRow>
             {/each}
        {:else}
-            <TableBodyRow colspan="3">No admin areas found</TableBodyRow>
+            <TableBodyRow >
+                <TableBodyCell colspan='3'>No admin areas found</TableBodyCell>
+            </TableBodyRow>
         {/if}
     </TableBody>
 </Table>
+</div>
+
+<style>
+    /* vertical scroll */
+    div {
+        height: 100vh;
+        overflow-y: auto;
+        margin: 20px;
+    }
+</style>
