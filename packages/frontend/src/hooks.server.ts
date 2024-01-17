@@ -108,7 +108,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
         try{
             console.log('1. hooks.server initAuthHandler token: ', event.url.searchParams || '');
-            if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
+            if (event.route.id === '/callback'){ //&& event.url.searchParams.get('token') !== null) {
                 console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
                 const token = event.url.searchParams.get('token') || '';
                 const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
