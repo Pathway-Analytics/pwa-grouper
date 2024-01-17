@@ -16,6 +16,8 @@ import { useEvent } from 'sst/context/handler';
 
 const isLocalMode = process.env.MODE === 'local';
 let domain = isLocalMode ? process.env.DOMAIN || '' : process.env.SITE_URL || '';
+let oldDomain = process.env.API_SITE_URL || '';
+// dont think we need to do this...
 domain = domain.replace('https://', '');
 domain = domain.replace('http://', '');
 
@@ -82,7 +84,8 @@ const main = async () => {
                     console.log('6. -- refreshToken token from Header:', useHeader('authorization')?.replace('Bearer ', ''));
                     console.log('6. -- refreshToken token from Cookie:', useCookie('auth-token'));
                     console.log('6. -- refreshToken token token selected :', token);
-                    cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
+                    // name, domain and path must match the original cookie to overwrite it
+                    cookieOld = `auth-token=${token}; Expires=${expiresDate}; Domain=${oldDomain}; Path=/; HttpOnly; SameSite=None;`;
                     // cookieNew = `auth-token=${token}; Expires=${refreshDate};  Path=/; `;
                 // } else {
                 //     token = useCookie('auth-token');
