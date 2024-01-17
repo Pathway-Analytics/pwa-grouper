@@ -1,5 +1,5 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { type Handle, type HandleFetch } from '@sveltejs/kit';
+import { type Handle, type HandleFetch, type RequestEvent } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import { RoleType } from '@pwa-grouper/core/types/role';
 import { refreshSession } from '$lib/refreshSession';
@@ -34,44 +34,59 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         console.log('3. hooks.server isRestrictedRoute allMatchesIncluded: ', allMatchesIncluded);
         return isRestricted;
     }
-        const createNewRequest = (request: Request, headers: Headers, url: string) => {
-            return new Request(url, { 
-                method: request.method,
-                headers: headers,
-                body: request.body,
-                mode: request.mode,
-                credentials: request.credentials,
-                cache: request.cache,
-                redirect: request.redirect,
-                referrer: request.referrer,
-                integrity: request.integrity
-            });
-        }
+    const createNewRequest = (request: Request, headers: Headers, url: string) => {
+        return new Request(url, { 
+            method: request.method,
+            headers: headers,
+            body: request.body,
+            mode: request.mode,
+            credentials: request.credentials,
+            cache: request.cache,
+            redirect: request.redirect,
+            referrer: request.referrer,
+            integrity: request.integrity
+        });
+    }
+    // get the token from the event and return it as  string
+    const getToken = (event: RequestEvent <Partial<Record<string, string>>, string | null>): string | null => {
+        const tokenCookie = event.cookies.get('auth-token') || '';
+        console.log('0. hooks.server getToken useCookie(auth-token): ', tokenCookie);
+        const tokenURL = event.url.searchParams.get('auth-token') || '';
+        console.log('0. hooks.server getToken searchParams(auth-token): ', tokenURL);
+        const tokenHeader = event.request.headers.get('authorization') || '';
+        console.log('0. hooks.server getToken useHeader(authorization) : ', tokenHeader);
+        const tokenAHeader = event.request.headers.get('Authorization') || '';
+        console.log('0. hooks.server getToken useHeader(Authorization) : ', tokenAHeader);
+        const tokenLocals = event.locals.token || '';
+        console.log('0. hooks.server getToken eventLocals : ', tokenLocals);
+        const token = tokenCookie || tokenURL || tokenHeader || tokenAHeader || tokenLocals;
 
+        return token? token : null;
+    }
     // ===== Fetch ====
         // this is applied to every fetch throughout the app...
         // server side pages do not have access direct access to cookies in the browser
         // any cookies needed in a server side page request must be forwarded in the request    
-        export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
-            console.log('0. hooks.server handleFetch started...') ;
+    export const handleFetch: HandleFetch = async ({ event, request, fetch }): Promise<Response> => {
+        console.log('0. hooks.server handleFetch started...') ;
 
-            // wrap each request with an authorization header
-            const newHeaders = new Headers(request.headers);
-            request.headers.set('Credentials', 'include');
-            request.headers.set('Authorization', `Bearer ${event.locals.token}`);
+        // wrap each request with an authorization header
+        const newHeaders = new Headers(request.headers);
+        request.headers.set('Credentials', 'include');
+        request.headers.set('Authorization', `Bearer ${event.locals.token}`);
 
-            console.log('1. hooks.server handleFetch request: ', JSON.stringify(request, null, 2));
-            const newRequest: Request = await createNewRequest(request, newHeaders, request.url);
-        
-            return fetch(newRequest);
-        }
+        console.log('1. hooks.server handleFetch request: ', JSON.stringify(request, null, 2));
+        const newRequest: Request = await createNewRequest(request, newHeaders, request.url);
+    
+        return fetch(newRequest);
+    }
 
     // ===== Errors =====
-        export async function handleError(error: Error) {
-            console.log('error: ', error);
-            // return a response indicating the error if needed
-            // return error;
-        }
+    export async function handleError(error: Error) {
+        console.log('error: ', error);
+        // return a response indicating the error if needed
+        // return error;
+    }
 
     // ===== Handles ====
     // This server hook is called for every frontend request to the server
@@ -94,27 +109,14 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     // anything hitting /callback with a token in the query string 
     const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
         console.log('0. hooks.server initAuthHandler ** route **: ', event.route.id);
-
-        // if route.id is /callback
-        // and the event.url.searchParams.get('token') is not null
-        const tokenCookie = event.cookies.get('auth-token') || '';
-        console.log('0. hooks.server initAuthHandlers useCookie(auth-token): ', tokenCookie);
-        const tokenURL = event.url.searchParams.get('auth-token') || '';
-        console.log('0. hooks.server initAuthHandler searchParams(auth-token): ', tokenURL);
-        const tokenHeader = event.request.headers.get('authorization') || '';
-        console.log('0. hooks.server initAuthHandler useHeader(authorization) : ', tokenHeader);
-        const tokenAHeader = event.request.headers.get('Authorization') || '';
-        console.log('0. hooks.server initAuthHandler useHeader(Authorization) : ', tokenAHeader);
-
+        const token = getToken(event); 
         try{
             console.log('1. hooks.server initAuthHandler token: ', event.url.searchParams || '');
             if (event.route.id === '/callback'){ //&& event.url.searchParams.get('token') !== null) {
                 console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
-                const token = event.url.searchParams.get('token') || '';
                 const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
 
                 console.log('1. hooks.server initAuthHandler session initialising... ', token? 'token found' : 'token not found');
-                    
                 const sessionResponse: SessionResponseType = await refreshSession(token);
                 event.locals.session = sessionResponse.session;
                 event.locals.token = sessionResponse.token;
@@ -145,14 +147,14 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     // check if the session is valid on the frontend, if not try to refresh it
     const authHandler: Handle = async ({ event, resolve }): Promise<Response> => {
         console.log('0. hooks.server authHandler route: ', event.route.id, event.locals);
-        
+        const token = event.locals.token;
         try {
-            if (event.locals.token && // there is a token
+            if (token && // there is a token
                 (event.locals.session.exp - Math.floor(Date.now() )/ 1000) < ttlThreshold && //about to expire
                 (event.locals.session.exp > Math.floor(Date.now())) // not yet expired
             ) {
                 // refresh the session
-                const token = event.locals.token;
+                
                 console.log('1. hooks.server authHandler session expired, refreshing...');
                 const sessionResponse: SessionResponseType = await refreshSession(token);
                 event.locals.session = sessionResponse.session;
@@ -163,7 +165,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 const response = await resolve(event);
                 return response;
 
-            } else if (event.locals.token &&
+            } else if (token &&
                 event.locals.session.exp > Date.now() - ttlThreshold // not expired
                 ) {
                 // session is valid
