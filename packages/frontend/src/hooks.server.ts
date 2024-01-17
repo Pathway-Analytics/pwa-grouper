@@ -158,7 +158,8 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 console.log('1. hooks.server authHandler session expired, refreshing...');
                 const sessionResponse: SessionResponseType = await refreshSession(token);
                 event.locals.session = sessionResponse.session;
-                event.locals.token = sessionResponse.token;
+                // set event.locals.token to sessionResponse.token if sessionResonses.session.isValid === true else set to ''
+                event.locals.token = sessionResponse.session.isValid? sessionResponse.token : null;
                 event.locals.message = sessionResponse.errMsg;
                 console.log('2. hooks.server authHandler session refreshed: ', JSON.stringify(event.locals.session, null, 2));
     
@@ -176,6 +177,9 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 // no session is not valid 
                 // authZHandler will hanle any redirects later...
                 console.log('4. hooks.server authHandler no session found: ');
+                event.locals.session = null;
+                event.locals.token = null;
+                event.locals.message = 'No session found';
                 const response = await resolve(event);
                 return response;
             }
