@@ -98,12 +98,14 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         // if route.id is /callback
         // and the event.url.searchParams.get('token') is not null
         const tokenCookie = event.cookies.get('auth-token') || '';
-        console.log('0. hooks.server initAuthHandlers tokenCookie: ', tokenCookie);
+        console.log('0. hooks.server initAuthHandlers useCookie(auth-token): ', tokenCookie);
         const tokenURL = event.url.searchParams.get('auth-token') || '';
-        console.log('0. hooks.server initAuthHandler tokenURL: ', tokenURL);
+        console.log('0. hooks.server initAuthHandler searchParams(auth-token): ', tokenURL);
         const tokenHeader = event.request.headers.get('authorization') || '';
-        console.log('0. hooks.server initAuthHandler tokenHeader: ', tokenHeader);
-            
+        console.log('0. hooks.server initAuthHandler useHeader(authorization) : ', tokenHeader);
+        const tokenAHeader = event.request.headers.get('Authorization') || '';
+        console.log('0. hooks.server initAuthHandler useHeader(Authorization) : ', tokenAHeader);
+
         try{
             console.log('1. hooks.server initAuthHandler token: ', event.url.searchParams || '');
             if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
