@@ -18,7 +18,7 @@
     let linkAuthUrl = `${api_url}/auth/link/authorize?email=`;    
      
     async function handleLinkAuth(event: Event) {
-        let tries: number = 0;
+        let tries: number = 1;
         event.preventDefault();
         $authState.isSigningIn = true;
         $authState.expiresAt = Date.now() + 1000 * 60 * 2;
@@ -32,6 +32,7 @@
         const fetchOperation = fetch(linkAuthUrl + $email, {});
 
         try {
+            console.log('Trying... first attempt');
             await Promise.race([fetchOperation, timeout]);
         } catch (error) {
             console.error(error);
@@ -39,10 +40,12 @@
             $authState.expiresAt = 0;
             if (tries < 3) { // try a couple of time the service might to wake up
                 tries++;
+                console.log('Retrying... again atempt #', tries);
                 await handleLinkAuth(event);
             } else {
                 $authState.isSigningIn = false;
                 $authState.expiresAt = 0;
+                console.log('Given up... login again');
                 goto('/login'); // Redirect to login page
             }
         }
