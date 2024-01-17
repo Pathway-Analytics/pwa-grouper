@@ -166,7 +166,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 const sessionResponse: SessionResponseType = await refreshSession(token);
                 event.locals.session = sessionResponse.session;
                 // set event.locals.token to sessionResponse.token if sessionResonses.session.isValid === true else set to ''
-                event.locals.token = sessionResponse.session.isValid? sessionResponse.token : null;
+                event.locals.token = sessionResponse.session.isValid === true ? sessionResponse.token : null;
                 event.locals.message = sessionResponse.errMsg;
                 console.log('2. hooks.server authHandler session refreshed: ', JSON.stringify(event.locals.session, null, 2));
     

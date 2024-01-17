@@ -15,6 +15,7 @@ export const refreshSession = async (token: string | null): Promise<SessionRespo
     if (token){
       console.log('2. refreshSession() Bearer Auth fetching from', api_session );
       const authHeader:{} = isLocalMode ? {authorization: `Bearer ${token}`} : {authorization: `Bearer ${token}`};
+      console.log('3. refreshSession() Bearer Auth fetching from', authHeader );
       const res = await fetch(api_session,{
         method: 'GET',
         headers: authHeader,
