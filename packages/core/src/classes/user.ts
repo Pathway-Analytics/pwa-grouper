@@ -57,6 +57,7 @@ export class User implements UserType {
    * @returns {Promise<CreateUpdateResponse>} UserType - The new user object created or updated
    */
     static async createUpdate(newuser: UserFilterType): Promise<UserType> {
+        console.log('0. --- /packages/core/users.ts User.createUpdate', `newuser: ${JSON.stringify(newuser)}`);
         let user: UserType;
         if (newuser.id && (newuser.email == null || newuser.email == undefined)) {
             // allows for null 
