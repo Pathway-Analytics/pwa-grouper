@@ -51,8 +51,8 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     const getToken = (event: RequestEvent <Partial<Record<string, string>>, string | null>): string | null => {
         const tokenCookie = event.cookies.get('auth-token') || '';
         console.log('0. hooks.server getToken useCookie(auth-token): ', tokenCookie);
-        const tokenURL = event.url.searchParams.get('auth-token') || '';
-        console.log('0. hooks.server getToken searchParams(auth-token): ', tokenURL);
+        const tokenURL = event.url.searchParams.get('token') || '';
+        console.log('0. hooks.server getToken searchParams(token): ', tokenURL);
         const tokenHeader = event.request.headers.get('authorization') || '';
         console.log('0. hooks.server getToken useHeader(authorization) : ', tokenHeader);
         const tokenAHeader = event.request.headers.get('Authorization') || '';
@@ -60,6 +60,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         const tokenLocals = event.locals.token || '';
         console.log('0. hooks.server getToken eventLocals : ', tokenLocals);
         const token = tokenCookie || tokenURL || tokenHeader || tokenAHeader || tokenLocals;
+        console.log('0. hooks.server getToken token used : ', token);
 
         return token? token : null;
     }
@@ -72,8 +73,14 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
         // wrap each request with an authorization header
         const newHeaders = new Headers(request.headers);
-        request.headers.set('Credentials', 'include');
-        request.headers.set('Authorization', `Bearer ${event.locals.token}`);
+        
+        if (request.url.includes(`${env.PUBLIC_API_URL}`) || request.url.includes(`${env.PUBLIC_SITE_URL}`)) {
+            newHeaders.set('authorization', `Bearer ${event.locals.token}`);
+            newHeaders.set('credentials', `include`);
+        } else { 
+            newHeaders.set('Authorization', `Bearer ${event.locals.token}`);
+            newHeaders.set('Credentials', `include`);
+        }
 
         console.log('1. hooks.server handleFetch request: ', JSON.stringify(request, null, 2));
         const newRequest: Request = await createNewRequest(request, newHeaders, request.url);
@@ -111,7 +118,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         console.log('0. hooks.server initAuthHandler ** route **: ', event.route.id);
         const token = getToken(event); 
         try{
-            console.log('1. hooks.server initAuthHandler token: ', event.url.searchParams || '');
+            console.log('1. hooks.server initAuthHandler token: ', token);
             if (event.route.id === '/callback'){ //&& event.url.searchParams.get('token') !== null) {
                 console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
                 const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
@@ -151,7 +158,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         try {
             if (token && // there is a token
                 (event.locals.session.exp - Math.floor(Date.now() )/ 1000) < ttlThreshold && //about to expire
-                (event.locals.session.exp > Math.floor(Date.now())) // not yet expired
+                (event.locals.session.exp > Math.floor(Date.now() )/ 1000) // not yet expired
             ) {
                 // refresh the session
                 
@@ -167,7 +174,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 return response;
 
             } else if (token &&
-                event.locals.session.exp > Date.now() - ttlThreshold // not expired
+                (event.locals.session.exp > Math.floor(Date.now() )/ 1000)  // not expired
                 ) {
                 // session is valid
                 console.log('3. hooks.server authHandler valid session: ');
@@ -176,7 +183,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
             } else {
                 // no session is not valid 
                 // authZHandler will hanle any redirects later...
-                console.log('4. hooks.server authHandler no session found: ');
+                console.log('4. hooks.server authHandler no session found, locals deleted: ');
                 event.locals.session = null;
                 event.locals.token = null;
                 event.locals.message = 'No session found';

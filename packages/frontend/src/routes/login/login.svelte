@@ -12,7 +12,7 @@
   
     let emailInput: HTMLInputElement;
     onMount(() => {
-        if ($page.data.session.isValid || $page.data.token){
+        if ($page.data.session?.isValid || $page.data.token){
             goto('/callback');
         } else {
             emailInput.focus();
