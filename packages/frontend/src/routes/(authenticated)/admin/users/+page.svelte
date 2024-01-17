@@ -5,11 +5,15 @@
     import { page } from '$app/stores';
     import { Input, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, TableSearch } from 'flowbite-svelte';
     import type { UserType } from '@pwa-grouper/core/types/user';
-    import type { RoleType } from '@pwa-grouper/core/types/role';
+    import  { type RoleType, RoleType as Roles  } from '@pwa-grouper/core/types/role';
     import { env } from '$env/dynamic/public';
     import { onMount } from 'svelte';
 
     const authBearer = `Bearer ${$page.data.token}`;
+
+    // create an array of roles from the enum
+    const arrayRoles: RoleType[] = Object.values<RoleType>(Roles);
+    
 
     let user: UserType = {
         id: '' ,
@@ -201,7 +205,18 @@
                             <TableBodyCell class='px-2 py-0'>{extUser.picture}</TableBodyCell>
                             <TableBodyCell class='px-2 py-0'>{extUser.lastLogin}</TableBodyCell>
                             <TableBodyCell class='px-2 py-0'><Input class='' id='contactTel' size="sm" bind:value={localUser.contactTel} /></TableBodyCell>
-                            <TableBodyCell class='px-2 py-0'><Input class='' id='roles' size="sm" bind:value={localUser.picture} /></TableBodyCell>
+                            <!-- change the roles input bos into a select drop down of arrayRoles -->
+                            <TableBodyCell class='px-2 py-0'>
+                                <select multiple bind:value={localUser.rolesArray}>
+                                    {#each arrayRoles as role}
+                                        {#if localUser.rolesArray.includes(role)}
+                                            <option value={role} selected>{role}</option>
+                                        {:else}
+                                            <option value={role}>{role}</option>
+                                        {/if}
+                                    {/each}
+                                </select>
+                            </TableBodyCell>
                         {:else}
                             <TableBodyCell class='px-2 py-0'>{extUser.id? extUser.id : ''}</TableBodyCell>
                             <TableBodyCell class='px-2 py-0'>{extUser.email}</TableBodyCell>
