@@ -57,7 +57,7 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
             // wrap each request with an authorization header
             const newHeaders = new Headers(request.headers);
-            event.locals.token && newHeaders.set('Authorization', `Bearer ${event.locals.token}`);
+            event.locals.token && newHeaders.set('authorization', `Bearer ${event.locals.token}`);
             newHeaders.set('credentials', 'include');
             
             const newRequest: Request = createNewRequest(request, newHeaders, request.url);
@@ -93,18 +93,15 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
     // if the route is /callback and the token is there set the session
     // anything hitting /callback with a token in the query string 
-     const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+    const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
         // if route.id is /callback
         // and the event.url.searchParams.get('token') is not null
         const tokenCookie = event.cookies.get('auth-token') || '';
-        console.log('0. initAuthHandlers tokenCookie: ', tokenCookie);
+        console.log('0. hooks.server initAuthHandlers tokenCookie: ', tokenCookie);
         const tokenURL = event.url.searchParams.get('auth-token') || '';
-        console.log('0. initAuthHandler tokenURL: ', tokenURL);
-        const tokenHeader = event.request.headers.get('Authorization') || '';
-        console.log('0. initAuthHandler tokenHeader: ', tokenHeader);
-        const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
-        console.log('0. initAuthHandler urlRedirect: ', urlRedirect);
-    
+        console.log('0. hooks.server initAuthHandler tokenURL: ', tokenURL);
+        const tokenHeader = event.request.headers.get('authorization') || '';
+        console.log('0. hooks.server initAuthHandler tokenHeader: ', tokenHeader);
             
         try{
             console.log('0. hooks.server initAuthHandler route: ', event.route.id);
@@ -120,17 +117,14 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                 event.locals.session = sessionResponse.session;
                 event.locals.token = sessionResponse.token;
                 event.locals.message = sessionResponse.errMsg;
-                console.log('2. hooks.server initAuthHandler session initialised: ', JSON.stringify(event.locals.session, null, 2));
+                console.log('2. hooks.server initAuthHandler session initialised locals: ', JSON.stringify(event.locals.session, null, 2));
             
-                console.log('3. hooks.server initAuthHandler session redirecting: ', urlRedirect || '');
-                return new Response(null, {
-                    status: 302, // Temporary redirect
-                    headers: {
-                        Location: `/${urlRedirect}` || '/dashboard',
-                    }
-                });
+                // we MUST return the response here, otherwise the locals will not be set
+                const response = await resolve(event);
+                return response;
                 
             } else {
+                console.log('2. hooks.server initAuthHandler session locals: ', JSON.stringify(event.locals.session, null, 2));
                 console.log('4. hooks.server initAuthHandler skipped... ');
                 const response = await resolve(event);
                 return response;
@@ -146,14 +140,32 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         }
     }
 
+    const callbackRedirectHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+        if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
+            console.log('0. hooks.server callbackRedirectHandler check locals : ', event.locals);
+            const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
+            console.log('0. hooks.server callbackRedirectHandler redirecting: ', urlRedirect || '');
+            
+            return new Response(null, {
+                status: 302, // Temporary redirect
+                headers: {
+                    Location: `/${urlRedirect}`,
+                }
+            });
+        } else {
+            const response = await resolve(event);
+            return response;
+        }
+    }
+
     // check if the session is valid on the frontend, if not try to refresh it
     const authHandler: Handle = async ({ event, resolve }): Promise<Response> => {
-        console.log('0. hooks.server authHandler route: ', event.route.id);
+        console.log('0. hooks.server authHandler route: ', event.route.id, event.locals);
         
         try {
             if (event.locals.token && // there is a token
-                event.locals.session.exp - Date.now() < ttlThreshold && //about to expire
-                event.locals.session.exp > Date.now() // not yet expired
+                (event.locals.session.exp - Math.floor(Date.now() )/ 1000) < ttlThreshold && //about to expire
+                (event.locals.session.exp > Math.floor(Date.now())) // not yet expired
             ) {
                 // refresh the session
                 const token = event.locals.token;
@@ -218,18 +230,19 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 // we cannot garuntee the order of the hooks as some may be async
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 // src/hooks.server.ts
-// export const handle: Handle = async ({ event, resolve }) => {
-//     // const handleInitAuth = () => initAuthHandler({ event, resolve: handleAuth });
-//     // const handleAuth = () => authHandler({ event, resolve: handleAuthZ });
-//     // const handleAuthZ = () => authZHandler({ event, resolve });
+export const handle: Handle = async ({ event, resolve }) => {
+    const handleInitAuth = () => initAuthHandler({ event, resolve: handleAuth });
+    const handleAuth = () => authHandler({ event, resolve: handleAuthZ });
+    const handleAuthZ = () => authZHandler({ event, resolve });
 
-//     // return handleInitAuth();
-// };
+    return handleInitAuth();
+};
 
 
-export const handle: Handle = sequence(
-    initAuthHandler,
-    // authHandler,
-    // authZHandler,
-)
+// export const handle: Handle = sequence(
+//     initAuthHandler,
+//     callbackRedirectHandler,
+//     authHandler,
+//     // authZHandler,
+// )
 

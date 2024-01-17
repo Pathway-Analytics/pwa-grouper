@@ -133,7 +133,7 @@ class SessionManager {
             const response = await fetch(`${env.PUBLIC_API_URL}/session`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `${authHeader}`,    
+                    'authorization': `${authHeader}`,    
                 },
                 credentials: 'include',
             });

@@ -3,12 +3,6 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ locals }) => {
 
     console.log('+layout.server session in load before locals:', JSON.stringify(locals, null, 2));
-    const props = {
-        session: locals.session,
-        mode: locals.mode,
-        token: locals.token
-    };
-    console.log('+layout.server session in load before locals:', JSON.stringify(locals, null, 2));
 
     // return the session
     // save it in page props 
@@ -16,7 +10,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     return {
         session: locals.session,
         mode: locals.mode,
-        token: locals.token,
+        token: locals.token
     };
 };
 

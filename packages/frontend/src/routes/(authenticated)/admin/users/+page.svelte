@@ -58,7 +58,7 @@
             const authBearer = `Bearer ${$page.data.token}`;
             const res = await fetch(`${env.PUBLIC_API_URL}/users`, { 
                 credentials: 'include', 
-                headers: { 'Authorization': authBearer }
+                headers: { 'authorization': authBearer }
             }
             );
             if (res.ok) {

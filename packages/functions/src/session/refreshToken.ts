@@ -4,6 +4,7 @@ import { User } from '@pwa-grouper/core/classes/user';
 import type { SessionType } from '@pwa-grouper/core/types/session';
 import { SessionUserType, emptySession } from '@pwa-grouper/core/types/session';
 import { authzHandler } from '@pwa-grouper/core/authzHandler';
+import { useEvent } from 'sst/context/handler';
 
 
 // This function check for the original cookie posted on api.mystage-myapp.mydomain.com
@@ -75,9 +76,8 @@ const main = async () => {
                 // strip Bearer from the useHeader('Authorisation') token or useQueryParam('token')
                     token = useQueryParam('token') 
                     || useHeader('authorization')?.replace('Bearer ', '') 
-                    || useHeader('Authorization')?.replace('Bearer ', '') 
-                        || useCookie('auth-token');
-
+                    || useCookie('auth-token');
+                    
                     console.log('6. -- refreshToken token from QueryParam:', useQueryParam('token'));
                     console.log('6. -- refreshToken token from Header:', useHeader('authorization')?.replace('Bearer ', ''));
                     console.log('6. -- refreshToken token from Cookie:', useCookie('auth-token'));

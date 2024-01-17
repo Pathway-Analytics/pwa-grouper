@@ -8,20 +8,11 @@ import { Input, Table, TableBody, Button,
     TableHeadCell, Checkbox, TableSearch 
 } from 'flowbite-svelte';
         
-    let SessionResponse={}
-
-    onMount (async () => {
-        // console.log('callback +page', $page);
-        // const token = $page.url.searchParams.get('token') || '';
-        // SessionResponse = await refreshSession(token);
-        // console.log('SessionResponse', JSON.stringify(SessionResponse, null, 2));
-        
-    });
 </script>
 <div class="scrollable">
-{#if SessionResponse}
+{#if $page}
 <p>Session from refreshSession() called from the client side: </p>
-    <pre>{JSON.stringify(SessionResponse, null,2)}</pre>
+    <pre>{JSON.stringify($page, null,2)}</pre>
         <Button>
             <a href="/dashboard">Dashboard</a>
         </Button>
