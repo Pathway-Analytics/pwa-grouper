@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import { goto } from '$app/navigation';
     import { writable } from 'svelte/store';
     import { env } from '$env/dynamic/public';
     import { onMount } from 'svelte';
@@ -8,8 +9,6 @@
     const error = writable('');
     const api_url = env.PUBLIC_API_URL;
   
-   
-
     let emailInput: HTMLInputElement;
     onMount(() => {
         emailInput.focus();
@@ -19,11 +18,34 @@
     let linkAuthUrl = `${api_url}/auth/link/authorize?email=`;    
      
     async function handleLinkAuth(event: Event) {
+        let tries: number = 0;
         event.preventDefault();
         $authState.isSigningIn = true;
         $authState.expiresAt = Date.now() + 1000 * 60 * 2;
         console.log($email, linkAuthUrl, linkAuthUrl + $email);
-        await fetch(linkAuthUrl + $email,{});
+        const timeout = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject(new Error('Operation timed out'));
+        }, 1000 * 30); // 30 secs
+        });
+
+        const fetchOperation = fetch(linkAuthUrl + $email, {});
+
+        try {
+            await Promise.race([fetchOperation, timeout]);
+        } catch (error) {
+            console.error(error);
+            $authState.isSigningIn = false;
+            $authState.expiresAt = 0;
+            if (tries < 3) { // try a couple of time the service might to wake up
+                tries++;
+                await handleLinkAuth(event);
+            } else {
+                $authState.isSigningIn = false;
+                $authState.expiresAt = 0;
+                goto('/login'); // Redirect to login page
+            }
+        }
     }
 </script>
 
