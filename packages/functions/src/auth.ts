@@ -134,21 +134,23 @@ export const handler = AuthHandler({
                         cookie = cookie.replace('; Domain=', '');
                         cookie = `${cookie}; Domain=localhost;`; //we wold need to remove port etc but in dev mode we use the authorization header anyway...
                         console.log('12. authhandler magiclink onSuccess set cookie is: ', cookie); 
-                        const newProxyStructure = Session.cookie(params);
-                        newProxyStructure.cookies = [cookie];
-                        console.log('13. authhandler magiclink onSuccess set newcookie: ', newProxyStructure?.cookies?.[0]);
+                        // const newProxyStructure = Session.cookie(params);
+                        // newProxyStructure.cookies = [cookie];
+                        // console.log('13. authhandler magiclink onSuccess set newcookie: ', newProxyStructure?.cookies?.[0]);
                         return  Session.parameter(params)
                         // return newProxyStructure;
                     } else {
                         console.log('14. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
                         //-X const cookies = getSessionCookies(authUser.id || '');
+                        // it may be possible to use the cookie method here but we need to set the cookie in the site domain
                         const cookies = getSessionCookies(authUser.id || '');
+                        const params = getSessionParameter(authUser.id || '');
                         // reset the cookie to the site subdomain: .my-stage-my-app.domain.com
                         //-X const newProxyStructure = Session.cookie(cookies);
                         // cookie = cookie.replace('; Domain=', '');
                         // cookie = `${cookie}; Domain=.${domain}`;
                         // console.log('15. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
-                        return Session.cookie(cookies);
+                        return Session.cookie(params);
                     }
                     // decide whether to use cookies or params for session management 
                     // https://docs.sst.dev/auth#cookies
