@@ -1,25 +1,25 @@
 <script lang='ts'>
 
 import { page } from '$app/stores';
-import { refreshSession } from '$lib/refreshSession';
 import { onMount } from 'svelte';
-import { Input, Table, TableBody, Button, 
-    TableBodyCell, TableBodyRow, TableHead, 
-    TableHeadCell, Checkbox, TableSearch 
-} from 'flowbite-svelte';
+import { goto } from '$app/navigation';
+
+onMount(async () => {
+    // redirect to dashboard or querysting ('urlRedirect') if present
+    const urlRedirect = $page.url.searchParams.get('urlRedirect') || '/dashboard';
+    console.log('urlRedirect: ', urlRedirect);
+
+    // redirect status 302
+    goto(urlRedirect, { replaceState: true });
+
+});
         
 </script>
 <div class="scrollable">
 {#if $page}
-<p>Session from refreshSession() called from the client side: </p>
-    <pre>{JSON.stringify($page, null,2)}</pre>
-        <Button>
-            <a href="/dashboard">Dashboard</a>
-        </Button>
-
+<p>loaded!</p>
 {:else}
-    <p>loading SessionResponse...</p>
-
+    <p>loading ... loading ...</p>
 {/if}
 
 
@@ -41,13 +41,6 @@ import { Input, Table, TableBody, Button,
 {:else}
     <h1>Welcome </h1>
 {/if}
-
-
-
-
-<Button>
-    <a href="/">Home</a>
-</Button>
 
 <style>
     div.scrollable {

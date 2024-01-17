@@ -57,13 +57,12 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
             // wrap each request with an authorization header
             const newHeaders = new Headers(request.headers);
-            event.locals.token && newHeaders.set('authorization', `Bearer ${event.locals.token}`);
-            newHeaders.set('credentials', 'include');
-            
-            const newRequest: Request = createNewRequest(request, newHeaders, request.url);
+            request.headers.set('Credentials', 'include');
+            request.headers.set('Authorization', `Bearer ${event.locals.token}`);
 
-
-            
+            console.log('1. hooks.server handleFetch request: ', JSON.stringify(request, null, 2));
+            const newRequest: Request = await createNewRequest(request, newHeaders, request.url);
+        
             return fetch(newRequest);
         }
 
@@ -94,6 +93,8 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
     // if the route is /callback and the token is there set the session
     // anything hitting /callback with a token in the query string 
     const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+        console.log('0. hooks.server initAuthHandler ** route **: ', event.route.id);
+
         // if route.id is /callback
         // and the event.url.searchParams.get('token') is not null
         const tokenCookie = event.cookies.get('auth-token') || '';
@@ -104,7 +105,6 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
         console.log('0. hooks.server initAuthHandler tokenHeader: ', tokenHeader);
             
         try{
-            console.log('0. hooks.server initAuthHandler route: ', event.route.id);
             console.log('1. hooks.server initAuthHandler token: ', event.url.searchParams || '');
             if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
                 console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
@@ -137,24 +137,6 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
                     Location: '/error',
                 }
             });
-        }
-    }
-
-    const callbackRedirectHandler: Handle = async ({ event, resolve }): Promise<Response> => {
-        if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
-            console.log('0. hooks.server callbackRedirectHandler check locals : ', event.locals);
-            const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
-            console.log('0. hooks.server callbackRedirectHandler redirecting: ', urlRedirect || '');
-            
-            return new Response(null, {
-                status: 302, // Temporary redirect
-                headers: {
-                    Location: `/${urlRedirect}`,
-                }
-            });
-        } else {
-            const response = await resolve(event);
-            return response;
         }
     }
 
@@ -231,11 +213,11 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
 // src/hooks.server.ts
 export const handle: Handle = async ({ event, resolve }) => {
-    const handleInitAuth = () => initAuthHandler({ event, resolve: handleAuth });
-    const handleAuth = () => authHandler({ event, resolve: handleAuthZ });
-    const handleAuthZ = () => authZHandler({ event, resolve });
+    const handle_1 = () => initAuthHandler({ event, resolve: handle_2 });
+    const handle_2 = () => authHandler({ event, resolve: handle_3 });
+    const handle_3 = () => authZHandler({ event, resolve: resolve });
 
-    return handleInitAuth();
+    return handle_1();
 };
 
 

@@ -21,6 +21,21 @@ Do not expect a lambda function running on node to read the header you set.  Nod
 const token = useHeader("authorization") // this will read the token
 ```
 
+Similarly, setting :
+
+```ts
+        headers: {
+            'authorization': `Bearer ${authToken}`,
+            // Other necessary headers
+        },
+```
+
+...will not be recognised when it comes to includin credentials.
+
+So, set: ```'Authorization': `Bearer ${authToken}`,```
+
+and read: ```useHeader()'authorization')```
+
 Serverside cookie handling is a common challenge when dealing with cookies in server-side requests, especially in a setup where the frontend and API are on different subdomains. Even though you've set the cookie domain to .my-stage.mydomain.com, which should theoretically cover both the API (api.my-stage.mydomain.com) and the frontend (my-stage.mydomain.com), server-side requests in SvelteKit do not automatically include cookies.
 
 Different Contexts: In a server-side rendering context (like SvelteKit's SSR), the server does not have access to the browser's cookies. When you make a fetch request server-side, it doesn't automatically include cookies that would be included in a client-side fetch.

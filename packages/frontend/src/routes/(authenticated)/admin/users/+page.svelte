@@ -9,7 +9,8 @@
     import { env } from '$env/dynamic/public';
     import { onMount } from 'svelte';
 
-    
+    const authBearer = `Bearer ${$page.data.token}`;
+
     let user: UserType = {
         id: '' ,
         email: '',
@@ -55,10 +56,9 @@
         if (env.PUBLIC_MODE === 'local'){
 
             console.log('local mode, token: ', $page.data.token);
-            const authBearer = `Bearer ${$page.data.token}`;
             const res = await fetch(`${env.PUBLIC_API_URL}/users`, { 
                 credentials: 'include', 
-                headers: { 'authorization': authBearer }
+                headers: { 'Authorization': authBearer }
             }
             );
             if (res.ok) {
@@ -93,12 +93,15 @@
         // Close editing immediately for quicker UI response
         userToUpdate.isEditing = false;
         users = [...users]; // Trigger reactivity
-
+        
         const res = await fetch(`${env.PUBLIC_API_URL}/user/${localUser.id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Authorization': authBearer,
+                'Content-Type': 'application/json',
+             },
+            credentials: 'include', 
             body: JSON.stringify(localUser),
-            credentials: 'include',
         });
         
         const updatedUser = await res.json();

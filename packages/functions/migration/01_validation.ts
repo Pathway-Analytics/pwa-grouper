@@ -7,7 +7,7 @@ async function callApiWithBasicAuthAndSecurityHeader() {
     const securityHeaderValue = 'value'; // replace with your security header value
 
     const headers = new Headers();
-    headers.append('authorization', 'Basic ' + btoa(username + ':' + password));
+    headers.append('Authorization', 'Basic ' + btoa(username + ':' + password));
     headers.append('authorise', securityHeaderValue);
 
     try {

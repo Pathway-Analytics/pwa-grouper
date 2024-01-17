@@ -64,7 +64,7 @@ export class User implements UserType {
         } else if (!newuser.id && newuser.email == '') {
             throw new Error("You must provide an email to create or update a user");
         } else {
-            
+    
             const user: UserType = {
                 id: (!newuser.id || newuser.id === 'new') ? uuidv4() : newuser.id,
                 email: newuser.email || '',
@@ -86,7 +86,7 @@ export class User implements UserType {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     roles: user.roles,
-                    lastLogin: newuser.lastLogin,
+                    lastLogin: newuser.lastLogin? new Date(newuser.lastLogin): null,
                     contactTel: newuser.contactTel    
                 })
                 .onConflict((oc) => oc
@@ -97,7 +97,7 @@ export class User implements UserType {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     roles: user.roles,
-                    lastLogin: newuser.lastLogin,
+                    lastLogin: newuser.lastLogin? new Date(newuser.lastLogin): null,
                     contactTel: newuser.contactTel    
                 })
                 )
