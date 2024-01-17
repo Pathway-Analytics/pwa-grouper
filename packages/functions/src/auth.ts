@@ -145,14 +145,10 @@ export const handler = AuthHandler({
                         const cookies = getSessionCookies(authUser.id || '');
                         // reset the cookie to the site subdomain: .my-stage-my-app.domain.com
                         //-X const newProxyStructure = Session.cookie(cookies);
-                        const newProxyStructure = Session.parameter(cookies);
-                        let cookie = newProxyStructure.cookies?.[0] ?? '';
-                        cookie = cookie.replace('; Domain=', '');
-                        cookie = `${cookie}; Domain=.${domain}`;
-                        console.log('15. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
-                        newProxyStructure.cookies = [cookie];
-                        // return   Session.cookie(cookies)
-                        return newProxyStructure;
+                        // cookie = cookie.replace('; Domain=', '');
+                        // cookie = `${cookie}; Domain=.${domain}`;
+                        // console.log('15. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
+                        return Session.cookie(cookies);
                     }
                     // decide whether to use cookies or params for session management 
                     // https://docs.sst.dev/auth#cookies
