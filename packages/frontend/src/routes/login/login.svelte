@@ -5,13 +5,18 @@
     import { onMount } from 'svelte';
     import { authState } from './store';
     import { email } from './store';
+    import { page } from '$app/stores';
     
     const error = writable('');
     const api_url = env.PUBLIC_API_URL;
   
     let emailInput: HTMLInputElement;
     onMount(() => {
-        emailInput.focus();
+        if ($page.data.session.isValid || $page.data.token){
+            goto('/callback');
+        } else {
+            emailInput.focus();
+        }
     });    
 
     let googleAuthUrl = `${api_url}/auth/google/authorize?prompt=select_account`;
