@@ -11,10 +11,10 @@ import { Input, Table, TableBody, Button,
     let SessionResponse={}
 
     onMount (async () => {
-        console.log('callback +page', $page);
-        const token = $page.url.searchParams.get('token') || '';
-         SessionResponse = await refreshSession(token);
-        console.log('SessionResponse', JSON.stringify(SessionResponse, null, 2));
+        // console.log('callback +page', $page);
+        // const token = $page.url.searchParams.get('token') || '';
+        // SessionResponse = await refreshSession(token);
+        // console.log('SessionResponse', JSON.stringify(SessionResponse, null, 2));
         
     });
 </script>

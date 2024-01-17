@@ -93,12 +93,22 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
     // if the route is /callback and the token is there set the session
     // anything hitting /callback with a token in the query string 
-    const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
+     const initAuthHandler: Handle = async ({ event, resolve }): Promise<Response> => {
         // if route.id is /callback
         // and the event.url.searchParams.get('token') is not null
+        const tokenCookie = event.cookies.get('auth-token') || '';
+        console.log('0. initAuthHandlers tokenCookie: ', tokenCookie);
+        const tokenURL = event.url.searchParams.get('auth-token') || '';
+        console.log('0. initAuthHandler tokenURL: ', tokenURL);
+        const tokenHeader = event.request.headers.get('Authorization') || '';
+        console.log('0. initAuthHandler tokenHeader: ', tokenHeader);
+        const urlRedirect = event.url.searchParams.get('urlRedirect') || 'dashboard';
+        console.log('0. initAuthHandler urlRedirect: ', urlRedirect);
+    
             
         try{
-
+            console.log('0. hooks.server initAuthHandler route: ', event.route.id);
+            console.log('1. hooks.server initAuthHandler token: ', event.url.searchParams || '');
             if (event.route.id === '/callback' && event.url.searchParams.get('token') !== null) {
                 console.log('0. hooks.server initAuthHandler request: ', JSON.stringify(event.request, null, 2));
                 const token = event.url.searchParams.get('token') || '';
@@ -207,9 +217,19 @@ const ttlThreshold: number = 30 * 60 * 1000  // ttl for session before we refres
 
 // we cannot garuntee the order of the hooks as some may be async
 // export const handle: Handle = sequence( checkQueryParamToken, authHook);
+// src/hooks.server.ts
+// export const handle: Handle = async ({ event, resolve }) => {
+//     // const handleInitAuth = () => initAuthHandler({ event, resolve: handleAuth });
+//     // const handleAuth = () => authHandler({ event, resolve: handleAuthZ });
+//     // const handleAuthZ = () => authZHandler({ event, resolve });
+
+//     // return handleInitAuth();
+// };
+
+
 export const handle: Handle = sequence(
     initAuthHandler,
-    authHandler,
-    authZHandler,
+    // authHandler,
+    // authZHandler,
 )
 

@@ -73,9 +73,15 @@ const main = async () => {
                 let token: string | undefined = ''       
                 // if (isLocalMode) {
                 // strip Bearer from the useHeader('Authorisation') token or useQueryParam('token')
-                    token = useHeader('Authorization')?.replace('Bearer ', '') || useQueryParam('token');
-                    
-                    console.log('6. -- refreshToken token (local mode) from QueryParams:', JSON.stringify(token));
+                    token = useQueryParam('token') 
+                    || useHeader('authorization')?.replace('Bearer ', '') 
+                    || useHeader('Authorization')?.replace('Bearer ', '') 
+                        || useCookie('auth-token');
+
+                    console.log('6. -- refreshToken token from QueryParam:', useQueryParam('token'));
+                    console.log('6. -- refreshToken token from Header:', useHeader('authorization')?.replace('Bearer ', ''));
+                    console.log('6. -- refreshToken token from Cookie:', useCookie('auth-token'));
+                    console.log('6. -- refreshToken token token selected :', token);
                     cookieOld = `auth-token=${token}; Expires=${expiresDate}; Path=/; HttpOnly; SameSite=None;`;
                     // cookieNew = `auth-token=${token}; Expires=${refreshDate};  Path=/; `;
                 // } else {

@@ -137,7 +137,8 @@ export const handler = AuthHandler({
                         const newProxyStructure = Session.cookie(params);
                         newProxyStructure.cookies = [cookie];
                         console.log('13. authhandler magiclink onSuccess set newcookie: ', newProxyStructure?.cookies?.[0]);
-                        return newProxyStructure;
+                        return  Session.parameter(params)
+                        // return newProxyStructure;
                     } else {
                         console.log('14. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
                         //-X const cookies = getSessionCookies(authUser.id || '');
@@ -150,7 +151,8 @@ export const handler = AuthHandler({
                         cookie = `${cookie}; Domain=.${domain}`;
                         console.log('15. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
                         newProxyStructure.cookies = [cookie];
-                        return newProxyStructure;
+                        return   Session.parameter(params)
+                        // return newProxyStructure;
                     }
                     // decide whether to use cookies or params for session management 
                     // https://docs.sst.dev/auth#cookies
@@ -192,7 +194,7 @@ function getSessionCookies (userId: string):{
 }{
     const urlRedirect = useQueryParam('urlRedirect');
     const redirect = urlRedirect
-        ? `${frontendCallback}?urlRedirect=${urlRedirect}`
+        ? `${frontendCallback}&urlRedirect=${urlRedirect}`
         : `${frontendCallback}`;
     return {
         type: 'user' as keyof SessionTypes,
@@ -224,7 +226,7 @@ function getSessionParameter (userId: string):{
     // add a urlRedirect query param to the redirect url 
     // the urlRedirect is used to redirect to after the session is set in localstorage
     const redirect = urlRedirect
-        ? `${frontendCallback}?urlRedirect=${urlRedirect}`
+        ? `${frontendCallback}&urlRedirect=${urlRedirect}`
         : `${frontendCallback}`;
     return {
         type: 'user' as keyof SessionTypes,
