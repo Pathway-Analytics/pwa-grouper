@@ -140,7 +140,7 @@ export const handler = AuthHandler({
                         return  Session.parameter(params)
                         // return newProxyStructure;
                     } else {
-                        console.log('14. authhandler magiclink onSuccess using sessionCookie, mode is: ', isLocalMode ? 'local' : 'deployed');
+                        console.log('14. authhandler magiclink onSuccess using sessionParam, mode is: ', isLocalMode ? 'local' : 'deployed');
                         //-X const cookies = getSessionCookies(authUser.id || '');
                         // it may be possible to use the cookie method here but we need to set the cookie in the site domain
                         const cookies = getSessionCookies(authUser.id || '');
@@ -150,7 +150,7 @@ export const handler = AuthHandler({
                         // cookie = cookie.replace('; Domain=', '');
                         // cookie = `${cookie}; Domain=.${domain}`;
                         // console.log('15. authhandler magiclink onSuccess set newProxyStructure is: ', JSON.stringify(newProxyStructure, null, 2));
-                        return Session.cookie(params);
+                        return Session.parameter(params);
                     }
                     // decide whether to use cookies or params for session management 
                     // https://docs.sst.dev/auth#cookies
